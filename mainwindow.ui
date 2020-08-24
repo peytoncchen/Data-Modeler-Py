@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
-    <height>600</height>
+    <width>900</width>
+    <height>750</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>700</width>
-    <height>600</height>
+    <width>900</width>
+    <height>750</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -259,7 +259,7 @@
         <property name="minimumSize">
          <size>
           <width>360</width>
-          <height>100</height>
+          <height>160</height>
          </size>
         </property>
         <property name="font">
@@ -326,8 +326,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>344</width>
-              <height>38</height>
+              <width>397</width>
+              <height>78</height>
              </rect>
             </property>
            </widget>
@@ -367,7 +367,7 @@
         <property name="minimumSize">
          <size>
           <width>360</width>
-          <height>100</height>
+          <height>75</height>
          </size>
         </property>
         <property name="font">
@@ -425,8 +425,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>344</width>
-              <height>60</height>
+              <width>397</width>
+              <height>93</height>
              </rect>
             </property>
            </widget>
@@ -440,7 +440,7 @@
         <property name="minimumSize">
          <size>
           <width>360</width>
-          <height>100</height>
+          <height>160</height>
          </size>
         </property>
         <property name="font">
@@ -474,7 +474,7 @@
           <number>5</number>
          </property>
          <item>
-          <widget class="QScrollArea" name="scrollArea">
+          <widget class="QScrollArea" name="tScrollArea">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -484,13 +484,13 @@
            <property name="widgetResizable">
             <bool>true</bool>
            </property>
-           <widget class="QWidget" name="scrollAreaWidgetContents">
+           <widget class="QWidget" name="tScrollWidget">
             <property name="geometry">
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>360</width>
-              <height>38</height>
+              <width>413</width>
+              <height>78</height>
              </rect>
             </property>
            </widget>

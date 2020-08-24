@@ -23,6 +23,33 @@ def s1verify(s1list):
 def s2verify(s2list):
     names = s2list[0]
     values = s2list[1]
+
+    for name in names:
+        if ' ' in name:
+            return False
     
+    for value in values:
+        try:
+            int(value)
+        except ValueError:
+            return False
+    
+    return True
+
+
+def s3and4verify(s3list, s4list):
+    for val in s3list:
+        try:
+            float(val)
+        except ValueError:
+            return False
+    
+    for val in s4list:
+        try:
+            float(val)
+        except ValueError:
+            return False
+    
+    return True
     
     
