@@ -17,7 +17,11 @@ def s1verify(s1list):
     if ' ' in nameM or ' ' in namedVar:
         return False
     
+    if nameM == '' or namedVar == '':
+        return False
+    
     return True
+
 
 # 2 lists one with labels, the other with values example -> [['Rat', 'Cage', 'Gender'], ['1', '2', '3']]
 def s2verify(s2list):
@@ -26,6 +30,8 @@ def s2verify(s2list):
 
     for name in names:
         if ' ' in name:
+            return False
+        if name == '':
             return False
     
     for value in values:
@@ -51,5 +57,34 @@ def s3and4verify(s3list, s4list):
             return False
     
     return True
+
+
+def s5verify(s5list, s1inputs, s2inputs):
+    tRange = int(s1inputs[1])
+
+    for num in s5list[0]:
+        try:
+            int(num)
+        except ValueError:
+            return False
+        
+        if int(num) not in (1, tRange):
+            return False
+    
+
+    for lst in s5list[1]:
+        for i in range(len(lst)):
+            try:
+                int(lst[i])
+            except ValueError:
+                return False
+            
+            if int(lst[i]) not in (1, int(s2inputs[1][i])):
+                return False
+    
+    return True
+
+
+
     
     

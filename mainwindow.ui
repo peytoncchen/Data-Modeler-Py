@@ -20,9 +20,9 @@
    <string>Data Modeler</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_4">
+   <layout class="QHBoxLayout" name="horizontalLayout_5">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0,0,0,0">
+     <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0,0,0">
       <item>
        <widget class="QGroupBox" name="inputGroupBox">
         <property name="minimumSize">
@@ -327,7 +327,7 @@
               <x>0</x>
               <y>0</y>
               <width>397</width>
-              <height>78</height>
+              <height>80</height>
              </rect>
             </property>
            </widget>
@@ -426,7 +426,7 @@
               <x>0</x>
               <y>0</y>
               <width>397</width>
-              <height>93</height>
+              <height>121</height>
              </rect>
             </property>
            </widget>
@@ -436,7 +436,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QGroupBox" name="tGroupBox2_3">
+       <widget class="QGroupBox" name="tGroupBox">
         <property name="minimumSize">
          <size>
           <width>360</width>
@@ -490,7 +490,7 @@
               <x>0</x>
               <y>0</y>
               <width>413</width>
-              <height>78</height>
+              <height>80</height>
              </rect>
             </property>
            </widget>
@@ -526,32 +526,156 @@
         </layout>
        </widget>
       </item>
-      <item>
-       <widget class="QLabel" name="s5label">
-        <property name="text">
-         <string> Step 5- Distribute groups -&gt;</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_6">
+     <layout class="QVBoxLayout" name="verticalLayout_7">
       <item>
-       <widget class="QTableWidget" name="tableWidget">
+       <widget class="QGroupBox" name="dGroupBox">
         <property name="minimumSize">
          <size>
-          <width>0</width>
-          <height>0</height>
+          <width>360</width>
+          <height>160</height>
          </size>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>13</pointsize>
+         </font>
+        </property>
+        <property name="title">
+         <string>Step 5 - Distribute groups:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <property name="leftMargin">
+          <number>5</number>
+         </property>
+         <property name="topMargin">
+          <number>5</number>
+         </property>
+         <property name="rightMargin">
+          <number>5</number>
+         </property>
+         <property name="bottomMargin">
+          <number>5</number>
+         </property>
+         <item>
+          <widget class="QScrollArea" name="dScrollArea">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>380</height>
+            </size>
+           </property>
+           <property name="widgetResizable">
+            <bool>true</bool>
+           </property>
+           <widget class="QWidget" name="dScrollWidget">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>413</width>
+              <height>378</height>
+             </rect>
+            </property>
+           </widget>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QPushButton" name="s5but">
+             <property name="maximumSize">
+              <size>
+               <width>131</width>
+               <height>32</height>
+              </size>
+             </property>
+             <property name="layoutDirection">
+              <enum>Qt::LeftToRight</enum>
+             </property>
+             <property name="text">
+              <string>Placeholder</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_2">
-        <property name="text">
-         <string>PushButton</string>
+       <widget class="QGroupBox" name="cGroupBox">
+        <property name="minimumSize">
+         <size>
+          <width>360</width>
+          <height>160</height>
+         </size>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>13</pointsize>
+         </font>
+        </property>
+        <property name="title">
+         <string>Current Inputs:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_8">
+         <property name="leftMargin">
+          <number>5</number>
+         </property>
+         <property name="topMargin">
+          <number>5</number>
+         </property>
+         <property name="rightMargin">
+          <number>5</number>
+         </property>
+         <property name="bottomMargin">
+          <number>5</number>
+         </property>
+         <item>
+          <widget class="QScrollArea" name="cScrollArea">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="widgetResizable">
+            <bool>true</bool>
+           </property>
+           <widget class="QWidget" name="cScrollWidget">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>413</width>
+              <height>205</height>
+             </rect>
+            </property>
+           </widget>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
@@ -559,6 +683,9 @@
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusBar">
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
    <property name="styleSheet">
     <string notr="true">background-color: none;</string>
    </property>

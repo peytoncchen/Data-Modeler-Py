@@ -6,8 +6,9 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 from Mainwindow import Ui_MainWindow
-from verify import s1verify, s2verify, s3and4verify
+from verify import s1verify, s2verify, s3and4verify, s5verify
 from inputs import Inputs
+from results import Results
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -18,6 +19,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         self.inputs = Inputs()
+        self.results = Results()
 
         self.bFbox = QFormLayout()
         self.bFscrollWidget.setLayout(self.bFbox)
@@ -27,12 +29,43 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.eBox = QFormLayout()
         self.eRscrollWidget.setLayout(self.eBox)
-        
+
+        self.dGrid = QGridLayout()
+        self.dScrollWidget.setLayout(self.dGrid)
+
+        self.dGroupBox.hide()
+        self.cGroupBox.hide()
+
+        self.setMinimumSize(QSize(450, 750))
+        self.resize(450, 750)
 
         self.s1but.clicked.connect(self.s1process)
         self.s2but.clicked.connect(self.s2process)
         self.s4but.clicked.connect(self.s3and4process)
-        self.pushButton.clicked.connect(self.test)
+        self.s5but.clicked.connect(self.s5process)
+    
+
+    def s5process(self):
+        self.inputs.stores_s5(self.inputs.s5Obj)
+
+        self.statusBar.clearMessage()
+        self.statusBar.setStyleSheet("background-color: none;")
+        if not s5verify(self.inputs.s5Inputs, self.inputs.s1Inputs, self.inputs.s2Inputs):
+            self.statusBar.showMessage('Invalid Input')
+            self.statusBar.setStyleSheet("background-color: pink;")
+            return
+        else:
+            print(self.inputs.s5Inputs)
+            self.results.gendvVals(self.inputs.s5Inputs, self.inputs.s4Inputs, self.inputs.s3Inputs[0])
+            print(self.results.dVResults)
+            self.initdVValView()
+
+
+    def expand(self):
+        self.setMinimumSize(QSize(900, 750))
+        self.resize(900, 750)
+        self.dGroupBox.show()
+        self.cGroupBox.show()
         
 
     def s1process(self):
@@ -46,8 +79,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
         else:
             self.initBfView()
-            self.initTView()
-            
+            self.initTView() 
+            if int(self.inputs.s1Inputs[2]) == 0:
+                pass
+                #fix right now index error self.initEView() 
     
 
     def s2process(self):
@@ -74,10 +109,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statusBar.setStyleSheet("background-color: pink;")
             return
         else:
-            print(self.inputs.s1Inputs)
-            print(self.inputs.s2Inputs)
-            print(self.inputs.s3Inputs)
-            print(self.inputs.s4Inputs)
+            self.expand()
+            self.initDView()
+            self.results.genEVals(self.inputs.s2Inputs, self.inputs.s3Inputs)
+            print(self.results.errorResults)
+
 
 
     def store_s1(self):
@@ -87,6 +123,65 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         nameM = str(self.nameMeas.text())
         nameD = str(self.namedVar.text())
         self.inputs.s1Inputs = [numM, numT, numB, nameM, nameD]
+
+    #buggy function fix by initiating the objects in initDView and then hide them, then show them here and setText
+    def initdVValView(self):
+        self.dGrid.removeWidget()
+        colCount = int(self.inputs.s1Inputs[2]) + 2
+        name = QLabel(self.inputs.s1Inputs[4])
+        self.dGrid.addWidget(name,0,colCount)
+        for i in range(len(self.results.dVResults)):
+            label = QLabel(str(self.results.dVResults[i]))
+            self.dGrid.addWidget(label,i+1,colCount)
+    
+    
+    def initDView(self):
+        self.clearLayout(self.dGrid)
+        tAssignObj = []
+        bAssignObj = []
+
+        #Init the row labels
+        l1 = QLabel(self.inputs.s1Inputs[3])
+        l2 = QLabel("Treatment")
+        l1.setAlignment(Qt.AlignHCenter)
+        l2.setAlignment(Qt.AlignHCenter)
+        l1.setFixedHeight(21)
+        l2.setFixedHeight(21)
+        self.dGrid.addWidget(l1,0,0)
+        self.dGrid.addWidget(l2,0,1)
+
+        for i in range(len(self.inputs.s2Inputs[0])):
+            blabel = QLabel(self.inputs.s2Inputs[0][i])
+            blabel.setFixedHeight(21)
+            blabel.setAlignment(Qt.AlignHCenter)
+            self.dGrid.addWidget(blabel,0,i+2)
+        
+        #Init the rest of distribute groups view
+        for i in range(int(self.inputs.s1Inputs[0])):
+            numl = QLabel(str(i+1))
+            numl.setMaximumWidth(125)
+            numl.setAlignment(Qt.AlignHCenter)
+            self.dGrid.addWidget(numl,i+1,0)
+            tAssign = QLineEdit()
+            tAssign.setFixedHeight(21)
+            tAssign.setMaximumWidth(125)
+            tAssign.setAlignment(Qt.AlignHCenter)
+            tAssignObj.append(tAssign)
+            self.dGrid.addWidget(tAssign,i+1,1)
+
+            iBAssign = []
+            for j in range(len(self.inputs.s2Inputs[0])):
+                bAssign = QLineEdit()
+                bAssign.setFixedHeight(21)
+                bAssign.setMaximumWidth(125)
+                bAssign.setAlignment(Qt.AlignHCenter)
+                iBAssign.append(bAssign)
+                self.dGrid.addWidget(bAssign,i+1,j+2)
+            bAssignObj.append(iBAssign)
+        
+        self.inputs.s5Obj.clear()
+        self.inputs.s5Obj.append(tAssignObj)
+        self.inputs.s5Obj.append(bAssignObj)
 
     
     def initEView(self):
@@ -132,12 +227,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.inputs.s2Obj.clear()
         self.inputs.s2Obj.append(lstlabel)
         self.inputs.s2Obj.append(lstval)
-    
-
-    def test(self):
-        print(self.inputs.s3Obj)
-        print(self.inputs.s4Obj)
-
 
 
     def clearLayout(self, layout):
