@@ -602,15 +602,15 @@
               <widget class="QPushButton" name="s5but">
                <property name="maximumSize">
                 <size>
-                 <width>131</width>
-                 <height>32</height>
+                 <width>170</width>
+                 <height>16777215</height>
                 </size>
                </property>
                <property name="layoutDirection">
                 <enum>Qt::LeftToRight</enum>
                </property>
                <property name="text">
-                <string>Generate values</string>
+                <string>Generate values/Reset</string>
                </property>
               </widget>
              </item>
@@ -628,19 +628,6 @@
                </property>
                <property name="text">
                 <string>Add run</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="reset">
-               <property name="maximumSize">
-                <size>
-                 <width>150</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Reset</string>
                </property>
               </widget>
              </item>
@@ -686,7 +673,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="experimentName"/>
+              <widget class="QLineEdit" name="experimentName">
+               <property name="placeholderText">
+                <string>Enter name</string>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QPushButton" name="exportSAS">

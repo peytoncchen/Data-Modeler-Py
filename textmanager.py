@@ -1,9 +1,42 @@
 #Prepares text file strings
 
+def preparelabeltxt(s1inputs, s2inputs):
+        labels = []
+        labels.append(s1inputs[3])
+        labels.append('Treatment')
+
+        for name in s2inputs[0]:
+            labels.append(name)
+    
+        labels.append(s1inputs[4])
+
+        return labels
+
+
+def preparemultisas(s5inputs, multiRun, s1inputs, s2inputs, eName):
+    bigboysas = ''
+    blockName = ' '.join(s2inputs[0])
+    sasstart = 'DATA ' + eName + '; INPUT ' + s1inputs[3] + ' Treatment ' + blockName + ' ' + s1inputs[4] + '; Lines;\n\n'
+    sasfinish = '\n;\nRUN;\n\nPROC MIXED ASYCOV NOBOUND DATA=' + eName + ' ALPHA=0.05;\nCLASS Treatment ' + blockName + ';\n'
+    sasfinish += 'MODEL ' + s1inputs[4] + ' = ' + 'Treatment ' + blockName + '\n'
+    sasfinish += '/SOLUTION DDFM=KENWARDROGER;\nlsmeans Treatment / adjust=tukey;\nRUN;\n\n\n'
+    
+
+    for lst in multiRun:
+        string = ''
+        string += sasstart
+        tempstr = preparetxt(s5inputs, lst, s1inputs, s2inputs, True)
+        string += tempstr
+        string += sasfinish
+        bigboysas += string
+    return bigboysas
+
+
+
 def preparemultitxt(s5inputs, multiRun, s1inputs, s2inputs):
     bigboystring = ''
     for lst in multiRun:
-        tempstr = preparetxt(s5inputs, lst, s1inputs, s2inputs)
+        tempstr = preparetxt(s5inputs, lst, s1inputs, s2inputs, False)
         tempstr += '\n\n\n'
         bigboystring += tempstr
     return bigboystring
@@ -11,20 +44,14 @@ def preparemultitxt(s5inputs, multiRun, s1inputs, s2inputs):
 
 
 
-def preparetxt(s5inputs, dVResults, s1inputs, s2inputs):
+def preparetxt(s5inputs, dVResults, s1inputs, s2inputs, sasbool):
     string = ''
 
     result = []
-    labels = []
-    labels.append(s1inputs[3])
-    labels.append('Treatment')
-
-    for name in s2inputs[0]:
-        labels.append(name)
     
-    labels.append(s1inputs[4])
-    result.append(labels)
-
+    if not sasbool:
+        labels = preparelabeltxt(s1inputs, s2inputs)
+        result.append(labels)
 
     for i in range(len(s5inputs[0])):
         temp = []
@@ -43,6 +70,7 @@ def preparetxt(s5inputs, dVResults, s1inputs, s2inputs):
         string += tempstr
 
     return string
+
 
 
 
