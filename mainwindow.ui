@@ -632,6 +632,19 @@
               </widget>
              </item>
              <item>
+              <widget class="QPushButton" name="reset">
+               <property name="maximumSize">
+                <size>
+                 <width>150</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Reset</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QLabel" name="runCount">
                <property name="maximumSize">
                 <size>

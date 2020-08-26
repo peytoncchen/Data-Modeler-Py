@@ -7,6 +7,7 @@ from PyQt5.QtGui import *
 
 from Mainwindow import Ui_MainWindow
 from verify import s1verify, s2verify, s3and4verify, s5verify
+from textmanager import preparemultitxt
 from inputs import Inputs
 from results import Results
 
@@ -21,8 +22,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.inputs = Inputs()
         self.results = Results()
 
+        self.runcounter = 0
+
         self.bFbox = QFormLayout()
         self.bFscrollWidget.setLayout(self.bFbox)
+
+        self.cBox = QHBoxLayout()
+        self.cScrollWidget.setLayout(self.cBox)
 
         self.tBox = QFormLayout()
         self.tScrollWidget.setLayout(self.tBox)
@@ -43,7 +49,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.s2but.clicked.connect(self.s2process)
         self.s4but.clicked.connect(self.s3and4process)
         self.s5but.clicked.connect(self.s5process)
+        self.addRun.clicked.connect(self.s5update)
+        self.reset.clicked.connect(self.resetmulti)
+        self.exportTxt.clicked.connect(self.exporttxt)
+        self.exportSAS.clicked.connect(self.exportsas)
+
+    def exporttxt(self):
+        dlg = QFileDialog()
+        dlg.setFileMode(QFileDialog.Directory)
+        outstring = preparemultitxt(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, self.inputs.s2Inputs)
+        if dlg.exec_():
+            dir = dlg.getSaveFileName()
+            f = open(str(dir[0]) + '.txt', 'w+')
+            f.write(outstring)
+            f.close()
+
+    def exportsas(self):
+        pass
     
+
+    def resetmulti(self):
+        self.results.multiRun.clear()
+        self.runcounter = 0
+        self.runCount.setText('Current run count: ' + str(self.runcounter))
+        self.runCount.repaint()
+
 
     def s5update(self):
         self.inputs.stores_s5(self.inputs.s5Obj)
@@ -58,7 +88,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print(self.inputs.s5Inputs)
             self.results.gendvVals(self.inputs.s5Inputs, self.inputs.s4Inputs, self.inputs.s3Inputs[0])
             print(self.results.dVResults)
+            self.runcounter += 1
+            self.runCount.setText('Current run count: ' + str(self.runcounter))
+            self.runCount.repaint()
             self.updatedVVal()
+            self.results.addRun()
+            print(self.results.multiRun)
             
 
     def s5process(self):
@@ -75,6 +110,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.results.gendvVals(self.inputs.s5Inputs, self.inputs.s4Inputs, self.inputs.s3Inputs[0])
             print(self.results.dVResults)
             self.initdVValView()
+            self.results.multiRun.clear()
+            self.results.addRun()
+            self.runcounter = 1
+            self.runCount.setText('Current run count: 1')
+            self.runCount.repaint()
+            print(self.results.multiRun)
             self.s5but.clicked.disconnect(self.s5process)
             self.s5but.clicked.connect(self.s5update)            
 
@@ -130,6 +171,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.expand()
             self.initDView()
             self.results.genEVals(self.inputs.s2Inputs, self.inputs.s3Inputs)
+            self.initcurrInpView()
             print(self.results.errorResults)
 
 
@@ -140,6 +182,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         nameM = str(self.nameMeas.text())
         nameD = str(self.namedVar.text())
         self.inputs.s1Inputs = [numM, numT, numB, nameM, nameD]
+
+
+    def initcurrInpView(self):
+        self.clearLayout(self.cBox)
+        self.errors = QLabel()
+        self.tmeans = QLabel()
+        self.cBox.addWidget(self.errors)
+        self.cBox.addWidget(self.tmeans)
+
+        generrors = ''
+        tmeans = 'Treatment Means:\n'
+
+        for i in range(len(self.inputs.s2Inputs[0])):
+            generrors += self.inputs.s2Inputs[0][i] + ' SD generated error:\n'
+            for j in range(len(self.results.errorResults[i])):
+                generrors += str(i + 1)
+                generrors += ': '
+                generrors += str(self.results.errorResults[i][j])
+            generrors += '\n\n'
+
+        for i in range(len(self.inputs.s4Inputs)):
+            tmeans += str(i + 1)
+            tmeans += ': '
+            tmeans += self.inputs.s4Inputs[i]
+            tmeans += '\n'  
+
+        self.errors.setText(generrors)
+        self.tmeans.setText(tmeans)      
+        self.errors.repaint()
+        self.tmeans.repaint()
+
 
 
     def updatedVVal(self):

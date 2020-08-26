@@ -5,14 +5,20 @@ import scipy.stats as sc
 
 
 class Results:
-    def __init__(self, errorResults=None, dVObjects=None, dVResults=None):
+    def __init__(self, errorResults=None, dVObjects=None, dVResults=None, multiRun=None):
         self.errorResults = errorResults or []
         self.dVObjects = dVObjects or []
         self.dVResults = dVResults or []
+        self.multiRun = multiRun or []
+
+
+    def addRun(self):
+        results = self.dVResults
+        self.multiRun.append(results)
 
 
     def gendvVals(self, s5inputs, s4inputs, totalerror):
-        self.dVResults.clear()
+        #self.dVResults.clear()
         count = len(s5inputs[0])
         numBF = len(s5inputs[1][0])
         result = []
