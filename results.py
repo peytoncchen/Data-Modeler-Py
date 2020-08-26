@@ -5,8 +5,9 @@ import scipy.stats as sc
 
 
 class Results:
-    def __init__(self, errorResults=None, dVResults=None):
+    def __init__(self, errorResults=None, dVObjects=None, dVResults=None):
         self.errorResults = errorResults or []
+        self.dVObjects = dVObjects or []
         self.dVResults = dVResults or []
 
 

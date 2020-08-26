@@ -68,7 +68,7 @@ def s5verify(s5list, s1inputs, s2inputs):
         except ValueError:
             return False
         
-        if int(num) not in (1, tRange):
+        if int(num) not in range(1, tRange+1):
             return False
     
 

@@ -45,6 +45,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.s5but.clicked.connect(self.s5process)
     
 
+    def s5update(self):
+        self.inputs.stores_s5(self.inputs.s5Obj)
+
+        self.statusBar.clearMessage()
+        self.statusBar.setStyleSheet("background-color: none;")
+        if not s5verify(self.inputs.s5Inputs, self.inputs.s1Inputs, self.inputs.s2Inputs):
+            self.statusBar.showMessage('Invalid Input')
+            self.statusBar.setStyleSheet("background-color: pink;")
+            return
+        else:
+            print(self.inputs.s5Inputs)
+            self.results.gendvVals(self.inputs.s5Inputs, self.inputs.s4Inputs, self.inputs.s3Inputs[0])
+            print(self.results.dVResults)
+            self.updatedVVal()
+            
+
     def s5process(self):
         self.inputs.stores_s5(self.inputs.s5Obj)
 
@@ -59,6 +75,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.results.gendvVals(self.inputs.s5Inputs, self.inputs.s4Inputs, self.inputs.s3Inputs[0])
             print(self.results.dVResults)
             self.initdVValView()
+            self.s5but.clicked.disconnect(self.s5process)
+            self.s5but.clicked.connect(self.s5update)            
 
 
     def expand(self):
@@ -115,7 +133,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print(self.results.errorResults)
 
 
-
     def store_s1(self):
         numM = str(self.numMeasure.text())
         numT = str(self.numTreat.text())
@@ -124,15 +141,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         nameD = str(self.namedVar.text())
         self.inputs.s1Inputs = [numM, numT, numB, nameM, nameD]
 
-    #buggy function fix by initiating the objects in initDView and then hide them, then show them here and setText
+
+    def updatedVVal(self):
+        self.name.setText(self.inputs.s1Inputs[4])
+        self.name.repaint()
+
+        for i in range(len(self.results.dVResults)):
+            self.results.dVObjects[i].setText(str(self.results.dVResults[i]))
+            self.results.dVObjects[i].repaint()
+            
+
     def initdVValView(self):
-        self.dGrid.removeWidget()
+        labellst = []
         colCount = int(self.inputs.s1Inputs[2]) + 2
-        name = QLabel(self.inputs.s1Inputs[4])
-        self.dGrid.addWidget(name,0,colCount)
+        self.name = QLabel(self.inputs.s1Inputs[4])
+        self.name.setAlignment(Qt.AlignHCenter)
+        self.name.setFixedHeight(21)
+        self.dGrid.addWidget(self.name,0,colCount)
         for i in range(len(self.results.dVResults)):
             label = QLabel(str(self.results.dVResults[i]))
+            label.setAlignment(Qt.AlignHCenter)
+            label.setFixedHeight(21)
+            labellst.append(label)
             self.dGrid.addWidget(label,i+1,colCount)
+        self.results.dVObjects = labellst
     
     
     def initDView(self):
@@ -155,7 +187,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             blabel.setFixedHeight(21)
             blabel.setAlignment(Qt.AlignHCenter)
             self.dGrid.addWidget(blabel,0,i+2)
-        
+
         #Init the rest of distribute groups view
         for i in range(int(self.inputs.s1Inputs[0])):
             numl = QLabel(str(i+1))
@@ -178,7 +210,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 iBAssign.append(bAssign)
                 self.dGrid.addWidget(bAssign,i+1,j+2)
             bAssignObj.append(iBAssign)
-        
+
         self.inputs.s5Obj.clear()
         self.inputs.s5Obj.append(tAssignObj)
         self.inputs.s5Obj.append(bAssignObj)

@@ -20,7 +20,7 @@
    <string>Data Modeler</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_5">
+   <layout class="QHBoxLayout" name="horizontalLayout_8">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0,0,0">
       <item>
@@ -326,7 +326,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>397</width>
+              <width>350</width>
               <height>80</height>
              </rect>
             </property>
@@ -425,7 +425,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>397</width>
+              <width>350</width>
               <height>121</height>
              </rect>
             </property>
@@ -489,7 +489,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>413</width>
+              <width>366</width>
               <height>80</height>
              </rect>
             </property>
@@ -584,7 +584,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>413</width>
+              <width>460</width>
               <height>378</height>
              </rect>
             </property>
@@ -592,22 +592,97 @@
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="spacing">
+            <number>1</number>
+           </property>
            <item>
-            <widget class="QPushButton" name="s5but">
-             <property name="maximumSize">
-              <size>
-               <width>131</width>
-               <height>32</height>
-              </size>
-             </property>
-             <property name="layoutDirection">
-              <enum>Qt::LeftToRight</enum>
-             </property>
-             <property name="text">
-              <string>Placeholder</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QPushButton" name="s5but">
+               <property name="maximumSize">
+                <size>
+                 <width>131</width>
+                 <height>32</height>
+                </size>
+               </property>
+               <property name="layoutDirection">
+                <enum>Qt::LeftToRight</enum>
+               </property>
+               <property name="text">
+                <string>Generate values</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <item>
+              <widget class="QPushButton" name="addRun">
+               <property name="maximumSize">
+                <size>
+                 <width>132</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Add run</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="runCount">
+               <property name="maximumSize">
+                <size>
+                 <width>140</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Current run count: 1</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <item>
+              <widget class="QPushButton" name="exportTxt">
+               <property name="maximumSize">
+                <size>
+                 <width>170</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Export run(s) to text file</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_7">
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Experiment Name:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="experimentName"/>
+             </item>
+             <item>
+              <widget class="QPushButton" name="exportSAS">
+               <property name="text">
+                <string>Export SAS run(s) to text file</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </item>
@@ -619,7 +694,7 @@
         <property name="minimumSize">
          <size>
           <width>360</width>
-          <height>160</height>
+          <height>150</height>
          </size>
         </property>
         <property name="font">
@@ -668,8 +743,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>413</width>
-              <height>205</height>
+              <width>460</width>
+              <height>110</height>
              </rect>
             </property>
            </widget>
