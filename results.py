@@ -17,8 +17,13 @@ class Results:
         self.multiRun.append(results)
 
 
+    def cleardVResultView(self):
+        length = len(self.dVResults)
+        self.dVResults.clear()
+        for i in range(length):
+            self.dVResults.append('')
+
     def gendvVals(self, s5inputs, s4inputs, totalerror):
-        #self.dVResults.clear()
         count = len(s5inputs[0])
         numBF = len(s5inputs[1][0])
         result = []

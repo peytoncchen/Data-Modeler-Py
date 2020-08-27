@@ -1,6 +1,7 @@
 # Data Modeler for Power Calculations Python Edition
 
 import sys
+import pandas as pd
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -8,8 +9,10 @@ from PyQt5.QtGui import *
 from Mainwindow import Ui_MainWindow
 from verify import s1verify, s2verify, s3and4verify, s5verify
 from textmanager import preparemultitxt, preparemultisas
+from generateglm import makeglmresults
 from inputs import Inputs
 from results import Results
+from displaypd import pandasModel
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -39,45 +42,200 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.dGrid = QGridLayout()
         self.dScrollWidget.setLayout(self.dGrid)
 
+        self.dfBox = QVBoxLayout()
+        self.GLMScrollWidget.setLayout(self.dfBox)
+
         self.dGroupBox.hide()
         self.cGroupBox.hide()
+        self.GLMGroupBox.hide()
+        self.PCGroupBox.hide()
+        self.s2but.hide()
+        self.updates4.hide()
+        self.hides6fields()
 
         self.setMinimumSize(QSize(450, 750))
         self.resize(450, 750)
 
         self.updatebool = False
+        self.initbool = True
 
         self.s1but.clicked.connect(self.s1process)
         self.s2but.clicked.connect(self.s2process)
         self.s4but.clicked.connect(self.s3and4process)
+        self.updates4.clicked.connect(self.s3and4update)
         self.s5but.clicked.connect(self.s5process)
         self.addRun.clicked.connect(self.s5add)
         self.exportTxt.clicked.connect(self.exporttxt)
         self.exportSAS.clicked.connect(self.exportsas)
+        self.glmCalc.clicked.connect(self.runglm)
 
-
-    def exporttxt(self):
-        dlg = QFileDialog()
-        dlg.setFileMode(QFileDialog.Directory)
-        outstring = preparemultitxt(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, self.inputs.s2Inputs)
-        if dlg.exec_():
-            dir = dlg.getSaveFileName()
-            f = open(str(dir[0]) + '.txt', 'w+')
-            f.write(outstring)
-            f.close()
-
-
-    def exportsas(self):
-        dlg = QFileDialog()
-        dlg.setFileMode(QFileDialog.Directory)
-        outstring = preparemultisas(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, 
-        self.inputs.s2Inputs, self.experimentName.text())
-        if dlg.exec_():
-            dir = dlg.getSaveFileName()
-            f = open(str(dir[0]) + '.txt', 'w+')
-            f.write(outstring)
-            f.close()
     
+    def runglm(self):
+        self.expand2()
+        self.clearLayout(self.dfBox)
+        resultframes = makeglmresults(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, self.inputs.s2Inputs)
+
+        for frame in resultframes:
+            rounded = frame.round(4)
+            model = pandasModel(rounded)
+            view = QTableView()
+            view.setModel(model)
+
+            rowheight = view.rowHeight(0)
+            numRows = model.rowCount()
+            height = (rowheight * numRows) + view.horizontalHeader().height() + (2 * view.frameWidth())
+            print(height)
+
+            view.resizeColumnsToContents()
+            view.resizeRowsToContents()
+            view.setMinimumHeight(height)
+            self.dfBox.addWidget(view)
+            print(frame)
+
+    
+    def hides6fields(self):
+        self.addRun.hide()
+        self.runCount.hide()
+        self.exportTxt.hide()
+        self.label.hide()
+        self.experimentName.hide()
+        self.exportSAS.hide()
+        self.glmCalc.hide()
+    
+
+    def shows6fields(self):
+        self.addRun.show()
+        self.addRun.repaint()
+        self.runCount.show()
+        self.runCount.repaint()
+        self.exportTxt.show()
+        self.exportTxt.repaint()
+        self.label.show()
+        self.label.repaint()
+        self.experimentName.show()
+        self.experimentName.repaint()
+        self.exportSAS.show()
+        self.exportSAS.repaint()
+        self.glmCalc.show()
+        self.glmCalc.repaint()
+
+
+    
+    def s1process(self):
+        self.store_s1()
+
+        self.statusBar.clearMessage()
+        self.statusBar.setStyleSheet("background-color: none;")
+        if not s1verify(self.inputs.s1Inputs):
+            self.statusBar.showMessage('Invalid Input')
+            self.statusBar.setStyleSheet("background-color: pink;")
+            return
+        else:
+            self.initBfView()
+            self.initTView() 
+            self.s1but.setText('Update')
+            self.s1but.repaint()
+            if int(self.inputs.s1Inputs[2]) == 0:
+                self.initEView(True) 
+                self.s2but.hide()
+                self.resize(451,750)
+                self.resize(450,750)
+                self.inputs.s2Inputs.append([])
+                self.inputs.s2Inputs.append([])
+            else:
+                self.s2but.show()
+                self.s2but.repaint()
+    
+
+    def s2process(self):
+        self.inputs.store_s2(self.inputs.s2Obj[0], self.inputs.s2Obj[1])
+
+        self.statusBar.clearMessage()
+        self.statusBar.setStyleSheet("background-color: none;")
+        if not s2verify(self.inputs.s2Inputs):
+            self.statusBar.showMessage('Invalid Input')
+            self.statusBar.setStyleSheet("background-color: pink;")
+            return
+        else:
+            self.initEView(False)
+            self.s2but.setText('Update')
+            self.s2but.repaint()
+    
+
+    def s3and4update(self):
+        self.inputs.store_s3and4(self.inputs.s3Obj, self.inputs.s4Obj)
+
+        self.statusBar.clearMessage()
+        self.statusBar.setStyleSheet("background-color: none;")
+
+        if not s3and4verify(self.inputs.s3Inputs, self.inputs.s4Inputs):
+            self.statusBar.showMessage('Invalid Input')
+            self.statusBar.setStyleSheet("background-color: pink;")
+            return
+        else:
+            self.results.genEVals(self.inputs.s2Inputs, self.inputs.s3Inputs)
+            self.results.cleardVResultView()
+            self.results.multiRun.clear()
+            self.s5but.setText('Generate values')
+            self.s5but.repaint()
+            self.updatedVVal()
+            self.initcurrInpView()
+            self.updatebool = True
+            self.hides6fields()
+
+
+    def s3and4process(self):
+        self.inputs.store_s3and4(self.inputs.s3Obj, self.inputs.s4Obj)
+
+        self.statusBar.clearMessage()
+        self.statusBar.setStyleSheet("background-color: none;")
+
+        if not s3and4verify(self.inputs.s3Inputs, self.inputs.s4Inputs):
+            self.statusBar.showMessage('Invalid Input')
+            self.statusBar.setStyleSheet("background-color: pink;")
+            return
+        else:
+            self.s4but.setText('Reset Grid')
+            self.s4but.repaint()
+            self.s5but.setText('Generate values')
+            self.s5but.repaint()
+            self.expand()
+            self.initDView()
+            self.results.genEVals(self.inputs.s2Inputs, self.inputs.s3Inputs)
+            self.initcurrInpView()
+            self.updatebool = False
+            self.hides6fields()
+
+
+    def s5process(self):
+        self.inputs.stores_s5(self.inputs.s5Obj)
+
+        self.statusBar.clearMessage()
+        self.statusBar.setStyleSheet("background-color: none;")
+        if not s5verify(self.inputs.s5Inputs, self.inputs.s1Inputs, self.inputs.s2Inputs):
+            self.statusBar.showMessage('Invalid Input')
+            self.statusBar.setStyleSheet("background-color: pink;")
+            return
+        else:
+            self.results.gendvVals(self.inputs.s5Inputs, self.inputs.s4Inputs, self.inputs.s3Inputs[0])
+            self.results.multiRun.clear()
+            self.results.addRun()
+            self.runcounter = 1
+            self.runCount.setText('Current run count: ' + str(self.runcounter))
+            if not self.updatebool:
+                self.initdVValView()
+                self.s5but.setText('Reset runs')
+                self.s5but.repaint()
+                self.updates4.show()
+                self.updates4.repaint()
+                self.shows6fields()
+                self.updatebool = True
+            else:
+                self.shows6fields()
+                self.updatedVVal()
+                self.runCount.repaint()
+                self.updatebool = True    
+
 
     def s5add(self):
         self.inputs.stores_s5(self.inputs.s5Obj)
@@ -95,100 +253,42 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.runCount.repaint()
             self.updatedVVal()
             self.results.addRun()
-            
-
-    def s5process(self):
-        self.inputs.stores_s5(self.inputs.s5Obj)
-
-        self.statusBar.clearMessage()
-        self.statusBar.setStyleSheet("background-color: none;")
-        if not s5verify(self.inputs.s5Inputs, self.inputs.s1Inputs, self.inputs.s2Inputs):
-            self.statusBar.showMessage('Invalid Input')
-            self.statusBar.setStyleSheet("background-color: pink;")
-            return
-        else:
-            self.results.gendvVals(self.inputs.s5Inputs, self.inputs.s4Inputs, self.inputs.s3Inputs[0])
-            if not self.updatebool:
-                self.initdVValView()
-            else:
-                self.updatedVVal()
-            self.results.multiRun.clear()
-            self.results.addRun()
-            self.runcounter = 1
-            self.runCount.setText('Current run count: 1')
-            self.runCount.repaint()
-            self.updatebool = True          
 
 
-    def expand(self):
-        self.setMinimumSize(QSize(900, 750))
-        self.resize(900, 750)
-        self.dGroupBox.show()
-        self.cGroupBox.show()
-        
-
-    def s1process(self):
-        self.store_s1()
-
-        self.statusBar.clearMessage()
-        self.statusBar.setStyleSheet("background-color: none;")
-        if not s1verify(self.inputs.s1Inputs):
-            self.statusBar.showMessage('Invalid Input')
-            self.statusBar.setStyleSheet("background-color: pink;")
-            return
-        else:
-            self.initBfView()
-            self.initTView() 
-            if int(self.inputs.s1Inputs[2]) == 0:
-                pass
-                #fix right now index error self.initEView() 
-    
-
-    def s2process(self):
-        self.inputs.store_s2(self.inputs.s2Obj[0], self.inputs.s2Obj[1])
-
-        self.statusBar.clearMessage()
-        self.statusBar.setStyleSheet("background-color: none;")
-        if not s2verify(self.inputs.s2Inputs):
-            self.statusBar.showMessage('Invalid Input')
-            self.statusBar.setStyleSheet("background-color: pink;")
-            return
-        else:
-            self.initEView()
-    
-
-    def s3and4process(self):
-        self.inputs.store_s3and4(self.inputs.s3Obj, self.inputs.s4Obj)
-
-        self.statusBar.clearMessage()
-        self.statusBar.setStyleSheet("background-color: none;")
-
-        if not s3and4verify(self.inputs.s3Inputs, self.inputs.s4Inputs):
-            self.statusBar.showMessage('Invalid Input')
-            self.statusBar.setStyleSheet("background-color: pink;")
-            return
-        else:
-            self.expand()
-            self.initDView()
-            self.results.genEVals(self.inputs.s2Inputs, self.inputs.s3Inputs)
-            self.initcurrInpView()
-            print(self.results.errorResults)
-            self.updatebool = False
+    def exporttxt(self):
+        dlg = QFileDialog()
+        dlg.setFileMode(QFileDialog.Directory)
+        outstring = preparemultitxt(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, self.inputs.s2Inputs)
+        if dlg.exec_():
+            dir = dlg.getSaveFileName()
+            f = open(str(dir[0]) + '.txt', 'w+')
+            f.write(outstring)
+            f.close()
 
 
-    def store_s1(self):
-        numM = str(self.numMeasure.text())
-        numT = str(self.numTreat.text())
-        numB = str(self.numBf.text())
-        nameM = str(self.nameMeas.text())
-        nameD = str(self.namedVar.text())
-        self.inputs.s1Inputs = [numM, numT, numB, nameM, nameD]
-
+    def exportsas(self):
+        dlg = QFileDialog()
+        dlg.setFileMode(QFileDialog.Directory)
+        if self.experimentName.text() == '':
+            self.experimentName.setText('UnnamedExpmt')
+            self.experimentName.repaint()
+        outstring = preparemultisas(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, 
+        self.inputs.s2Inputs, self.experimentName.text())
+        if dlg.exec_():
+            dir = dlg.getSaveFileName()
+            f = open(str(dir[0]) + '.txt', 'w+')
+            f.write(outstring)
+            f.close()
+                  
 
     def initcurrInpView(self):
         self.clearLayout(self.cBox)
         self.errors = QLabel()
         self.tmeans = QLabel()
+        self.errors.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.errors.setCursor(Qt.IBeamCursor)
+        self.tmeans.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.tmeans.setCursor(Qt.IBeamCursor)
         self.errors.setAlignment(Qt.AlignTop)
         self.tmeans.setAlignment(Qt.AlignTop)
         self.cBox.addWidget(self.errors)
@@ -211,6 +311,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             tmeans += ': '
             tmeans += self.inputs.s4Inputs[i]
             tmeans += '\n'  
+        
+        if generrors == '':
+            generrors = 'No SD generated errors'
 
         self.errors.setText(generrors)
         self.tmeans.setText(tmeans)      
@@ -239,6 +342,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             label = QLabel(str(self.results.dVResults[i]))
             label.setAlignment(Qt.AlignHCenter)
             label.setFixedHeight(21)
+            label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+            label.setCursor(Qt.IBeamCursor)
             labellst.append(label)
             self.dGrid.addWidget(label,i+1,colCount)
         self.results.dVObjects = labellst
@@ -293,7 +398,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.inputs.s5Obj.append(bAssignObj)
 
     
-    def initEView(self):
+    def initEView(self,emptybool):
         self.clearLayout(self.eBox)
         lsterrors = []
 
@@ -302,11 +407,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.eBox.addRow(totalerror, totalerrorval)
         lsterrors.append(totalerrorval)
 
-        for i in range(len(self.inputs.s2Inputs[0])):
-            label = QLabel(self.inputs.s2Inputs[0][i] + ' SD:')
-            sdval = QLineEdit()
-            lsterrors.append(sdval)
-            self.eBox.addRow(label, sdval)
+        if not emptybool:
+            for i in range(len(self.inputs.s2Inputs[0])):
+                label = QLabel(self.inputs.s2Inputs[0][i] + ' SD:')
+                sdval = QLineEdit()
+                lsterrors.append(sdval)
+                self.eBox.addRow(label, sdval)
         self.inputs.s3Obj.clear()
         self.inputs.s3Obj = lsterrors
 
@@ -336,6 +442,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.inputs.s2Obj.clear()
         self.inputs.s2Obj.append(lstlabel)
         self.inputs.s2Obj.append(lstval)
+
+
+    def expand2(self):
+        self.setMinimumSize(QSize(1350, 750))
+        self.resize(1350, 750)
+        self.GLMGroupBox.show()
+        self.PCGroupBox.show()
+
+
+    def expand(self):
+        self.setMinimumSize(QSize(900, 750))
+        self.resize(900, 750)
+        self.dGroupBox.show()
+        self.cGroupBox.show()
+
+
+    def store_s1(self):
+        numM = str(self.numMeasure.text())
+        numT = str(self.numTreat.text())
+        numB = str(self.numBf.text())
+        nameM = str(self.nameMeas.text())
+        nameD = str(self.namedVar.text())
+        self.inputs.s1Inputs = [numM, numT, numB, nameM, nameD]
 
 
     def clearLayout(self, layout):
