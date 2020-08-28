@@ -25,7 +25,7 @@ def preparemultisas(s5inputs, multiRun, s1inputs, s2inputs, eName):
     for lst in multiRun:
         string = ''
         string += sasstart
-        tempstr = preparetxt(s5inputs, lst, s1inputs, s2inputs, True)
+        tempstr = preparetxt(s5inputs, lst, s1inputs, s2inputs)
         string += tempstr
         string += sasfinish
         bigboysas += string
@@ -35,23 +35,27 @@ def preparemultisas(s5inputs, multiRun, s1inputs, s2inputs, eName):
 
 def preparemultitxt(s5inputs, multiRun, s1inputs, s2inputs):
     bigboystring = ''
+    lstheader = []
+    labels = preparelabeltxt(s1inputs, s2inputs)
+    lstheader.append(labels)
+    for label in lstheader:
+        header = ','.join(label)
+        header += '\n\n'
+        bigboystring += header
+
     for lst in multiRun:
-        tempstr = preparetxt(s5inputs, lst, s1inputs, s2inputs, False)
-        tempstr += '\n\n\n'
+        tempstr = preparetxt(s5inputs, lst, s1inputs, s2inputs)
+        tempstr += '\n\n'
         bigboystring += tempstr
     return bigboystring
 
 
 
 
-def preparetxt(s5inputs, dVResults, s1inputs, s2inputs, sasbool):
+def preparetxt(s5inputs, dVResults, s1inputs, s2inputs):
     string = ''
 
     result = []
-    
-    if not sasbool:
-        labels = preparelabeltxt(s1inputs, s2inputs)
-        result.append(labels)
 
     for i in range(len(s5inputs[0])):
         temp = []
@@ -65,7 +69,7 @@ def preparetxt(s5inputs, dVResults, s1inputs, s2inputs, sasbool):
         result.append(temp)
     
     for lst in result:
-        tempstr = ' '.join(lst)
+        tempstr = ','.join(lst)
         tempstr += '\n'
         string += tempstr
 

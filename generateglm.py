@@ -32,17 +32,53 @@ def makeglmresults(s5inputs, multiRun, s1inputs, s2inputs):
         model = sm.GLM.from_formula(formula, dic)
         modelresult = model.fit()
         tresult = modelresult.t_test_pairwise('C(Treatment)')
-        #tresult.result_frame.round(4)
-        resultframe.append(tresult.result_frame)
-        #resultframe.append(tresult.result_frame.loc[:,'pvalue-hs': 'reject-hs'])
+        rounded = tresult.result_frame.round(4)
+        resultframe.append(rounded)
     return resultframe
 
 
+def exportresultframe(resultframe):
+    keys = []
+    for i in range(len(resultframe)):
+        keys.append('Run ' + str(i + 1))
+    return pd.concat(resultframe, keys=keys)
+
+
 def todict(resultframe):
-    dic = []
+    dics = []
     for frame in resultframe:
         df = frame.loc[:,'pvalue-hs':'reject-hs']
         temp = df.to_dict()
-        dic.append(temp)
-    return dic
-    
+        dics.append(temp)
+    return dics
+
+
+def parseddics(dics):  
+    result = {}
+    if dics:
+        combokeys = dics[0]['reject-hs'].keys()
+        result = {}
+        for key in combokeys:
+            lst = []
+            for dic in dics:
+                 lst.append(dic['reject-hs'][key])
+            result[key] = lst
+    return result
+
+
+def printpwr(resultframe):
+    dics = todict(resultframe)
+    parsed = parseddics(dics)
+    lstpwrlabels = []
+
+    for tdiff in parsed:
+        total = len(parsed[tdiff])
+        counter = 0
+        for val in parsed[tdiff]:
+            if val:
+                counter += 1
+        pwr = (counter/total) * 100
+        rounded = round(pwr, 1)
+        label = 'For treatments ' + tdiff +', power estimation: ' + str(counter) + '/' + str(total) + ' or ' + str(rounded) + '%.'
+        lstpwrlabels.append(label)
+    return lstpwrlabels

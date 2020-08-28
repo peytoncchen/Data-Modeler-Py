@@ -785,7 +785,7 @@
         <property name="minimumSize">
          <size>
           <width>360</width>
-          <height>300</height>
+          <height>500</height>
          </size>
         </property>
         <property name="font">
@@ -838,7 +838,7 @@
               <x>0</x>
               <y>0</y>
               <width>393</width>
-              <height>298</height>
+              <height>361</height>
              </rect>
             </property>
            </widget>
@@ -910,7 +910,13 @@
         <property name="minimumSize">
          <size>
           <width>360</width>
-          <height>250</height>
+          <height>115</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>200</height>
          </size>
         </property>
         <property name="font">
@@ -963,7 +969,7 @@
               <x>0</x>
               <y>0</y>
               <width>393</width>
-              <height>223</height>
+              <height>160</height>
              </rect>
             </property>
            </widget>

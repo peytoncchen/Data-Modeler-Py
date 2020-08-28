@@ -9,7 +9,7 @@ from PyQt5.QtGui import *
 from Mainwindow import Ui_MainWindow
 from verify import s1verify, s2verify, s3and4verify, s5verify
 from textmanager import preparemultitxt, preparemultisas
-from generateglm import makeglmresults
+from generateglm import makeglmresults, printpwr, exportresultframe
 from inputs import Inputs
 from results import Results
 from displaypd import pandasModel
@@ -45,6 +45,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.dfBox = QVBoxLayout()
         self.GLMScrollWidget.setLayout(self.dfBox)
 
+        self.pwrBox = QVBoxLayout()
+        self.PCScrollWidget.setLayout(self.pwrBox)
+
         self.dGroupBox.hide()
         self.cGroupBox.hide()
         self.GLMGroupBox.hide()
@@ -68,29 +71,51 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.exportTxt.clicked.connect(self.exporttxt)
         self.exportSAS.clicked.connect(self.exportsas)
         self.glmCalc.clicked.connect(self.runglm)
+        self.parsepower.clicked.connect(self.pwr)
+        self.exportpwrcsv.clicked.connect(self.exportframes)
+
+    
+    def exportframes(self):
+        dlg = QFileDialog()
+        dlg.setFileMode(QFileDialog.Directory)
+        dataframe = exportresultframe(self.results.resultframes)
+        if dlg.exec_():
+            dir = dlg.getSaveFileName()
+            dataframe.to_csv(str(dir[0]) + '.csv', index=True)
+
+
+    def pwr(self):
+        self.clearLayout(self.pwrBox)
+        labels = printpwr(self.results.resultframes)
+        headpwrlabel = QLabel('Based on ' + str(len(self.results.multiRun)) + ' runs and alpha = 0.05, power is estimated for difference between means:')
+        self.pwrBox.addWidget(headpwrlabel)
+        for label in labels:
+            self.pwrBox.addWidget(QLabel(label))
 
     
     def runglm(self):
         self.expand2()
         self.clearLayout(self.dfBox)
         resultframes = makeglmresults(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, self.inputs.s2Inputs)
+        self.results.resultframes.clear()
+        self.results.resultframes = resultframes
 
-        for frame in resultframes:
-            rounded = frame.round(4)
-            model = pandasModel(rounded)
+        for frame in self.results.resultframes:
+            model = pandasModel(frame)
             view = QTableView()
             view.setModel(model)
 
-            rowheight = view.rowHeight(0)
+            #setting height of TableViews, capping expandability @ 4 treatments / 6 rows
+            height = view.rowHeight(0)
             numRows = model.rowCount()
-            height = (rowheight * numRows) + view.horizontalHeader().height() + (2 * view.frameWidth())
-            print(height)
+            if numRows > 6:
+                numRows = 6
+            height = (height * numRows) 
 
             view.resizeColumnsToContents()
             view.resizeRowsToContents()
             view.setMinimumHeight(height)
             self.dfBox.addWidget(view)
-            print(frame)
 
     
     def hides6fields(self):
@@ -199,7 +224,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.s4but.repaint()
             self.s5but.setText('Generate values')
             self.s5but.repaint()
-            self.expand()
+            self.expand() #glitchy with expand2 
             self.initDView()
             self.results.genEVals(self.inputs.s2Inputs, self.inputs.s3Inputs)
             self.initcurrInpView()
