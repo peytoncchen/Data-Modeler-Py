@@ -17,6 +17,7 @@ class Inputs:
 
 
     def store_s2(self, s2objlabel, s2objval):
+        #Stores values from S2 into self var
         self.s2Inputs.clear()
         lstlabel = []
         lstval = []
@@ -31,6 +32,7 @@ class Inputs:
 
 
     def store_s3and4(self, s3objval, s4objval):
+        #Stores values from S3 and S4 into self var
         self.s3Inputs.clear()
         self.s4Inputs.clear()
 
@@ -48,6 +50,7 @@ class Inputs:
     
 
     def stores_s5(self, s5objval):
+        #Stores values from S5 into self var
         self.s5Inputs.clear()
 
         tLst = []

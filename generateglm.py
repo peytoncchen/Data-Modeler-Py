@@ -3,6 +3,7 @@ import pandas as pd
 
 
 def makedict(s5inputs, dVlist, s1inputs, s2inputs):
+    #Makes a dict based on inputs to be used for data plugged into creating GLM
     result = {}
     result[s1inputs[4]] = dVlist
     result['Treatment'] = s5inputs[0]
@@ -17,6 +18,7 @@ def makedict(s5inputs, dVlist, s1inputs, s2inputs):
 
 
 def makeformula(s1inputs, s2inputs):
+    #Makes formula to be used with GLM
     result = s1inputs[4] + ' ~ ' + 'C(Treatment)'
     for name in s2inputs[0]:
         blkstring = ' + C(' + name + ')'
@@ -25,6 +27,7 @@ def makeformula(s1inputs, s2inputs):
 
 
 def makeglmresults(s5inputs, multiRun, s1inputs, s2inputs):
+    #Runs GLM calculations, fits modle, runs pairwise t-test, extracts pandas dataframes rounded, stores into list
     formula = makeformula(s1inputs, s2inputs)
     resultframe = []
     for i in range(len(multiRun)):
@@ -38,6 +41,7 @@ def makeglmresults(s5inputs, multiRun, s1inputs, s2inputs):
 
 
 def exportresultframe(resultframe):
+    #Prepares all dataframees to be extracted and exported 
     keys = []
     for i in range(len(resultframe)):
         keys.append('Run ' + str(i + 1))
@@ -45,6 +49,7 @@ def exportresultframe(resultframe):
 
 
 def todict(resultframe):
+    #Takes t-test pairwise resultframes and extracts them into dicts for power estimations
     dics = []
     for frame in resultframe:
         df = frame.loc[:,'pvalue-hs':'reject-hs']
@@ -53,7 +58,8 @@ def todict(resultframe):
     return dics
 
 
-def parseddics(dics):  
+def parseddics(dics):
+    #Reorganizes dicts to have all treatments' bool contained together  
     result = {}
     if dics:
         combokeys = dics[0]['reject-hs'].keys()
@@ -67,6 +73,7 @@ def parseddics(dics):
 
 
 def printpwr(resultframe):
+    #Produces labels to be displayed pwr estimation view box.
     dics = todict(resultframe)
     parsed = parseddics(dics)
     lstpwrlabels = []

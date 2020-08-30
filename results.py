@@ -14,17 +14,20 @@ class Results:
 
 
     def addRun(self):
+        #Adding results from current dVResults into multiRun so user can store multiple runs
         results = self.dVResults
         self.multiRun.append(results)
 
 
     def cleardVResultView(self):
+        #Clearing the dVVal View when the current displayed values are not up to date/irrelevant
         length = len(self.dVResults)
         self.dVResults.clear()
         for i in range(length):
             self.dVResults.append('')
 
     def gendvVals(self, s5inputs, s4inputs, totalerror):
+        #Generates dependent variable values using Gaussian distribution (inv-norm) and user inputs
         count = len(s5inputs[0])
         numBF = len(s5inputs[1][0])
         result = []
@@ -48,6 +51,8 @@ class Results:
 
 
     def genEVals(self, s2inputs, s3inputs):
+        #Based on number associated with each blocking factor, generates error SD
+        #on Gaussian distribution. i.e. 6 cages with SD 1 will have 6 random error generated based on curve with SD 1.
         self.errorResults.clear()
         counts = len(s2inputs[1])
         result = []
@@ -58,6 +63,7 @@ class Results:
 
 
     def genOneEVal(self, count, sd):
+        #Generates one error val
         lst = []
         for i in range(count):
             rand = random.uniform(0.0, 1.0)

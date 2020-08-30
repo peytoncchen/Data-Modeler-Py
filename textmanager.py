@@ -1,6 +1,7 @@
 #Prepares text file strings
 
 def preparelabeltxt(s1inputs, s2inputs):
+    #Generates label text for non-SAS output
         labels = []
         labels.append(s1inputs[3])
         labels.append('Treatment')
@@ -14,6 +15,7 @@ def preparelabeltxt(s1inputs, s2inputs):
 
 
 def preparemultisas(s5inputs, multiRun, s1inputs, s2inputs, eName):
+    #Generates string to be outputted into SAS script file
     bigboysas = ''
     blockName = ' '.join(s2inputs[0])
     sasstart = 'DATA ' + eName + '; INPUT ' + s1inputs[3] + ' Treatment ' + blockName + ' ' + s1inputs[4] + '; Lines;\n\n'
@@ -34,6 +36,7 @@ def preparemultisas(s5inputs, multiRun, s1inputs, s2inputs, eName):
 
 
 def preparemultitxt(s5inputs, multiRun, s1inputs, s2inputs):
+    #Prepares text file non-SAS information for multiple runs
     bigboystring = ''
     lstheader = []
     labels = preparelabeltxt(s1inputs, s2inputs)
@@ -53,6 +56,7 @@ def preparemultitxt(s5inputs, multiRun, s1inputs, s2inputs):
 
 
 def preparetxt(s5inputs, dVResults, s1inputs, s2inputs):
+    #Prepares text for one set of dVResults
     string = ''
 
     result = []
@@ -69,7 +73,7 @@ def preparetxt(s5inputs, dVResults, s1inputs, s2inputs):
         result.append(temp)
     
     for lst in result:
-        tempstr = ','.join(lst)
+        tempstr = ' '.join(lst)
         tempstr += '\n'
         string += tempstr
 

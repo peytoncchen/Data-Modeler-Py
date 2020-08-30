@@ -2,11 +2,12 @@ import pandas as pd
 from PyQt5.QtWidgets import QTableView
 from PyQt5.QtCore import QAbstractTableModel, Qt
 
+#Standard model class to be used with QTableView based on PyQt's MVC-like architecture
 
-class pandasModel(QAbstractTableModel):
+class pdModel(QAbstractTableModel):
 
     def __init__(self, data):
-        super(pandasModel, self).__init__()
+        super(pdModel, self).__init__()
         self._data = data
 
     def data(self, index, role=Qt.DisplayRole):
