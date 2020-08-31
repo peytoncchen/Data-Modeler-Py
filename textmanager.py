@@ -16,11 +16,18 @@ def preparelabeltxt(s1inputs, s2inputs):
 
 def preparemultisas(s5inputs, multiRun, s1inputs, s2inputs, eName):
     #Generates string to be outputted into SAS script file
+    #Prepares all labels by removing all spaces
+    expmtName = eName.replace(' ', '')
+    nmMeas = s1inputs[3].replace(' ', '')
+    dvNm = s1inputs[4].replace(' ', '')
+
+    blocklist = [label.replace(' ', '') for label in s2inputs[0]]
+
     bigboysas = ''
-    blockName = ' '.join(s2inputs[0])
-    sasstart = 'DATA ' + eName + '; INPUT ' + s1inputs[3] + ' Treatment ' + blockName + ' ' + s1inputs[4] + '; Lines;\n\n'
-    sasfinish = '\n;\nRUN;\n\nPROC MIXED ASYCOV NOBOUND DATA=' + eName + ' ALPHA=0.05;\nCLASS Treatment ' + blockName + ';\n'
-    sasfinish += 'MODEL ' + s1inputs[4] + ' = ' + 'Treatment ' + blockName + '\n'
+    blockName = ' '.join(blocklist)
+    sasstart = 'DATA ' + expmtName + '; INPUT ' + nmMeas + ' Treatment ' + blockName + ' ' + dvNm + '; Lines;\n\n'
+    sasfinish = '\n;\nRUN;\n\nPROC MIXED ASYCOV NOBOUND DATA=' + expmtName + ' ALPHA=0.05;\nCLASS Treatment ' + blockName + ';\n'
+    sasfinish += 'MODEL ' + dvNm + ' = ' + 'Treatment ' + blockName + '\n'
     sasfinish += '/SOLUTION DDFM=KENWARDROGER;\nlsmeans Treatment / adjust=tukey;\nRUN;\n\n\n'
     
 

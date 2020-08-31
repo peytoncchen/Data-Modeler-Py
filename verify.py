@@ -14,8 +14,12 @@ def s1verify(s1list):
     except ValueError:
         return False, 'Invalid input - integer input expected'
 
-    if ' ' in nameM or ' ' in namedVar:
-        return False, 'Invalid input - labels must be one word to ensure compatability with SAS'
+    if int(numM) < 0 or int(numT) < 0 or int(numB) < 0:
+        return False, 'Invalid input - integers must be positive'
+    
+    if int(numT) < 2:
+        return False, 'Invalid input - must have at least 2 treatments'
+
     
     if nameM == '' or namedVar == '':
         return False, 'Invalid input - name measurements and name of dependent variable cannot be blank'
@@ -29,8 +33,6 @@ def s2verify(s2list):
     values = s2list[1]
 
     for name in names:
-        if ' ' in name:
-            return False, 'Invalid input - labels must be one word to ensure compatability with SAS'
         if name == '':
             return False, 'Invalid input - blocking factor names cannot be blank'
     
@@ -39,6 +41,8 @@ def s2verify(s2list):
             int(value)
         except ValueError:
             return False, 'Invalid input - integer input expected for blocking factor values'
+        if int(value) < 0:
+            return False, 'Invalid input - integers must be positive'
     
     return True, ''
 
@@ -49,6 +53,8 @@ def s3and4verify(s3list, s4list):
             float(val)
         except ValueError:
             return False, 'Invalid input - float input expected for SD'
+        if float(val) < 0:
+            return False, 'Invalid input - SD must be positive'
     
     for val in s4list:
         try:

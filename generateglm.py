@@ -5,23 +5,23 @@ import pandas as pd
 def makedict(s5inputs, dVlist, s1inputs, s2inputs):
     #Makes a dict based on inputs to be used for data plugged into creating GLM
     result = {}
-    result[s1inputs[4]] = dVlist
+    result[s1inputs[4].replace(' ', '')] = dVlist
     result['Treatment'] = s5inputs[0]
 
     for i in range(len(s2inputs[0])):
         blk = []
         for lst in s5inputs[1]:
             blk.append(lst[i])
-        result[s2inputs[0][i]] = blk
+        result[s2inputs[0][i].replace(' ', '')] = blk
 
     return result
 
 
 def makeformula(s1inputs, s2inputs):
     #Makes formula to be used with GLM
-    result = s1inputs[4] + ' ~ ' + 'C(Treatment)'
+    result = s1inputs[4].replace(' ', '') + ' ~ ' + 'C(Treatment)'
     for name in s2inputs[0]:
-        blkstring = ' + C(' + name + ')'
+        blkstring = ' + C(' + name.replace(' ', '') + ')'
         result += blkstring
     return result
 

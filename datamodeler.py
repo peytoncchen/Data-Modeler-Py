@@ -63,18 +63,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.updatebool = False
         self.initbool = True
         self.finalexpand = False
-        self.dviewinit = False
         self.firstexpand = False
-        self.numbfchanged = False
-        self.numTchanged = False
         self.dViewlabelchanged = False
-        self.numMeaschanged = False
         self.dViewlabels = []
 
         self.s1but.clicked.connect(self.s1process)
-        self.numMeasure.textChanged.connect(self.changenumMeasbool)
-        self.numBf.textChanged.connect(self.changenumBfbool)
-        self.numTreat.textChanged.connect(self.changenumTbool)
         self.s2but.clicked.connect(self.s2process)
         self.s4but.clicked.connect(self.s3and4process)
         self.updates4.clicked.connect(self.s3and4update)
@@ -92,15 +85,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionReset.setShortcut("Ctrl+R")
         self.actionDocumentation.triggered.connect(self.opendocs)
         self.actionDocumentation.setShortcut("Ctrl+D")
-    
-    def changenumMeasbool(self):
-        self.numMeaschanged = True
 
-    def changenumTbool(self):
-        self.numTchanged = True
 
-    def changenumBfbool(self):
-        self.numbfchanged = True
+        completerNmMeaslst = ['Rat', 'Mouse', 'Pig', 'Dog', 'Cat', 'Fish', 
+        'Rabbit', 'Guinea Pig', 'Hamster', 'Bird', 'Monkey', 'Measurement']
+        self.completer1 = QCompleter(completerNmMeaslst, self)
+        self.completer1.setCaseSensitivity(0) #Case insensitive
+        self.nameMeas.setCompleter(self.completer1)
+
+        completerNmDvarlst = ['Days Survived', 'Time to peak', 'Dependent Variable', 'Dependent Var']
+        self.completer2 = QCompleter(completerNmDvarlst, self)
+        self.completer2.setCaseSensitivity(0)
+        self.namedVar.setCompleter(self.completer2)
+
+        completerNmBF = ['Cage', 'Gender', 'Color', 'Species']
+        completerNmBF += completerNmMeaslst[0:11]
+        self.completer3 = QCompleter(completerNmBF, self)
+        self.completer3.setCaseSensitivity(0)
+
+
 
     def changedViewlabelsbool(self):
         self.dViewlabelchanged = True
@@ -111,7 +114,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
 
     def reset(self):
-        pass
+        #Resets everything back to just like first opening the app
+        self.minimize()
+        self.minimize2()
+        self.hides6fields()
+        self.s2but.hide()
+        self.updates4.hide()
+        self.updatebool = False
+        self.initbool = True
+        self.finalexpand = False
+        self.firstexpand = False
+        self.dViewlabelchanged = False
+        self.dViewlabels = []
+
+        self.numMeasure.clear()
+        self.numTreat.clear()
+        self.numBf.clear()
+        self.nameMeas.clear()
+        self.namedVar.clear()
+
+        self.numRuns.clear()
+        self.experimentName.clear()
+
+        self.clearLayout(self.bFbox)
+        self.clearLayout(self.eBox)
+        self.clearLayout(self.tBox)
 
     
     def exportframes(self):
@@ -229,8 +256,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statusBar.setStyleSheet("background-color: pink;")
             return #if unrecognized inputs program will not continue and halt here
         else:
-            self.nameMeas.setReadOnly(True) #set read only to prevent weirdness, can edit when the user does total resets
-            self.namedVar.setReadOnly(True)
+            #self.nameMeas.setReadOnly(True) #set read only to prevent weirdness, can edit when the user does total resets
+            #self.namedVar.setReadOnly(True)
 
             self.minimize() #Minimizes 3rd pane if it exists
             #Sets button text to 'Update' after initial press
@@ -238,15 +265,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.s1but.repaint()
             self.hides6fields() #Need to update everything before being able to S6 stuff
             self.clearLayout(self.cBox) #Clears current input box until everything is updated after S4 (Step 4)
-            if self.numMeaschanged:
+            if self.numMeasure.isModified():
                 self.minimize2()
                 self.s4but.setText('Continue')
                 self.s4but.repaint()
-                self.numMeaschanged = False
-            if self.numTchanged: #Only if number of treatments is updated/edited
+                self.numMeasure.setModified(False)
+            if self.numTreat.isModified(): #Only if number of treatments is updated/edited
                 self.initTView() 
-                self.numTchanged = False
-            if self.numbfchanged: #Only if the number of blocking factor is updated/edited
+                self.numTreat.setModified(False)
+            if self.numBf.isModified(): #Only if the number of blocking factor is updated/edited
                 self.minimize2()
                 self.s4but.setText('Continue')
                 self.s4but.repaint()
@@ -263,7 +290,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     #Reveals S2 button in case where there are more than 0 blocking factors
                     self.s2but.show()
                     self.s2but.repaint()
-            if self.dviewinit:
+            if self.nameMeas.isModified() or self.namedVar.isModified():
+                self.nameMeas.setModified(False)
+                self.namedVar.setModified(False)
+                self.dViewlabelchanged = True
+                self.updateDviewlabels() 
+                self.dViewlabelchanged = False      
+            if self.firstexpand: #If view is not automatically minimized b/c of changes, cleans up view
                 self.results.cleardVResultView() #Clears dependent variable generation until update complete
                 self.updatedVVal()
                 self.s5but.setText('Generate values')
@@ -284,16 +317,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statusBar.setStyleSheet("background-color: pink;")
             return
         else:
-            if self.numbfchanged: #Only reinitializes Error Step 3 View if Step 1 number of blocking factors is changed/updated
+            if self.numBf.isModified(): #Only reinitializes Error Step 3 View if Step 1 number of blocking factors is changed/updated
                 self.initEView(False)
-                self.numbfchanged = False
+                self.numBf.setModified(False)
+            if self.dViewlabelchanged:
+                self.updateDviewlabels()
+                self.dViewlabelchanged = False
             self.s2but.setText('Update')
             self.s2but.repaint()
-            self.hides6fields() #Need to update everything before being able to S6 stuff
-            self.clearLayout(self.cBox) #Clears current input box until everything is updated after S4 (Step 4)
-            if self.dviewinit:
+            self.hides6fields() #Need to update everything and regenerate values before being able to do S6 stuff 
+            if self.firstexpand:
                 self.results.cleardVResultView() #Clears dependent variable generation until update complete
                 self.updatedVVal()
+                self.results.genEVals(self.inputs.s2Inputs, self.inputs.s3Inputs)
+                self.initcurrInpView() #Reinitializes current input box: if blank, updated needed S3 or S4
                 self.s5but.setText('Generate values')
                 self.s5but.repaint()
             self.minimize() #Minimizes 3rd pane if it exists
@@ -320,7 +357,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if not self.firstexpand and not self.finalexpand: #To ensure window resizing isn't awkward
                 self.expand()
                 self.firstexpand = True
-            self.dviewinit = False 
             self.updatebool = False
             self.initDView()
             self.results.genEVals(self.inputs.s2Inputs, self.inputs.s3Inputs)
@@ -382,7 +418,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.updates4.show()
                 self.updates4.repaint()
                 self.shows6fields()
-                self.dviewinit = True
                 self.updatebool = True
             else:
                 self.shows6fields()
@@ -488,10 +523,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def updatedVVal(self):
-        #Updates dVVal View rather than overwriting 
-        self.name.setText(self.inputs.s1Inputs[4])
-        self.name.repaint()
-
+        #Updates dependent var generation text with setText rather than overwriting
         for i in range(len(self.results.dVResults)):
             self.results.dVObjects[i].setText(str(self.results.dVResults[i]))
             self.results.dVObjects[i].repaint()
@@ -511,6 +543,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             labellst.append(label)
             self.dGrid.addWidget(label,i+1,colCount)
         self.results.dVObjects = labellst
+
+
+    def updateDviewlabels(self):
+        #Updates the distribute view labels if any of the names are changed in step 1 or step 2
+        if self.firstexpand and self.dViewlabelchanged:
+            self.dViewlabels[0].setText(self.inputs.s1Inputs[3])
+            self.dViewlabels[0].repaint()
+            for i in range(len(self.inputs.s2Inputs[0])):
+                newtext = self.inputs.s2Inputs[0][i]
+                self.dViewlabels[i+1].setText(newtext)
+                self.dViewlabels[i+1].repaint()
     
     
     def initDView(self):
@@ -529,7 +572,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.dGrid.addWidget(l1,0,0)
         self.dGrid.addWidget(l2,0,1)
         self.dViewlabels.append(l1)
-        self.dViewlabels.append(l2)
+        #self.dViewlabels.append(l2) Skipped because this will always be treatment
 
         for i in range(len(self.inputs.s2Inputs[0])):
             blabel = QLabel(self.inputs.s2Inputs[0][i])
@@ -539,10 +582,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.dViewlabels.append(blabel)
 
         colCount = int(self.inputs.s1Inputs[2]) + 2
-        self.name = QLabel(self.inputs.s1Inputs[4])
-        self.name.setAlignment(Qt.AlignHCenter)
-        self.name.setFixedHeight(21)
-        self.dGrid.addWidget(self.name,0,colCount)
+        name = QLabel(self.inputs.s1Inputs[4])
+        name.setAlignment(Qt.AlignHCenter)
+        name.setFixedHeight(21)
+        self.dGrid.addWidget(name,0,colCount)
+        self.dViewlabels.append(name)
 
         #Init the rest of distribute groups view
         for i in range(int(self.inputs.s1Inputs[0])):
@@ -618,6 +662,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for i in range(int(self.inputs.s1Inputs[2])):
             bName = QLineEdit()
             bName.textChanged.connect(self.changedViewlabelsbool)
+            bName.setCompleter(self.completer3)
             bVal = QLineEdit()
             lstlabel.append(bName)
             lstval.append(bVal)
@@ -649,11 +694,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def store_s1(self):
         #Stores the values for S1 into instance of Inputs model created on init
-        numM = str(self.numMeasure.text())
-        numT = str(self.numTreat.text())
-        numB = str(self.numBf.text())
-        nameM = str(self.nameMeas.text())
-        nameD = str(self.namedVar.text())
+        numM = str(self.numMeasure.text()).strip()
+        numT = str(self.numTreat.text()).strip()
+        numB = str(self.numBf.text()).strip()
+        nameM = str(self.nameMeas.text()).strip()
+        nameD = str(self.namedVar.text()).strip()
         self.inputs.s1Inputs = [numM, numT, numB, nameM, nameD]
 
 

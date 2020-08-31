@@ -23,9 +23,9 @@ class Inputs:
         lstval = []
 
         for obj in s2objlabel:
-            lstlabel.append(str(obj.text()))
+            lstlabel.append(str(obj.text()).strip())
         for obj in s2objval:
-            lstval.append(str(obj.text()))
+            lstval.append(str(obj.text()).strip())
         
         self.s2Inputs.append(lstlabel)
         self.s2Inputs.append(lstval)
@@ -40,10 +40,10 @@ class Inputs:
         lsts4 = []
 
         for obj in s3objval:
-            lsts3.append(str(obj.text()))
+            lsts3.append(str(obj.text()).strip())
         
         for obj in s4objval:
-            lsts4.append(str(obj.text()))
+            lsts4.append(str(obj.text()).strip())
 
         self.s3Inputs = lsts3
         self.s4Inputs = lsts4
@@ -59,13 +59,13 @@ class Inputs:
         #Extract treatment assignments
 
         for obj in s5objval[0]:
-            tLst.append(str(obj.text()))
+            tLst.append(str(obj.text()).strip())
         
         #Extract blocking assignments
         for lst in s5objval[1]:
             iBlst = []
             for obj in lst:
-                iBlst.append(str(obj.text()))
+                iBlst.append(str(obj.text()).strip())
             bLst.append(iBlst)
         
         self.s5Inputs.append(tLst)
