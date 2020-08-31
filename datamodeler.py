@@ -61,7 +61,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.resize(450, 750)
 
         self.updatebool = False
-        self.initbool = True
         self.finalexpand = False
         self.firstexpand = False
         self.dViewlabelchanged = False
@@ -115,13 +114,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def reset(self):
         #Resets everything back to just like first opening the app
+        #Storage for app will clear itself when reinitializing that view/calculations so no need to do it here
         self.minimize()
         self.minimize2()
         self.hides6fields()
         self.s2but.hide()
         self.updates4.hide()
         self.updatebool = False
-        self.initbool = True
         self.finalexpand = False
         self.firstexpand = False
         self.dViewlabelchanged = False
