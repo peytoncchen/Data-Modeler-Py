@@ -1,3 +1,5 @@
+import copy
+
 #Verifying all the inputs at each step
 
 def s1verify(s1list):
@@ -90,6 +92,28 @@ def s5verify(s5list, s1inputs, s2inputs):
                 return False, 'Invalid input - blocking factor assignment number out of range'
     
     return True, ''
+
+
+def verifygriddict(griddict, s1inputs, s2inputs):
+    #Verifies grid structure and column labels to prepare for loading in
+    colcountCheck = int(s1inputs[2]) + 1
+    totalmeas = int(s1inputs[0])
+    lstcolnames = copy.deepcopy(s2inputs[0])
+    lstcolnames.insert(0, 'Treatment')
+
+    if len(griddict) != colcountCheck:
+        return False, 'Invalid csv grid - incorrect number of columns'
+
+    for i, key in enumerate(griddict):
+        if len(griddict[key]) != totalmeas:
+            return False, 'Invalid csv grid - incorrect number of rows'
+        if key != lstcolnames[i]:
+            return False, 'Invalid csv grid - columns are labelled incorrectly'
+
+    return True, ''
+
+
+    
 
 
 

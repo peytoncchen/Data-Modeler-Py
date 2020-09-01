@@ -24,16 +24,19 @@ def makeformula(s1inputs, s2inputs, big):
     #Makes formula to be used with GLM
     result = s1inputs[4].replace(' ', '') + ' ~ '
     if big:
-        result += 'C(Treatment)'
+        result += 'C(Treatment) + '
     for name in s2inputs[0]:
-        blkstring = ' + C(' + name.replace(' ', '') + ')'
+        blkstring = 'C(' + name.replace(' ', '') + ') + '
         result += blkstring
-    return result
+    return result[:-3] #accounting for superfluous + character at the end of the formula
 
 def calcnestedfstat(small_model, big_model):
     #Given two fitted GLMs, the larger of which contains treatment compared to smaller, 
     #returns the f-stat and p-value corresponding to the larger model adding explanatory power
     addtl_params = big_model.df_model - small_model.df_model
+    print(big_model.df_model)
+    print(small_model.df_model)
+    print(addtl_params)
     f_stat = (small_model.deviance - big_model.deviance) / (addtl_params * big_model.scale)
     df_numerator = addtl_params
     # use fitted values to obtain n_obs from model object:

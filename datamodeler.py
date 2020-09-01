@@ -8,7 +8,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 from Mainwindow import Ui_MainWindow
-from verify import s1verify, s2verify, s3and4verify, s5verify
+from verify import s1verify, s2verify, s3and4verify, s5verify, verifygriddict
 from textmanager import preparemultitxt, preparemultisas
 from generateglm import makeglmresults, printpwr, exportresultframe, makeftest, fpwr
 from inputs import Inputs
@@ -78,6 +78,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.s5but.clicked.connect(self.s5process)
         self.addRun.clicked.connect(self.s5add)
         self.editGrid.clicked.connect(self.unlockgrid)
+        self.loadgridCSV.clicked.connect(self.loadincsv)
         
         self.exportSAS.clicked.connect(self.exportsas)
         self.glmCalc.clicked.connect(self.runglm)
@@ -110,9 +111,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.completer3.setCaseSensitivity(0)
 
 
+    def loadincsv(self):
+        self.unlockgrid()
+        dlg = QFileDialog()
+        dlg.setFileMode(QFileDialog.ExistingFile)
+        filename, _filter = dlg.getOpenFileName(None, "Load in csv", ".", "(*.csv)")
+
+        if filename:
+            grid = pd.read_csv(str(filename))
+            griddict = grid.to_dict('list') #list format extraction of dataframe to dict
+
+            verify = verifygriddict(griddict, self.inputs.s1Inputs, self.inputs.s2Inputs)
+            self.statusBar.clearMessage()
+            self.statusBar.setStyleSheet("background-color: none;")
+
+            if not verify[0]:
+                self.statusBar.showMessage(verify[1])
+                self.statusBar.setStyleSheet("background-color: pink;")
+                return
+            else:
+                self.inputs.loadin_s5(self.inputs.s5Obj, griddict)
+
 
     def changedViewlabelsbool(self):
         self.dViewlabelchanged = True
+  
     
     def opendocs(self):
         #Links documentation menu button to Github main page with README for user and developer documentation
@@ -217,9 +240,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             view.resizeRowsToContents()
             view.setMinimumHeight(height)
             self.dfBox.addWidget(view)
-        self.statusBar.clearMessage()
+
 
     def unlockgrid(self):
+        self.hides6fields()
         self.results.multiRun.clear()
         self.results.cleardVResultView() #Clears dependent variable generation until update complete
         self.updatedVVal()
@@ -228,6 +252,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.runcounter = 0 #Reset run counter
         self.runCount.setText('Current run count: ' + str(self.runcounter))
         self.runCount.repaint()
+        self.minimize()
         for obj in self.inputs.s5Obj[0]: #Treatment col
             obj.setReadOnly(False)
         for lst in self.inputs.s5Obj[1]: #Blocking fac cols
