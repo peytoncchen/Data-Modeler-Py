@@ -1,12 +1,15 @@
 import statsmodels.api as sm
 import pandas as pd
+from scipy import stats
+import copy
 
 
-def makedict(s5inputs, dVlist, s1inputs, s2inputs):
+def makedict(s5inputs, dVlist, s1inputs, s2inputs, big):
     #Makes a dict based on inputs to be used for data plugged into creating GLM
     result = {}
     result[s1inputs[4].replace(' ', '')] = dVlist
-    result['Treatment'] = s5inputs[0]
+    if big:
+        result['Treatment'] = s5inputs[0]
 
     for i in range(len(s2inputs[0])):
         blk = []
@@ -17,27 +20,53 @@ def makedict(s5inputs, dVlist, s1inputs, s2inputs):
     return result
 
 
-def makeformula(s1inputs, s2inputs):
+def makeformula(s1inputs, s2inputs, big):
     #Makes formula to be used with GLM
-    result = s1inputs[4].replace(' ', '') + ' ~ ' + 'C(Treatment)'
+    result = s1inputs[4].replace(' ', '') + ' ~ '
+    if big:
+        result += 'C(Treatment)'
     for name in s2inputs[0]:
         blkstring = ' + C(' + name.replace(' ', '') + ')'
         result += blkstring
     return result
 
+def calcnestedfstat(small_model, big_model):
+    #Given two fitted GLMs, the larger of which contains treatment compared to smaller, 
+    #returns the f-stat and p-value corresponding to the larger model adding explanatory power
+    addtl_params = big_model.df_model - small_model.df_model
+    f_stat = (small_model.deviance - big_model.deviance) / (addtl_params * big_model.scale)
+    df_numerator = addtl_params
+    # use fitted values to obtain n_obs from model object:
+    df_denom = (big_model.fittedvalues.shape[0] - big_model.df_model)
+    p_value = stats.f.sf(f_stat, df_numerator, df_denom)
+    return f_stat, p_value
+
 
 def makeglmresults(s5inputs, multiRun, s1inputs, s2inputs):
     #Runs GLM calculations, fits modle, runs pairwise t-test, extracts pandas dataframes rounded, stores into list
-    formula = makeformula(s1inputs, s2inputs)
+    formula = makeformula(s1inputs, s2inputs, True)
     resultframe = []
+    bigmodels = []
     for i in range(len(multiRun)):
-        dic = makedict(s5inputs, multiRun[i], s1inputs, s2inputs)
+        dic = makedict(s5inputs, multiRun[i], s1inputs, s2inputs, True)
         model = sm.GLM.from_formula(formula, dic)
         modelresult = model.fit()
+        bigmodels.append(modelresult)
         tresult = modelresult.t_test_pairwise('C(Treatment)')
         rounded = tresult.result_frame.round(4)
         resultframe.append(rounded)
-    return resultframe
+    return resultframe, bigmodels
+
+
+def makeftest(s5inputs, multiRun, s1inputs, s2inputs, bigmodels):
+    formula = makeformula(s1inputs, s2inputs, False)
+    results = []
+    for i in range(len(multiRun)):
+        dic = makedict(s5inputs, multiRun[i], s1inputs, s2inputs, False)
+        smallmodel = sm.GLM.from_formula(formula, dic).fit()
+        tup = calcnestedfstat(smallmodel, bigmodels[i])
+        results.append(tup)
+    return results
 
 
 def exportresultframe(resultframe):
@@ -86,6 +115,19 @@ def printpwr(resultframe):
                 counter += 1
         pwr = (counter/total) * 100
         rounded = round(pwr, 1)
-        label = 'For treatments ' + tdiff +', power estimation: ' + str(counter) + '/' + str(total) + ' or ' + str(rounded) + '%.'
+        label = '  For treatments ' + tdiff +', power estimation: ' + str(counter) + '/' + str(total) + ' or ' + str(rounded) + '%.'
         lstpwrlabels.append(label)
     return lstpwrlabels
+
+
+def fpwr(fresults):
+    #Produces label to displayed for fixed effect pwr estimation view box.
+    counter = 0
+    total = len(fresults)
+    for result in fresults:
+        if result[1] < 0.05:
+            counter += 1
+    percentage = round((counter/total)*100, 1)
+    label = '  Overall effect of treatment has estimated power: ' + str(counter) + '/' + str(total) + ' or ' + str(percentage) + '%.'
+
+    return label

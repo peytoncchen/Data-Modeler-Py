@@ -10,7 +10,7 @@ from PyQt5.QtGui import *
 from Mainwindow import Ui_MainWindow
 from verify import s1verify, s2verify, s3and4verify, s5verify
 from textmanager import preparemultitxt, preparemultisas
-from generateglm import makeglmresults, printpwr, exportresultframe
+from generateglm import makeglmresults, printpwr, exportresultframe, makeftest, fpwr
 from inputs import Inputs
 from results import Results
 from displaypd import pdModel
@@ -48,6 +48,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.pwrBox = QVBoxLayout()
         self.PCScrollWidget.setLayout(self.pwrBox)
+        self.pwrBox.setSpacing(5)
+        
+        self.fBox = QVBoxLayout()
+        self.FScrollWidget.setLayout(self.fBox)
+        self.fBox.setSpacing(5)
 
         self.dGroupBox.hide()
         self.cGroupBox.hide()
@@ -72,6 +77,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.updates4.clicked.connect(self.s3and4update)
         self.s5but.clicked.connect(self.s5process)
         self.addRun.clicked.connect(self.s5add)
+        self.editGrid.clicked.connect(self.unlockgrid)
         
         self.exportSAS.clicked.connect(self.exportsas)
         self.glmCalc.clicked.connect(self.runglm)
@@ -86,18 +92,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionDocumentation.setShortcut("Ctrl+D")
 
 
-        completerNmMeaslst = ['Rat', 'Mouse', 'Pig', 'Dog', 'Cat', 'Fish', 
-        'Rabbit', 'Guinea Pig', 'Hamster', 'Bird', 'Monkey', 'Measurement']
+        completerNmMeaslst = ['Rat', 'Mouse', 'Pig', 'Sheep' 
+        'Rabbit', 'Guinea Pig', 'Subject', 'Measurement', 'Sample']
         self.completer1 = QCompleter(completerNmMeaslst, self)
         self.completer1.setCaseSensitivity(0) #Case insensitive
         self.nameMeas.setCompleter(self.completer1)
 
-        completerNmDvarlst = ['Days Survived', 'Time to peak', 'Dependent Variable', 'Dependent Var']
+        completerNmDvarlst = ['Days Survived', 'Time to peak', 'Dependent Variable', 
+        'Dependent Var', 'Tumor Size', 'Concentration']
         self.completer2 = QCompleter(completerNmDvarlst, self)
         self.completer2.setCaseSensitivity(0)
         self.namedVar.setCompleter(self.completer2)
 
-        completerNmBF = ['Cage', 'Gender', 'Color', 'Species']
+        completerNmBF = ['Cage', 'Gender', 'Color', 'Species', 'Age', 'Strain', 'Day', 'Week']
         completerNmBF += completerNmMeaslst[0:11]
         self.completer3 = QCompleter(completerNmBF, self)
         self.completer3.setCaseSensitivity(0)
@@ -154,21 +161,46 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Initializes display after parsing power with power estimation results
         self.clearLayout(self.pwrBox)
         labels = printpwr(self.results.resultframes)
-        headpwrlabel = QLabel('Based on ' + str(len(self.results.multiRun)) + ' runs and alpha = 0.05, power is estimated for difference between means:')
+        headpwrlabel = QLabel('Based on ' + str(len(self.results.multiRun)) + ' runs and alpha = 0.05:')
+        headpwrlabel.setStyleSheet("font-weight: bold;")
         self.pwrBox.addWidget(headpwrlabel)
+        fixedlabel = QLabel('Power for fixed effect f-test is estimated as:')
+        fixedlabel.setStyleSheet("font-weight: bold;")
+        self.pwrBox.addWidget(fixedlabel)
+        fixedeffect = fpwr(self.results.fresults)
+        self.pwrBox.addWidget(QLabel(fixedeffect))
+        pairwiselabel = QLabel('Power for pairwise t-tests between treatments are estimated as:')
+        pairwiselabel.setStyleSheet("font-weight: bold;")
+        self.pwrBox.addWidget(pairwiselabel)
         for label in labels:
             self.pwrBox.addWidget(QLabel(label))
 
     
     def runglm(self):
         #Expands and initializes GLM fit and pairwise t-test multiple comparison for display in QTableViews
+        self.statusBar.showMessage('Calculating and fitting GLM models...')
         self.expand2()
         self.clearLayout(self.dfBox)
         self.clearLayout(self.pwrBox) #Since GLM is reinitialized
-        resultframes = makeglmresults(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, self.inputs.s2Inputs)
+        self.clearLayout(self.fBox)
+        results = makeglmresults(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, self.inputs.s2Inputs)
+        resultframes = results[0]
+        bigmodels = results[1]
         self.results.resultframes.clear()
         self.results.resultframes = resultframes
 
+        fresults = makeftest(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, self.inputs.s2Inputs, bigmodels)
+        self.results.fresults.clear()
+        self.results.fresults = fresults
+        #Initializing text for display in f-test box
+        self.fBox.addWidget(QLabel('Fixed effects f-test results:'))
+        for i, tup in enumerate(self.results.fresults):
+            string = 'Run ' + str(i+1) + ' | ' + 'f-stat: ' + str(round(tup[0], 4)) + ', ' + 'p-value: ' + str(round(tup[1], 4))
+            self.fBox.addWidget(QLabel(string))
+
+
+        #Initializing tableviews for pairwise t-test
+        self.dfBox.addWidget(QLabel('Pairwise t-test results:'))
         for frame in self.results.resultframes:
             model = pdModel(frame)
             view = QTableView()
@@ -185,13 +217,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             view.resizeRowsToContents()
             view.setMinimumHeight(height)
             self.dfBox.addWidget(view)
+        self.statusBar.clearMessage()
 
-    
+    def unlockgrid(self):
+        self.results.multiRun.clear()
+        self.results.cleardVResultView() #Clears dependent variable generation until update complete
+        self.updatedVVal()
+        self.s5but.setText('Generate values')
+        self.s5but.repaint()
+        self.runcounter = 0 #Reset run counter
+        self.runCount.setText('Current run count: ' + str(self.runcounter))
+        self.runCount.repaint()
+        for obj in self.inputs.s5Obj[0]: #Treatment col
+            obj.setReadOnly(False)
+        for lst in self.inputs.s5Obj[1]: #Blocking fac cols
+            for obj in lst:
+                obj.setReadOnly(False)
+
+
+    def lockgrid(self):
+        for obj in self.inputs.s5Obj[0]: #Treatment col
+            obj.setReadOnly(True)
+        for lst in self.inputs.s5Obj[1]: #Blocking fac cols
+            for obj in lst:
+                obj.setReadOnly(True)
+
+        
     def hides6fields(self):
         #Hides buttons until generated values
         self.addRun.hide()
         self.runCount.hide()
-        self.exportTxt.hide()
+        self.editGrid.hide()
         self.label.hide()
         self.experimentName.hide()
         self.exportSAS.hide()
@@ -205,8 +261,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.addRun.repaint()
         self.runCount.show()
         self.runCount.repaint()
-        self.exportTxt.show()
-        self.exportTxt.repaint()
+        self.editGrid.show()
+        self.editGrid.repaint()
         self.label.show()
         self.label.repaint()
         self.experimentName.show()
@@ -405,11 +461,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statusBar.setStyleSheet("background-color: pink;")
             return
         else:
+            self.lockgrid()
             self.results.gendvVals(self.inputs.s5Inputs, self.inputs.s4Inputs, self.inputs.s3Inputs[0])
             self.results.multiRun.clear() #Doubles as reset runs button
             self.results.addRun()
             self.runcounter = 1 #Reset run counter
             self.runCount.setText('Current run count: ' + str(self.runcounter))
+            self.minimize()
             if not self.updatebool:
                 self.initdVValView()
                 self.s5but.setText('Reset runs')
@@ -438,12 +496,41 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statusBar.setStyleSheet("background-color: pink;")
             return
         else:
-            self.results.gendvVals(self.inputs.s5Inputs, self.inputs.s4Inputs, self.inputs.s3Inputs[0])
-            self.runcounter += 1
-            self.runCount.setText('Current run count: ' + str(self.runcounter))
-            self.runCount.repaint()
-            self.updatedVVal()
-            self.results.addRun()
+            self.statusBar.clearMessage()
+            self.statusBar.setStyleSheet("background-color: none;")
+            self.minimize()
+            if self.runcounter > 2000:
+                self.statusBar.showMessage('Are you trying to crash the program??? Error - Too many runs')
+                self.statusBar.setStyleSheet("background-color: pink;")
+                return
+            if str(self.numRuns.text()):
+                try:
+                    numR = int(str(self.numRuns.text()))
+                except ValueError:
+                    self.statusBar.showMessage('Invalid input - Number of runs must be integer')
+                    self.statusBar.setStyleSheet("background-color: pink;")
+                    return
+                if numR < 0:
+                    self.statusBar.showMessage('Invalid input - Number of runs must be positive')
+                    self.statusBar.setStyleSheet("background-color: pink;")
+                    return
+                self.statusBar.showMessage('Calculating...')
+                for i in range(numR):
+                    self.results.gendvVals(self.inputs.s5Inputs, self.inputs.s4Inputs, self.inputs.s3Inputs[0])
+                    self.runcounter += 1
+                    self.results.addRun()
+                self.runCount.setText('Current run count: ' + str(self.runcounter))
+                self.runCount.repaint()
+                self.updatedVVal()
+                self.numRuns.clear()
+                self.statusBar.clearMessage()
+            else:
+                self.results.gendvVals(self.inputs.s5Inputs, self.inputs.s4Inputs, self.inputs.s3Inputs[0])
+                self.runcounter += 1
+                self.runCount.setText('Current run count: ' + str(self.runcounter))
+                self.runCount.repaint()
+                self.updatedVVal()
+                self.results.addRun()
 
 
     def exporttxt(self):
@@ -474,6 +561,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             f = open(str(dir[0]) + '.txt', 'w+')
             f.write(outstring)
             f.close()
+        self.experimentName.clear()
                   
 
     def initcurrInpView(self):

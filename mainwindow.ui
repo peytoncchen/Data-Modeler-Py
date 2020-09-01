@@ -620,6 +620,19 @@
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QPushButton" name="loadgridCSV">
+               <property name="maximumSize">
+                <size>
+                 <width>160</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Load in grid CSV</string>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
            <item>
@@ -657,7 +670,7 @@
               <widget class="QLabel" name="runCount">
                <property name="maximumSize">
                 <size>
-                 <width>140</width>
+                 <width>155</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -671,7 +684,7 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_6">
              <item>
-              <widget class="QPushButton" name="exportTxt">
+              <widget class="QPushButton" name="editGrid">
                <property name="maximumSize">
                 <size>
                  <width>170</width>
@@ -679,7 +692,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>Export run(s) to text file</string>
+                <string>Edit grid distribution</string>
                </property>
               </widget>
              </item>
@@ -810,7 +823,7 @@
          </font>
         </property>
         <property name="title">
-         <string>General Linear Model - Pairwise t-test Output:</string>
+         <string>General Linear Model - f-test and pairwise t-test output:</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -838,11 +851,40 @@
           <number>5</number>
          </property>
          <item>
+          <widget class="QScrollArea" name="FscrollArea">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>80</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>145</height>
+            </size>
+           </property>
+           <property name="widgetResizable">
+            <bool>true</bool>
+           </property>
+           <widget class="QWidget" name="FScrollWidget">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>393</width>
+              <height>78</height>
+             </rect>
+            </property>
+           </widget>
+          </widget>
+         </item>
+         <item>
           <widget class="QScrollArea" name="GLMScrollArea">
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>300</height>
+             <height>335</height>
             </size>
            </property>
            <property name="widgetResizable">
@@ -854,7 +896,7 @@
               <x>0</x>
               <y>0</y>
               <width>393</width>
-              <height>369</height>
+              <height>333</height>
              </rect>
             </property>
            </widget>
@@ -894,23 +936,6 @@
                </property>
                <property name="text">
                 <string>Export results to CSV</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_10">
-             <item>
-              <widget class="QPushButton" name="resetglm">
-               <property name="maximumSize">
-                <size>
-                 <width>190</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>Reset and run again</string>
                </property>
               </widget>
              </item>
@@ -985,7 +1010,7 @@
               <x>0</x>
               <y>0</y>
               <width>393</width>
-              <height>160</height>
+              <height>148</height>
              </rect>
             </property>
            </widget>
