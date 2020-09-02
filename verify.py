@@ -22,7 +22,6 @@ def s1verify(s1list):
     if int(numT) < 2:
         return False, 'Invalid input - must have at least 2 treatments'
 
-    
     if nameM == '' or namedVar == '':
         return False, 'Invalid input - name measurements and name of dependent variable cannot be blank'
     
@@ -43,8 +42,8 @@ def s2verify(s2list):
             int(value)
         except ValueError:
             return False, 'Invalid input - integer input expected for blocking factor values'
-        if int(value) < 0:
-            return False, 'Invalid input - integers must be positive'
+        if int(value) < 0 or int(value) == 1:
+            return False, 'Invalid input - integers must be positive and greater than 1'
     
     return True, ''
 

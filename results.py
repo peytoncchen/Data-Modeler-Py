@@ -5,13 +5,16 @@ import scipy.stats as sc
 
 
 class Results:
-    def __init__(self, errorResults=None, dVObjects=None, dVResults=None, multiRun=None, resultframes=None, fresults=None):
-        self.errorResults = errorResults or []
-        self.dVObjects = dVObjects or []
-        self.dVResults = dVResults or []
-        self.multiRun = multiRun or []
-        self.resultframes = resultframes or []
-        self.fresults = fresults or []
+    def __init__(self):
+        self.errorResults = []
+        self.dVObjects = []
+        self.dVResults = []
+        self.multiRun = []
+        self.resultframes = []
+        self.fresults = []
+        self.fpwrstring = ''
+        self.pstring = ''
+        self.fstring = ''
 
 
     def addRun(self):

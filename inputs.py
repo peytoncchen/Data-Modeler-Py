@@ -3,17 +3,16 @@
 from PyQt5.QtWidgets import QLineEdit
 
 class Inputs:
-    def __init__(self, s1Inputs=None, s2Obj=None, s2Inputs=None, s3Obj=None, s3Inputs=None, 
-    s4Obj=None, s4Inputs=None, s5Obj=None, s5Inputs=None):
-        self.s1Inputs = s1Inputs or []
-        self.s2Obj = s2Obj or []
-        self.s2Inputs = s2Inputs or []
-        self.s3Obj = s3Obj or []
-        self.s3Inputs = s3Inputs or []
-        self.s4Obj = s4Obj or []
-        self.s4Inputs = s4Inputs or []
-        self.s5Obj = s5Obj or []
-        self.s5Inputs = s5Inputs or []
+    def __init__(self):
+        self.s1Inputs = []
+        self.s2Obj = []
+        self.s2Inputs = []
+        self.s3Obj = []
+        self.s3Inputs = []
+        self.s4Obj = []
+        self.s4Inputs = []
+        self.s5Obj = []
+        self.s5Inputs = []
 
 
     def store_s2(self, s2objlabel, s2objval):
@@ -51,6 +50,7 @@ class Inputs:
 
     def stores_s5(self, s5objval):
         #Stores values from S5 into self var
+
         self.s5Inputs.clear()
 
         tLst = []

@@ -30,13 +30,11 @@ def makeformula(s1inputs, s2inputs, big):
         result += blkstring
     return result[:-3] #accounting for superfluous + character at the end of the formula
 
+
 def calcnestedfstat(small_model, big_model):
     #Given two fitted GLMs, the larger of which contains treatment compared to smaller, 
     #returns the f-stat and p-value corresponding to the larger model adding explanatory power
     addtl_params = big_model.df_model - small_model.df_model
-    print(big_model.df_model)
-    print(small_model.df_model)
-    print(addtl_params)
     f_stat = (small_model.deviance - big_model.deviance) / (addtl_params * big_model.scale)
     df_numerator = addtl_params
     # use fitted values to obtain n_obs from model object:
@@ -46,7 +44,7 @@ def calcnestedfstat(small_model, big_model):
 
 
 def makeglmresults(s5inputs, multiRun, s1inputs, s2inputs):
-    #Runs GLM calculations, fits modle, runs pairwise t-test, extracts pandas dataframes rounded, stores into list
+    #Runs GLM calculations, fits model, runs pairwise t-test, extracts pandas dataframes rounded, stores into list
     formula = makeformula(s1inputs, s2inputs, True)
     resultframe = []
     bigmodels = []

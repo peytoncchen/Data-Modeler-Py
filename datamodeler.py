@@ -2,6 +2,7 @@
 
 import sys
 import pandas as pd
+import numpy as np
 import webbrowser
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -69,7 +70,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.finalexpand = False
         self.firstexpand = False
         self.dViewlabelchanged = False
+        self.badexpmt = False
         self.dViewlabels = []
+
+
+        self.nameMeas.textChanged.connect(self.changedViewlabelsbool)
+        self.namedVar.textChanged.connect(self.changedViewlabelsbool)
 
         self.s1but.clicked.connect(self.s1process)
         self.s2but.clicked.connect(self.s2process)
@@ -100,7 +106,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.nameMeas.setCompleter(self.completer1)
 
         completerNmDvarlst = ['Days Survived', 'Time to peak', 'Dependent Variable', 
-        'Dependent Var', 'Tumor Size', 'Concentration']
+        'Tumor Size', 'Concentration']
         self.completer2 = QCompleter(completerNmDvarlst, self)
         self.completer2.setCaseSensitivity(0)
         self.namedVar.setCompleter(self.completer2)
@@ -154,6 +160,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.finalexpand = False
         self.firstexpand = False
         self.dViewlabelchanged = False
+        self.badexpmt = False
         self.dViewlabels = []
 
         self.numMeasure.clear()
@@ -187,25 +194,46 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         headpwrlabel = QLabel('Based on ' + str(len(self.results.multiRun)) + ' runs and alpha = 0.05:')
         headpwrlabel.setStyleSheet("font-weight: bold;")
         self.pwrBox.addWidget(headpwrlabel)
+        
+
         fixedlabel = QLabel('Power for fixed effect f-test is estimated as:')
         fixedlabel.setStyleSheet("font-weight: bold;")
         self.pwrBox.addWidget(fixedlabel)
         fixedeffect = fpwr(self.results.fresults)
-        self.pwrBox.addWidget(QLabel(fixedeffect))
+        self.results.fpwrstring = fixedeffect
+        print(self.results.fpwrstring)
+        fixedeffectresult = QLabel(fixedeffect)
+        fixedeffectresult.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        fixedeffectresult.setCursor(Qt.IBeamCursor)
+        self.pwrBox.addWidget(fixedeffectresult)
+
         pairwiselabel = QLabel('Power for pairwise t-tests between treatments are estimated as:')
         pairwiselabel.setStyleSheet("font-weight: bold;")
         self.pwrBox.addWidget(pairwiselabel)
+        pairwiseresultstr = ''
         for label in labels:
-            self.pwrBox.addWidget(QLabel(label))
+            pairwiseresultstr += label
+            pairwiseresultstr += '\n'
+        pairwiseresult = QLabel(pairwiseresultstr)
+        self.results.pstring = pairwiseresultstr
+        print(self.results.pstring)
+        pairwiseresult.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        pairwiseresult.setCursor(Qt.IBeamCursor)
+        self.pwrBox.addWidget(pairwiseresult)
+
+
+    def resetSBbkgrd(self):
+        self.statusBar.setStyleSheet("background-color: none;")
 
     
     def runglm(self):
         #Expands and initializes GLM fit and pairwise t-test multiple comparison for display in QTableViews
-        self.statusBar.showMessage('Calculating and fitting GLM models...')
         self.expand2()
         self.clearLayout(self.dfBox)
         self.clearLayout(self.pwrBox) #Since GLM is reinitialized
         self.clearLayout(self.fBox)
+        self.badexpmt = False
+
         results = makeglmresults(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, self.inputs.s2Inputs)
         resultframes = results[0]
         bigmodels = results[1]
@@ -217,9 +245,35 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.results.fresults = fresults
         #Initializing text for display in f-test box
         self.fBox.addWidget(QLabel('Fixed effects f-test results:'))
+        fstring = ''
+
         for i, tup in enumerate(self.results.fresults):
-            string = 'Run ' + str(i+1) + ' | ' + 'f-stat: ' + str(round(tup[0], 4)) + ', ' + 'p-value: ' + str(round(tup[1], 4))
-            self.fBox.addWidget(QLabel(string))
+            fstring += 'Run ' + str(i+1) + ' | ' + 'f-stat: ' + str(round(tup[0], 4)) + ', ' + 'p-value: ' + str(round(tup[1], 4))
+            fstring += '\n'
+            if tup[0] == -np.inf or tup[0] == np.inf:
+                self.badexpmt = True
+        
+        flabel = QLabel(fstring)
+        self.results.fstring = fstring
+        print(self.results.fstring)
+        print(self.results.multiRun)
+        flabel.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        flabel.setCursor(Qt.IBeamCursor)
+        self.fBox.addWidget(flabel)
+
+        print(self.inputs.s1Inputs)
+        print(self.inputs.s2Inputs)
+        print(self.inputs.s3Inputs)
+        print(self.inputs.s4Inputs)
+        print(self.inputs.s5Inputs)
+        print(self.results.errorResults)
+
+        if self.badexpmt:
+            self.statusBar.setStyleSheet("background-color: #FFFF99") #Light yellow warning
+            self.statusBar.showMessage('Warning - this experiment is designed without enough separation in treatment and blocking factor assignments, unable to complete f-test', 10000)
+            self.timer = QTimer(self)
+            self.timer.timeout.connect(self.resetSBbkgrd)
+            self.timer.start(10000)
 
 
         #Initializing tableviews for pairwise t-test
@@ -238,26 +292,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             view.resizeColumnsToContents()
             view.resizeRowsToContents()
-            view.setMinimumHeight(height)
+            view.setFixedHeight(height) #locks in height
             self.dfBox.addWidget(view)
+        self.dfBox.addStretch() #Fill in empty space if there aren't enough tables generated
 
 
     def unlockgrid(self):
         self.hides6fields()
         self.results.multiRun.clear()
-        self.results.cleardVResultView() #Clears dependent variable generation until update complete
-        self.updatedVVal()
-        self.s5but.setText('Generate values')
-        self.s5but.repaint()
-        self.runcounter = 0 #Reset run counter
+        self.runcounter = 0
         self.runCount.setText('Current run count: ' + str(self.runcounter))
         self.runCount.repaint()
+        if self.updatebool: #So this doesn't crash out on reset since QLabel objects are deleted
+            self.results.cleardVResultView() #Clears dependent variable generation until update complete
+            self.updatedVVal()
+        self.s5but.setText('Generate values')
+        self.s5but.repaint()
         self.minimize()
-        for obj in self.inputs.s5Obj[0]: #Treatment col
-            obj.setReadOnly(False)
-        for lst in self.inputs.s5Obj[1]: #Blocking fac cols
-            for obj in lst:
+        if self.inputs.s5Obj: #if not empty
+            for obj in self.inputs.s5Obj[0]: #Treatment col
                 obj.setReadOnly(False)
+            for lst in self.inputs.s5Obj[1]: #Blocking fac cols
+                for obj in lst:
+                    obj.setReadOnly(False)
 
 
     def lockgrid(self):
@@ -269,34 +326,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         
     def hides6fields(self):
-        #Hides buttons until generated values
-        self.addRun.hide()
-        self.runCount.hide()
-        self.editGrid.hide()
-        self.label.hide()
-        self.experimentName.hide()
-        self.exportSAS.hide()
-        self.glmCalc.hide()
-        self.numRuns.hide()
+        #Disables buttons and set readonly QLineEdit until generated values
+        self.addRun.setEnabled(False)
+        self.numRuns.setReadOnly(True)
+        self.editGrid.setEnabled(False)
+        self.exportSAS.setEnabled(False)
+        self.glmCalc.setEnabled(False)
+        self.experimentName.setReadOnly(True)
     
 
     def shows6fields(self):
-        #Shows buttons after generated values
-        self.addRun.show()
+        #Enables buttons and allow edit QLineEdit after generated values
+        self.addRun.setEnabled(True)
+        self.numRuns.setReadOnly(False)
+        self.editGrid.setEnabled(True)
+        self.exportSAS.setEnabled(True)
+        self.glmCalc.setEnabled(True)
+        self.experimentName.setReadOnly(False)
         self.addRun.repaint()
-        self.runCount.show()
-        self.runCount.repaint()
-        self.editGrid.show()
         self.editGrid.repaint()
-        self.label.show()
-        self.label.repaint()
-        self.experimentName.show()
         self.experimentName.repaint()
-        self.exportSAS.show()
         self.exportSAS.repaint()
-        self.glmCalc.show()
         self.glmCalc.repaint()
-        self.numRuns.show()
         self.numRuns.repaint()
 
     
@@ -336,14 +387,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statusBar.setStyleSheet("background-color: pink;")
             return #if unrecognized inputs program will not continue and halt here
         else:
-            #self.nameMeas.setReadOnly(True) #set read only to prevent weirdness, can edit when the user does total resets
-            #self.namedVar.setReadOnly(True)
-
             self.minimize() #Minimizes 3rd pane if it exists
             #Sets button text to 'Update' after initial press
             self.s1but.setText('Update')
             self.s1but.repaint()
-            self.hides6fields() #Need to update everything before being able to S6 stuff
             self.clearLayout(self.cBox) #Clears current input box until everything is updated after S4 (Step 4)
             if self.numMeasure.isModified():
                 self.minimize2()
@@ -370,17 +417,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     #Reveals S2 button in case where there are more than 0 blocking factors
                     self.s2but.show()
                     self.s2but.repaint()
-            if self.nameMeas.isModified() or self.namedVar.isModified():
-                self.nameMeas.setModified(False)
-                self.namedVar.setModified(False)
-                self.dViewlabelchanged = True
-                self.updateDviewlabels() 
-                self.dViewlabelchanged = False      
-            if self.firstexpand: #If view is not automatically minimized b/c of changes, cleans up view
-                self.results.cleardVResultView() #Clears dependent variable generation until update complete
-                self.updatedVVal()
-                self.s5but.setText('Generate values')
-                self.s5but.repaint()
+            if self.dViewlabelchanged:
+                self.updateDviewlabels()
+                self.dViewlabelchanged = False  
+            if self.firstexpand:
+                self.unlockgrid()
+                self.results.genEVals(self.inputs.s2Inputs, self.inputs.s3Inputs)
+                self.initcurrInpView() #Reinitializes current input box: if blank, updated needed S3 or S4
     
 
     def s2process(self):
@@ -405,14 +448,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.dViewlabelchanged = False
             self.s2but.setText('Update')
             self.s2but.repaint()
-            self.hides6fields() #Need to update everything and regenerate values before being able to do S6 stuff 
             if self.firstexpand:
-                self.results.cleardVResultView() #Clears dependent variable generation until update complete
-                self.updatedVVal()
+                self.unlockgrid()
                 self.results.genEVals(self.inputs.s2Inputs, self.inputs.s3Inputs)
                 self.initcurrInpView() #Reinitializes current input box: if blank, updated needed S3 or S4
-                self.s5but.setText('Generate values')
-                self.s5but.repaint()
             self.minimize() #Minimizes 3rd pane if it exists
 
 
@@ -432,8 +471,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.s4but.setText('Reinitialize grid')
             self.s4but.repaint()
-            self.s5but.setText('Generate values')
-            self.s5but.repaint()
             if not self.firstexpand and not self.finalexpand: #To ensure window resizing isn't awkward
                 self.expand()
                 self.firstexpand = True
@@ -441,7 +478,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.initDView()
             self.results.genEVals(self.inputs.s2Inputs, self.inputs.s3Inputs)
             self.initcurrInpView()
-            self.hides6fields()
+            self.unlockgrid()
             self.minimize() #Minimizes 3rd pane if it exists
 
 
@@ -461,14 +498,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             #Generates new error values and clears any current/outdated dependent variables
             self.results.genEVals(self.inputs.s2Inputs, self.inputs.s3Inputs)
-            self.results.cleardVResultView()
-            self.results.multiRun.clear()
-            self.s5but.setText('Generate values')
-            self.s5but.repaint()
-            self.updatedVVal()
             self.initcurrInpView()
             self.updatebool = True #To update not reinitialize and overwrite current dVVal view
-            self.hides6fields() #Rehides buttons until values generated
+            self.unlockgrid()
             self.minimize() #Minimizes 3rd pane if it exists
 
 
@@ -492,6 +524,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.results.addRun()
             self.runcounter = 1 #Reset run counter
             self.runCount.setText('Current run count: ' + str(self.runcounter))
+            self.runCount.repaint()
             self.minimize()
             if not self.updatebool:
                 self.initdVValView()
@@ -566,8 +599,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         dlg.setFileMode(QFileDialog.Directory)
         outstring = preparemultitxt(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, self.inputs.s2Inputs)
         if dlg.exec_():
-            dir = dlg.getSaveFileName()
-            f = open(str(dir[0]) + '.txt', 'w+')
+            directory, _filter = dlg.getSaveFileName()
+            f = open(str(directory) + '.txt', 'w+')
             f.write(outstring)
             f.close()
 
@@ -582,11 +615,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         outstring = preparemultisas(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, 
         self.inputs.s2Inputs, self.experimentName.text())
         if dlg.exec_():
-            dir = dlg.getSaveFileName()
-            f = open(str(dir[0]) + '.txt', 'w+')
+            directoy, _filter = dlg.getSaveFileName()
+            f = open(str(directory) + '.txt', 'w+')
             f.write(outstring)
             f.close()
-        self.experimentName.clear()
+        self.experimentName.clear() #Clears experiment name
                   
 
     def initcurrInpView(self):
@@ -659,13 +692,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def updateDviewlabels(self):
         #Updates the distribute view labels if any of the names are changed in step 1 or step 2
-        if self.firstexpand and self.dViewlabelchanged:
+        if self.firstexpand:
             self.dViewlabels[0].setText(self.inputs.s1Inputs[3])
             self.dViewlabels[0].repaint()
             for i in range(len(self.inputs.s2Inputs[0])):
                 newtext = self.inputs.s2Inputs[0][i]
                 self.dViewlabels[i+1].setText(newtext)
                 self.dViewlabels[i+1].repaint()
+            self.dViewlabels[len(self.dViewlabels) - 1].setText(self.inputs.s1Inputs[4])
+            self.dViewlabels[len(self.dViewlabels) - 1].repaint()
     
     
     def initDView(self):
@@ -712,6 +747,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             tAssign.setAlignment(Qt.AlignHCenter)
             tAssignObj.append(tAssign)
             self.dGrid.addWidget(tAssign,i+1,1)
+            tAssign.repaint()
 
             iBAssign = []
             for j in range(len(self.inputs.s2Inputs[0])):
@@ -721,6 +757,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 bAssign.setAlignment(Qt.AlignHCenter)
                 iBAssign.append(bAssign)
                 self.dGrid.addWidget(bAssign,i+1,j+2)
+                bAssign.repaint()
             bAssignObj.append(iBAssign)
 
         #Store these inputs to extract values at a later time
@@ -745,6 +782,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 sdval = QLineEdit()
                 lsterrors.append(sdval)
                 self.eBox.addRow(label, sdval)
+                label.repaint()
+                sdval.repaint()
 
         #Stores objects to extract values later
         self.inputs.s3Obj.clear()
@@ -760,6 +799,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             mean = QLineEdit()
             lstmeans.append(mean)
             self.tBox.addRow(num, mean)
+            num.repaint()
+            mean.repaint()
         
         #Stores objects to extract values later
         self.inputs.s4Obj.clear()
@@ -779,6 +820,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             lstlabel.append(bName)
             lstval.append(bVal)
             self.bFbox.addRow(bName, bVal)
+            bName.repaint()
+            bVal.repaint()
         
         #Stores objects to extract values later
         self.inputs.s2Obj.clear()

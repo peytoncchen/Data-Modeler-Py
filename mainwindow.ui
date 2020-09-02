@@ -307,7 +307,7 @@
             <enum>QFrame::StyledPanel</enum>
            </property>
            <property name="frameShadow">
-            <enum>QFrame::Plain</enum>
+            <enum>QFrame::Sunken</enum>
            </property>
            <property name="verticalScrollBarPolicy">
             <enum>Qt::ScrollBarAlwaysOn</enum>
@@ -406,7 +406,7 @@
          <item>
           <widget class="QScrollArea" name="eRscrollArea">
            <property name="frameShadow">
-            <enum>QFrame::Plain</enum>
+            <enum>QFrame::Sunken</enum>
            </property>
            <property name="verticalScrollBarPolicy">
             <enum>Qt::ScrollBarAlwaysOn</enum>
@@ -585,6 +585,9 @@
            <property name="widgetResizable">
             <bool>true</bool>
            </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+           </property>
            <widget class="QWidget" name="dScrollWidget">
             <property name="geometry">
              <rect>
@@ -675,7 +678,7 @@
                 </size>
                </property>
                <property name="text">
-                <string>Current run count: 1</string>
+                <string>Current run count: 0</string>
                </property>
               </widget>
              </item>
@@ -890,6 +893,9 @@
            <property name="widgetResizable">
             <bool>true</bool>
            </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+           </property>
            <widget class="QWidget" name="GLMScrollWidget">
             <property name="geometry">
              <rect>
@@ -930,12 +936,12 @@
               <widget class="QPushButton" name="exportpwrcsv">
                <property name="maximumSize">
                 <size>
-                 <width>190</width>
+                 <width>250</width>
                  <height>16777215</height>
                 </size>
                </property>
                <property name="text">
-                <string>Export results to CSV</string>
+                <string>Export pairwise t-test results to CSV</string>
                </property>
               </widget>
              </item>
