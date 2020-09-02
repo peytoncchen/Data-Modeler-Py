@@ -86,6 +86,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.editGrid.clicked.connect(self.unlockgrid)
         self.loadgridCSV.clicked.connect(self.loadincsv)
         
+        self.exportTextBut.clicked.connect(self.exporttxt)
         self.exportSAS.clicked.connect(self.exportsas)
         self.glmCalc.clicked.connect(self.runglm)
         self.parsepower.clicked.connect(self.pwr)
@@ -183,8 +184,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         dlg.setFileMode(QFileDialog.Directory)
         dataframe = exportresultframe(self.results.resultframes)
         if dlg.exec_():
-            dir = dlg.getSaveFileName()
-            dataframe.to_csv(str(dir[0]) + '.csv', index=True)
+            directory, _filter = dlg.getSaveFileName()
+            dataframe.to_csv(str(directory) + '.csv', index=True)
 
 
     def pwr(self):
@@ -333,6 +334,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.exportSAS.setEnabled(False)
         self.glmCalc.setEnabled(False)
         self.experimentName.setReadOnly(True)
+        self.exportTextBut.setEnabled(False)
     
 
     def shows6fields(self):
@@ -343,6 +345,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.exportSAS.setEnabled(True)
         self.glmCalc.setEnabled(True)
         self.experimentName.setReadOnly(False)
+        self.exportTextBut.setEnabled(True)
+        self.exportTextBut.repaint()
         self.addRun.repaint()
         self.editGrid.repaint()
         self.experimentName.repaint()
@@ -615,7 +619,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         outstring = preparemultisas(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, 
         self.inputs.s2Inputs, self.experimentName.text())
         if dlg.exec_():
-            directoy, _filter = dlg.getSaveFileName()
+            directory, _filter = dlg.getSaveFileName()
             f = open(str(directory) + '.txt', 'w+')
             f.write(outstring)
             f.close()
