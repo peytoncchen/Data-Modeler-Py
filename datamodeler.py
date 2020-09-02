@@ -61,6 +61,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.PCGroupBox.hide()
         self.s2but.setEnabled(False)
         self.updates4.hide()
+        self.editInputs.hide()
         self.hides6fields()
 
         self.setMinimumSize(QSize(450, 750))
@@ -85,6 +86,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.addRun.clicked.connect(self.s5add)
         self.editGrid.clicked.connect(self.unlockgrid)
         self.loadgridCSV.clicked.connect(self.loadincsv)
+        self.editInputs.clicked.connect(self.unlockinputs)
         
         self.exportTextBut.clicked.connect(self.exporttxt)
         self.exportSAS.clicked.connect(self.exportsas)
@@ -116,6 +118,83 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         completerNmBF += completerNmMeaslst[0:11]
         self.completer3 = QCompleter(completerNmBF, self)
         self.completer3.setCaseSensitivity(0)
+
+
+    def lockinputs(self):
+        self.editInputs.setEnabled(True)
+        self.editInputs.repaint()
+
+        #Locking out S1
+        self.numMeasure.setReadOnly(True)
+        self.numTreat.setReadOnly(True)
+        self.numBf.setReadOnly(True)
+        self.nameMeas.setReadOnly(True)
+        self.namedVar.setReadOnly(True)
+        self.s1but.setEnabled(False)
+        self.s1but.repaint()
+        
+        #Locking out S2
+        for obj in self.inputs.s2Obj[0]:
+            obj.setReadOnly(True)
+        for obj in self.inputs.s2Obj[1]:
+            obj.setReadOnly(True)
+        self.s2but.setEnabled(False)
+        self.s2but.repaint()
+
+        #Locking out S3
+        for obj in self.inputs.s3Obj:
+            obj.setReadOnly(True)
+        
+        #Locking out S4
+        for obj in self.inputs.s4Obj:
+            obj.setReadOnly(True)
+        for obj in self.inputs.s4labelobj:
+            obj.setReadOnly(True)
+        self.s4but.setEnabled(False)
+        self.s4but.repaint()
+        self.updates4.setEnabled(False)
+        self.updates4.repaint()
+
+
+    def unlockinputs(self):
+        self.editInputs.setEnabled(False)
+        self.editInputs.repaint()
+
+        if self.firstexpand:
+            self.unlockgrid()
+        self.clearLayout(self.cBox)
+
+        #Unlocking S1
+        self.numMeasure.setReadOnly(False)
+        self.numTreat.setReadOnly(False)
+        self.numBf.setReadOnly(False)
+        self.nameMeas.setReadOnly(False)
+        self.namedVar.setReadOnly(False)
+        self.s1but.setEnabled(True)
+        self.s1but.repaint()
+
+        #Unlocking S2
+        for obj in self.inputs.s2Obj[0]:
+            obj.setReadOnly(False)
+        for obj in self.inputs.s2Obj[1]:
+            obj.setReadOnly(False)
+        if int(self.inputs.s1Inputs[2]) != 0:
+            self.s2but.setEnabled(True)
+            self.s2but.repaint()
+
+        #Unlocking S3
+        for obj in self.inputs.s3Obj:
+            obj.setReadOnly(False)
+        
+        #Unlocking S4
+        for obj in self.inputs.s4Obj:
+            obj.setReadOnly(False)
+        for obj in self.inputs.s4labelobj:
+            obj.setReadOnly(False)
+        self.s4but.setEnabled(True)
+        self.s4but.repaint()
+        self.updates4.setEnabled(True)
+        self.updates4.repaint()
 
 
     def loadincsv(self):
@@ -157,6 +236,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.hides6fields()
         self.s2but.setEnabled(False)
         self.updates4.hide()
+        self.editInputs.hide()
         self.updatebool = False
         self.finalexpand = False
         self.firstexpand = False
@@ -173,9 +253,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.numRuns.clear()
         self.experimentName.clear()
 
+        self.unlockinputs()
         self.clearLayout(self.bFbox)
         self.clearLayout(self.eBox)
         self.clearLayout(self.tBox)
+
+        self.s1but.setText('Continue')
+        self.s1but.repaint()
+        self.s2but.setText('Continue')
+        self.repaint()
+        self.s4but.setText('Continue')
+        self.s4but.repaint()
+        self.s5but.setText('Generate values')
+        self.s5but.repaint()
 
     
     def exportframes(self):
@@ -402,8 +492,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             #Sets button text to 'Update' after initial press
             self.s1but.setText('Update')
             self.s1but.repaint()
-            self.s2but.setText('Continue')
-            self.s2but.repaint()
             self.clearLayout(self.cBox) #Clears current input box until everything is updated after S4 (Step 4)
             if self.numMeasure.isModified():
                 self.minimize2()
@@ -424,8 +512,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.s2but.setEnabled(False) #in case this is updating from non-zero initial # of blocking factors
                     self.s2but.setText('Skip this!')
                     self.s2but.repaint()
-                    #self.resize(450,751) #trying to get the button to disappear if blocking factors (BF) updated to 0
-                    #self.resize(450,750) #Weird PyQt5 library-isms??? repaint() and QApplication.processEvents() didn't work
                     self.inputs.s2Inputs.append([]) #To ensure input variables have the same shape even in case of 0 BF
                     self.inputs.s2Inputs.append([])
                 else:
@@ -473,7 +559,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def s3and4process(self):
         #Continue/reset grid button
         #Store values from step 3 and 4 into an instance of Inputs class created at Mainwindow init
-        self.inputs.store_s3and4(self.inputs.s3Obj, self.inputs.s4Obj)
+        self.inputs.store_s3and4(self.inputs.s3Obj, self.inputs.s4Obj, self.inputs.s4labelobj)
 
         self.statusBar.clearMessage()
         self.statusBar.setStyleSheet("background-color: none;")
@@ -500,7 +586,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def s3and4update(self):
         #Update errors and treatment means button
         #Store values from step 3 and 4 into an instance of Inputs class created at Mainwindow init
-        self.inputs.store_s3and4(self.inputs.s3Obj, self.inputs.s4Obj)
+        self.inputs.store_s3and4(self.inputs.s3Obj, self.inputs.s4Obj, self.inputs.s4labelobj)
 
         self.statusBar.clearMessage()
         self.statusBar.setStyleSheet("background-color: none;")
@@ -534,6 +620,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
         else:
             self.lockgrid()
+            self.lockinputs()
+            self.editInputs.show()
+            self.editInputs.repaint()
             self.results.gendvVals(self.inputs.s5Inputs, self.inputs.s4Inputs, self.inputs.s3Inputs[0])
             self.results.multiRun.clear() #Doubles as reset runs button
             self.results.addRun()
@@ -788,6 +877,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         totalerror = QLabel("Total error SD:")
         totalerrorval = QLineEdit()
+        totalerrorval.setPlaceholderText('Enter SD value')
         self.eBox.addRow(totalerror, totalerrorval)
         lsterrors.append(totalerrorval)
 
@@ -795,6 +885,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             for i in range(len(self.inputs.s2Inputs[0])):
                 label = QLabel(self.inputs.s2Inputs[0][i] + ' SD:')
                 sdval = QLineEdit()
+                sdval.setPlaceholderText('Enter SD value')
                 lsterrors.append(sdval)
                 self.eBox.addRow(label, sdval)
                 label.repaint()
@@ -809,17 +900,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Initializes treatment view box based on number of treatments
         self.clearLayout(self.tBox)
         lstmeans = []
+        lsttlabels = []
         for i in range(int(self.inputs.s1Inputs[1])):
             num = QLabel(str(i + 1))
+
+            label = QLineEdit()
+            label.setPlaceholderText('Enter label (opt)')
+            lsttlabels.append(label)
             mean = QLineEdit()
+            mean.setPlaceholderText('Enter mean')
+
+            hbox = QHBoxLayout()
+            hbox.addWidget(label)
+            hbox.addWidget(mean)
+
             lstmeans.append(mean)
-            self.tBox.addRow(num, mean)
+            self.tBox.addRow(num, hbox)
             num.repaint()
             mean.repaint()
         
         #Stores objects to extract values later
         self.inputs.s4Obj.clear()
         self.inputs.s4Obj = lstmeans
+        self.inputs.s4labelobj.clear()
+        self.inputs.s4labelobj = lsttlabels
 
 
     def initBfView(self):
@@ -831,7 +935,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             bName = QLineEdit()
             bName.textChanged.connect(self.changedViewlabelsbool)
             bName.setCompleter(self.completer3)
+            bName.setPlaceholderText('Enter label')
             bVal = QLineEdit()
+            bVal.setPlaceholderText('Enter value')
             lstlabel.append(bName)
             lstval.append(bVal)
             self.bFbox.addRow(bName, bVal)
@@ -873,13 +979,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def clearLayout(self, layout):
-        #Clears the given layout of all widgets
-        while layout.count():
-            c = layout.takeAt(0)
-            if c.widget() is not None:
-                c.widget().deleteLater()
-            elif c.layout() is not None:
-                clearLayout(c.layout())
+        #Clears the given layout of all widgets      
+        if layout is not None:
+            while layout.count():
+                c = layout.takeAt(0)
+                widget = c.widget()
+                if widget is not None:
+                    widget.deleteLater()
+                else:
+                    self.clearLayout(c.layout())
         
 
 if __name__ == '__main__':

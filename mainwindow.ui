@@ -193,7 +193,7 @@
               <number>30</number>
              </property>
              <property name="placeholderText">
-              <string>Enter value</string>
+              <string>Enter name</string>
              </property>
             </widget>
            </item>
@@ -219,7 +219,7 @@
               <number>30</number>
              </property>
              <property name="placeholderText">
-              <string>Enter value</string>
+              <string>Enter name</string>
              </property>
             </widget>
            </item>
@@ -249,6 +249,25 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QPushButton" name="editInputs">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>140</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Edit inputs</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
         </layout>
@@ -259,7 +278,7 @@
         <property name="minimumSize">
          <size>
           <width>360</width>
-          <height>160</height>
+          <height>170</height>
          </size>
         </property>
         <property name="font">
@@ -326,8 +345,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>376</width>
-              <height>90</height>
+              <width>380</width>
+              <height>96</height>
              </rect>
             </property>
            </widget>
@@ -425,8 +444,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>376</width>
-              <height>125</height>
+              <width>380</width>
+              <height>103</height>
              </rect>
             </property>
            </widget>
@@ -440,7 +459,7 @@
         <property name="minimumSize">
          <size>
           <width>360</width>
-          <height>160</height>
+          <height>180</height>
          </size>
         </property>
         <property name="font">
@@ -449,7 +468,7 @@
          </font>
         </property>
         <property name="title">
-         <string>Step 4 - Enter treatment means:</string>
+         <string>Step 4 - Enter treatment means and labels (optional):</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -492,8 +511,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>392</width>
-              <height>90</height>
+              <width>396</width>
+              <height>106</height>
              </rect>
             </property>
            </widget>
@@ -593,7 +612,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>462</width>
+              <width>454</width>
               <height>378</height>
              </rect>
             </property>
@@ -690,7 +709,7 @@
               <widget class="QPushButton" name="editGrid">
                <property name="maximumSize">
                 <size>
-                 <width>170</width>
+                 <width>160</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -701,6 +720,12 @@
              </item>
              <item>
               <widget class="QPushButton" name="exportTextBut">
+               <property name="maximumSize">
+                <size>
+                 <width>120</width>
+                 <height>16777215</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Export run(s)</string>
                </property>
@@ -710,7 +735,7 @@
               <widget class="QPushButton" name="glmCalc">
                <property name="maximumSize">
                 <size>
-                 <width>180</width>
+                 <width>170</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -725,6 +750,12 @@
             <layout class="QHBoxLayout" name="horizontalLayout_7">
              <item>
               <widget class="QLabel" name="label">
+               <property name="maximumSize">
+                <size>
+                 <width>113</width>
+                 <height>16777215</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Experiment Name:</string>
                </property>
@@ -732,6 +763,12 @@
              </item>
              <item>
               <widget class="QLineEdit" name="experimentName">
+               <property name="maximumSize">
+                <size>
+                 <width>120</width>
+                 <height>16777215</height>
+                </size>
+               </property>
                <property name="placeholderText">
                 <string>Enter name</string>
                </property>
@@ -739,6 +776,12 @@
              </item>
              <item>
               <widget class="QPushButton" name="exportSAS">
+               <property name="maximumSize">
+                <size>
+                 <width>210</width>
+                 <height>16777215</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Export SAS run(s) to text file</string>
                </property>
@@ -805,7 +848,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>462</width>
+              <width>454</width>
               <height>118</height>
              </rect>
             </property>
@@ -882,7 +925,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>392</width>
+              <width>396</width>
               <height>78</height>
              </rect>
             </property>
@@ -908,7 +951,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>392</width>
+              <width>396</width>
               <height>333</height>
              </rect>
             </property>
@@ -1022,7 +1065,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>392</width>
+              <width>396</width>
               <height>148</height>
              </rect>
             </property>

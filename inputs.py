@@ -11,6 +11,8 @@ class Inputs:
         self.s3Inputs = []
         self.s4Obj = []
         self.s4Inputs = []
+        self.s4labelobj = []
+        self.s4labels = []
         self.s5Obj = []
         self.s5Inputs = []
 
@@ -30,22 +32,31 @@ class Inputs:
         self.s2Inputs.append(lstval)
 
 
-    def store_s3and4(self, s3objval, s4objval):
+    def store_s3and4(self, s3objval, s4objval, s4objlabel):
         #Stores values from S3 and S4 into self var
         self.s3Inputs.clear()
         self.s4Inputs.clear()
+        self.s4labels.clear()
 
         lsts3 = []
         lsts4 = []
+        lsts4label = []
 
         for obj in s3objval:
             lsts3.append(str(obj.text()).strip())
         
         for obj in s4objval:
             lsts4.append(str(obj.text()).strip())
+        
+        for obj in s4objlabel:
+            lsts4label.append(str(obj.text()).strip())
+
 
         self.s3Inputs = lsts3
         self.s4Inputs = lsts4
+        self.s4labels = lsts4label
+        print(self.s4Inputs)
+        print(self.s4labels)
     
 
     def stores_s5(self, s5objval):

@@ -49,7 +49,7 @@ def preparemultitxt(s5inputs, multiRun, s1inputs, s2inputs):
     labels = preparelabeltxt(s1inputs, s2inputs)
     lstheader.append(labels)
     for label in lstheader:
-        header = ','.join(label)
+        header = ' '.join(label)
         header += '\n\n'
         bigboystring += header
 

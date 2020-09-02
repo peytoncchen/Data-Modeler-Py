@@ -41,8 +41,10 @@ class Results:
             dvVal += float(s4inputs[tNum-1]) #adding treatment value
 
             rand = random.uniform(0.0, 1.0)
-            tEVal = sc.norm(0, float(totalerror)).ppf(rand)
-            dvVal += tEVal #adding generated total error value based on totalerror SD value
+
+            if float(totalerror) != 0: #Handling case where totalerror = 0 then don't run this code
+                tEVal = sc.norm(0, float(totalerror)).ppf(rand)
+                dvVal += tEVal #adding generated total error value based on totalerror SD value
 
             for j in range(numBF):
                 bFnum = int(s5inputs[1][i][j])
@@ -70,10 +72,13 @@ class Results:
         #Generates one error val
         lst = []
         for i in range(count):
-            rand = random.uniform(0.0, 1.0)
-            val = sc.norm(0, sd).ppf(rand)
-            rounded = round(val, 4)
-            lst.append(rounded)
+            if sd != 0: #Handling case where SD is 0
+                rand = random.uniform(0.0, 1.0)
+                val = sc.norm(0, sd).ppf(rand)
+                rounded = round(val, 4)
+                lst.append(rounded)
+            else: 
+                lst.append(0)
         return lst
         
 
