@@ -59,7 +59,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.cGroupBox.hide()
         self.GLMGroupBox.hide()
         self.PCGroupBox.hide()
-        self.s2but.hide()
+        self.s2but.setEnabled(False)
         self.updates4.hide()
         self.hides6fields()
 
@@ -155,7 +155,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.minimize()
         self.minimize2()
         self.hides6fields()
-        self.s2but.hide()
+        self.s2but.setEnabled(False)
         self.updates4.hide()
         self.updatebool = False
         self.finalexpand = False
@@ -335,6 +335,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.glmCalc.setEnabled(False)
         self.experimentName.setReadOnly(True)
         self.exportTextBut.setEnabled(False)
+        self.exportTextBut.repaint()
+        self.addRun.repaint()
+        self.editGrid.repaint()
+        self.experimentName.repaint()
+        self.exportSAS.repaint()
+        self.glmCalc.repaint()
+        self.numRuns.repaint()
     
 
     def shows6fields(self):
@@ -395,6 +402,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             #Sets button text to 'Update' after initial press
             self.s1but.setText('Update')
             self.s1but.repaint()
+            self.s2but.setText('Continue')
+            self.s2but.repaint()
             self.clearLayout(self.cBox) #Clears current input box until everything is updated after S4 (Step 4)
             if self.numMeasure.isModified():
                 self.minimize2()
@@ -412,14 +421,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.clearLayout(self.eBox) #Clears error box in preparation for update
                 if int(self.inputs.s1Inputs[2]) == 0: #handles case where there are 0 blocking factors to initialize error view
                     self.initEView(True) 
-                    self.s2but.hide() #in case this is updating from non-zero initial # of blocking factors
-                    self.resize(450,751) #trying to get the button to disappear if blocking factors (BF) updated to 0
-                    self.resize(450,750) #Weird PyQt5 library-isms??? repaint() and QApplication.processEvents() didn't work
+                    self.s2but.setEnabled(False) #in case this is updating from non-zero initial # of blocking factors
+                    self.s2but.setText('Skip this!')
+                    self.s2but.repaint()
+                    #self.resize(450,751) #trying to get the button to disappear if blocking factors (BF) updated to 0
+                    #self.resize(450,750) #Weird PyQt5 library-isms??? repaint() and QApplication.processEvents() didn't work
                     self.inputs.s2Inputs.append([]) #To ensure input variables have the same shape even in case of 0 BF
                     self.inputs.s2Inputs.append([])
                 else:
                     #Reveals S2 button in case where there are more than 0 blocking factors
-                    self.s2but.show()
+                    self.s2but.setEnabled(True)
                     self.s2but.repaint()
             if self.dViewlabelchanged:
                 self.updateDviewlabels()
