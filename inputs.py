@@ -87,6 +87,7 @@ class Inputs:
         #Load in grid to Step 5 when load in csv grid option is chosen
         for i, obj in enumerate(s5objval[0]): #loading in treatments
             obj.setText(str(griddict['Treatment'][i]))
+            obj.repaint()
 
         keys = [*griddict] #Gets all the keys in griddict in list format
         keys.remove('Treatment') #Already taken care of loading in treatments
@@ -94,6 +95,7 @@ class Inputs:
         for i, lst in enumerate(s5objval[1]):
             for key, obj in zip(keys, lst):
                 obj.setText(str(griddict[key][i]))
+                obj.repaint()
 
 
 

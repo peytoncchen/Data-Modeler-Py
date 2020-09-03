@@ -106,7 +106,7 @@ def verifygriddict(griddict, s1inputs, s2inputs):
     for i, key in enumerate(griddict):
         if len(griddict[key]) != totalmeas:
             return False, 'Invalid csv grid - incorrect number of rows'
-        if key != lstcolnames[i]:
+        if key not in lstcolnames:
             return False, 'Invalid csv grid - columns are labelled incorrectly'
 
     return True, ''

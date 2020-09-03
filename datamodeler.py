@@ -12,6 +12,7 @@ from Mainwindow import Ui_MainWindow
 from verify import s1verify, s2verify, s3and4verify, s5verify, verifygriddict
 from textmanager import preparemultitxt, preparemultisas
 from generateglm import makeglmresults, printpwr, exportresultframe, makeftest, fpwr
+from autofill import runLDalgo
 from inputs import Inputs
 from results import Results
 from displaypd import pdModel
@@ -60,6 +61,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.GLMGroupBox.hide()
         self.PCGroupBox.hide()
         self.s2but.setEnabled(False)
+        self.s4but.setEnabled(False)
         self.updates4.hide()
         self.editInputs.hide()
         self.hides6fields()
@@ -87,6 +89,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.editGrid.clicked.connect(self.unlockgrid)
         self.loadgridCSV.clicked.connect(self.loadincsv)
         self.editInputs.clicked.connect(self.unlockinputs)
+        self.autogenGrid.clicked.connect(self.genGrid)
         
         self.exportTextBut.clicked.connect(self.exporttxt)
         self.exportSAS.clicked.connect(self.exportsas)
@@ -217,6 +220,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
             else:
                 self.inputs.loadin_s5(self.inputs.s5Obj, griddict)
+    
+
+    def genGrid(self):
+        self.unlockgrid()
+        dic = runLDalgo(self.inputs.s1Inputs, self.inputs.s2Inputs)
+
+        verify = verifygriddict(dic, self.inputs.s1Inputs, self.inputs.s2Inputs)
+        self.statusBar.clearMessage()
+        self.statusBar.setStyleSheet("background-color: none;")
+
+        if not verify[0]:
+            self.statusBar.showMessage('Auto-generation is an experimental feature... it did something wrong, going to have to grid in yourself!') 
+            self.statusBar.setStyleSheet("background-color: pink;")
+            return
+        else:
+            self.statusBar.showMessage('Experimental feature - there may be a better distribution if done by hand', 5000)
+            self.inputs.loadin_s5(self.inputs.s5Obj, dic)
 
 
     def changedViewlabelsbool(self):
@@ -231,10 +251,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def reset(self):
         #Resets everything back to just like first opening the app
         #Storage for app will clear itself when reinitializing that view/calculations so no need to do it here
+        self.unlockinputs()
         self.minimize()
         self.minimize2()
         self.hides6fields()
         self.s2but.setEnabled(False)
+        self.s4but.setEnabled(False)
         self.updates4.hide()
         self.editInputs.hide()
         self.updatebool = False
@@ -253,7 +275,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.numRuns.clear()
         self.experimentName.clear()
 
-        self.unlockinputs()
         self.clearLayout(self.bFbox)
         self.clearLayout(self.eBox)
         self.clearLayout(self.tBox)
@@ -492,11 +513,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             #Sets button text to 'Update' after initial press
             self.s1but.setText('Update')
             self.s1but.repaint()
+            self.s4but.setEnabled(True)
             self.clearLayout(self.cBox) #Clears current input box until everything is updated after S4 (Step 4)
             if self.numMeasure.isModified():
                 self.minimize2()
                 self.s4but.setText('Continue')
                 self.s4but.repaint()
+                self.updates4.hide()
+                self.updates4.repaint()
                 self.numMeasure.setModified(False)
             if self.numTreat.isModified(): #Only if number of treatments is updated/edited
                 self.initTView() 
@@ -505,6 +529,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.minimize2()
                 self.s4but.setText('Continue')
                 self.s4but.repaint()
+                self.updates4.hide()
+                self.updates4.repaint()
                 self.initBfView()
                 self.clearLayout(self.eBox) #Clears error box in preparation for update
                 if int(self.inputs.s1Inputs[2]) == 0: #handles case where there are 0 blocking factors to initialize error view
@@ -683,6 +709,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.results.addRun()
                 self.runCount.setText('Current run count: ' + str(self.runcounter))
                 self.runCount.repaint()
+                self.runCount.adjustSize()
                 self.updatedVVal()
                 self.numRuns.clear()
                 self.statusBar.clearMessage()
@@ -796,7 +823,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def updateDviewlabels(self):
         #Updates the distribute view labels if any of the names are changed in step 1 or step 2
-        if self.firstexpand:
+        if self.firstexpand and self.dViewlabels:
             self.dViewlabels[0].setText(self.inputs.s1Inputs[3])
             self.dViewlabels[0].repaint()
             for i in range(len(self.inputs.s2Inputs[0])):
@@ -812,6 +839,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.clearLayout(self.dGrid)
         tAssignObj = []
         bAssignObj = []
+        self.dViewlabels.clear()
 
         #Init the row labels
         l1 = QLabel(self.inputs.s1Inputs[3])

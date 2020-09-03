@@ -655,6 +655,13 @@
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QPushButton" name="autogenGrid">
+               <property name="text">
+                <string>Auto-gen grid</string>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
            <item>
