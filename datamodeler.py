@@ -12,7 +12,8 @@ from Mainwindow import Ui_MainWindow
 from verify import s1verify, s2verify, s3and4verify, s5verify, verifygriddict
 from textmanager import preparemultitxt, preparemultisas
 from generateglm import makeglmresults, printpwr, exportresultframe, makeftest, fpwr
-from autofill import runLDalgo
+from autofillLD import runLDalgo
+from autofillCP import runCPalgo, verifyCPalgo, combotofitgrid
 from inputs import Inputs
 from results import Results
 from displaypd import pdModel
@@ -103,6 +104,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionReset.setShortcut("Ctrl+R")
         self.actionDocumentation.triggered.connect(self.opendocs)
         self.actionDocumentation.setShortcut("Ctrl+D")
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.resetSBbkgrd)
 
 
         completerNmMeaslst = ['Rat', 'Mouse', 'Pig', 'Sheep' 
@@ -223,20 +227,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
 
     def genGrid(self):
-        self.unlockgrid()
-        dic = runLDalgo(self.inputs.s1Inputs, self.inputs.s2Inputs)
+        choices = ('Cartesian product assignment (Default)', 'Quasi-random low discrepancy sequence assignment')
+        choice, ok = QInputDialog.getItem(self, 'Select auto-gen method', 'Note: Use cartesian product for all but very large sample sizes.', choices, 0 , False)
+        if ok and choice:
+            self.unlockgrid()
 
-        verify = verifygriddict(dic, self.inputs.s1Inputs, self.inputs.s2Inputs)
-        self.statusBar.clearMessage()
-        self.statusBar.setStyleSheet("background-color: none;")
+            if choice == 'Cartesian product assignment (Default)':
+                combos = runCPalgo(self.inputs.s1Inputs, self.inputs.s2Inputs)
+                verify = verifyCPalgo(self.inputs.s1Inputs, combos)
+                if not verify[0]:
+                    self.statusBar.showMessage(verify[1], 10000)
+                    self.statusBar.setStyleSheet("background-color: #FFFF99") #Light yellow warning
+                    self.timer.start(10000)
+                    return
+                else:
+                    dic = combotofitgrid(combos, self.inputs.s2Inputs, self.inputs.s1Inputs)
+                    self.inputs.loadin_s5(self.inputs.s5Obj, dic)
 
-        if not verify[0]:
-            self.statusBar.showMessage('Auto-generation is an experimental feature... it did something wrong, going to have to grid in yourself!') 
-            self.statusBar.setStyleSheet("background-color: pink;")
-            return
-        else:
-            self.statusBar.showMessage('Experimental feature - there may be a better distribution if done by hand', 5000)
-            self.inputs.loadin_s5(self.inputs.s5Obj, dic)
+            if choice == 'Quasi-random low discrepancy sequence assignment':
+                dic = runLDalgo(self.inputs.s1Inputs, self.inputs.s2Inputs)
+
+                verify = verifygriddict(dic, self.inputs.s1Inputs, self.inputs.s2Inputs)
+                self.statusBar.clearMessage()
+                self.statusBar.setStyleSheet("background-color: none;")
+
+                if not verify[0]:
+                    self.statusBar.showMessage('Auto-generation is an experimental feature... it did something wrong, going to have to grid in yourself or try Cartesian product!') 
+                    self.statusBar.setStyleSheet("background-color: pink;")
+                    return
+                else:
+                    self.statusBar.setStyleSheet("background-color: #FFFF99") #Light yellow warning
+                    self.timer.start(5000)
+                    self.statusBar.showMessage('Experimental feature - there may be a better distribution if done by hand or cartesian product', 5000)
+                    self.inputs.loadin_s5(self.inputs.s5Obj, dic)
 
 
     def changedViewlabelsbool(self):
@@ -383,8 +406,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.badexpmt:
             self.statusBar.setStyleSheet("background-color: #FFFF99") #Light yellow warning
             self.statusBar.showMessage('Warning - this experiment is designed without enough separation in treatment and blocking factor assignments, unable to complete f-test', 10000)
-            self.timer = QTimer(self)
-            self.timer.timeout.connect(self.resetSBbkgrd)
             self.timer.start(10000)
 
 
@@ -712,6 +733,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.runCount.adjustSize()
                 self.updatedVVal()
                 self.numRuns.clear()
+                self.numRuns.repaint()
                 self.statusBar.clearMessage()
             else:
                 self.results.gendvVals(self.inputs.s5Inputs, self.inputs.s4Inputs, self.inputs.s3Inputs[0])
