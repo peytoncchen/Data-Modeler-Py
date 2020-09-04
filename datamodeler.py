@@ -10,10 +10,11 @@ from PyQt5.QtGui import *
 
 from Mainwindow import Ui_MainWindow
 from verify import s1verify, s2verify, s3and4verify, s5verify, verifygriddict
-from textmanager import preparemultitxt, preparemultisas
+from textmanager import preparemultitxt, preparemultisas, preparelabeltxt
 from generateglm import makeglmresults, printpwr, exportresultframe, makeftest, fpwr
 from autofillLD import runLDalgo
 from autofillCP import runCPalgo, verifyCPalgo, combotofitgrid
+from exportxlsx import writetoxlsx
 from inputs import Inputs
 from results import Results
 from displaypd import pdModel
@@ -98,7 +99,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.parsepower.clicked.connect(self.pwr)
         self.exportpwrcsv.clicked.connect(self.exportframes)
 
-        self.actionSave.triggered.connect(self.exporttxt)
+        self.actionSave.triggered.connect(self.exportxlsx)
         self.actionSave.setShortcut("Ctrl+S")
         self.actionReset.triggered.connect(self.reset)
         self.actionReset.setShortcut("Ctrl+R")
@@ -107,6 +108,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.resetSBbkgrd)
+        self.timer.start(0) #fixing the fact that SB bkgd color doesn't initialize correctly
 
 
         completerNmMeaslst = ['Rat', 'Mouse', 'Pig', 'Sheep' 
@@ -125,6 +127,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         completerNmBF += completerNmMeaslst[0:11]
         self.completer3 = QCompleter(completerNmBF, self)
         self.completer3.setCaseSensitivity(0)
+
+    
+    def exportxlsx(self):
+        if self.updatebool:
+            dlg = QFileDialog()
+            dlg.setFileMode(QFileDialog.Directory)
+            if dlg.exec_():
+                directory, _filter = dlg.getSaveFileName()
+                labels = preparelabeltxt(self.inputs.s1Inputs, self.inputs.s2Inputs)
+                writetoxlsx(self.inputs.s1Inputs, self.inputs.s2Inputs, self.inputs.s3Inputs, self.inputs.s4Inputs, 
+                self.inputs.s4labels, self.inputs.s5Inputs, self.results.multiRun, self.results.fstring, self.results.fpwrstring,
+                self.results.pstring, labels, self.results.errorResults, directory)
+                
+        else:
+            self.statusBar.setStyleSheet("background-color: #FFFF99")
+            self.statusBar.showMessage('Generate some values before you export to xlsx!', 7000)
+            self.timer.start(7000)
 
 
     def lockinputs(self):
@@ -169,7 +188,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.firstexpand:
             self.unlockgrid()
-        self.clearLayout(self.cBox)
 
         #Unlocking S1
         self.numMeasure.setReadOnly(False)
@@ -336,7 +354,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pwrBox.addWidget(fixedlabel)
         fixedeffect = fpwr(self.results.fresults)
         self.results.fpwrstring = fixedeffect
-        print(self.results.fpwrstring)
         fixedeffectresult = QLabel(fixedeffect)
         fixedeffectresult.setTextInteractionFlags(Qt.TextSelectableByMouse)
         fixedeffectresult.setCursor(Qt.IBeamCursor)
@@ -351,7 +368,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pairwiseresultstr += '\n'
         pairwiseresult = QLabel(pairwiseresultstr)
         self.results.pstring = pairwiseresultstr
-        print(self.results.pstring)
         pairwiseresult.setTextInteractionFlags(Qt.TextSelectableByMouse)
         pairwiseresult.setCursor(Qt.IBeamCursor)
         self.pwrBox.addWidget(pairwiseresult)
@@ -390,18 +406,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         flabel = QLabel(fstring)
         self.results.fstring = fstring
-        print(self.results.fstring)
-        print(self.results.multiRun)
         flabel.setTextInteractionFlags(Qt.TextSelectableByMouse)
         flabel.setCursor(Qt.IBeamCursor)
         self.fBox.addWidget(flabel)
-
-        print(self.inputs.s1Inputs)
-        print(self.inputs.s2Inputs)
-        print(self.inputs.s3Inputs)
-        print(self.inputs.s4Inputs)
-        print(self.inputs.s5Inputs)
-        print(self.results.errorResults)
 
         if self.badexpmt:
             self.statusBar.setStyleSheet("background-color: #FFFF99") #Light yellow warning
@@ -535,7 +542,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.s1but.setText('Update')
             self.s1but.repaint()
             self.s4but.setEnabled(True)
-            self.clearLayout(self.cBox) #Clears current input box until everything is updated after S4 (Step 4)
             if self.numMeasure.isModified():
                 self.minimize2()
                 self.s4but.setText('Continue')
@@ -546,6 +552,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if self.numTreat.isModified(): #Only if number of treatments is updated/edited
                 self.initTView() 
                 self.numTreat.setModified(False)
+                self.clearLayout(self.cBox) #Clears current input box until everything is updated after S4 (Step 4)
             if self.numBf.isModified(): #Only if the number of blocking factor is updated/edited
                 self.minimize2()
                 self.s4but.setText('Continue')

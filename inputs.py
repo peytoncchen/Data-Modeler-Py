@@ -55,8 +55,6 @@ class Inputs:
         self.s3Inputs = lsts3
         self.s4Inputs = lsts4
         self.s4labels = lsts4label
-        print(self.s4Inputs)
-        print(self.s4labels)
     
 
     def stores_s5(self, s5objval):
