@@ -1,4 +1,5 @@
-# Data Modeler for Power Calculations Python Edition
+# Data Modeler for Power Calculations Python Edition 
+# Dedicated to the Appel Lab at Stanford University Department of Bioengineering
 
 import sys
 import pandas as pd
