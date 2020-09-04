@@ -435,8 +435,14 @@ class Ui_MainWindow(object):
         self.actionReset.setObjectName("actionReset")
         self.actionDocumentation = QtWidgets.QAction(MainWindow)
         self.actionDocumentation.setObjectName("actionDocumentation")
+        self.actionSave_2 = QtWidgets.QAction(MainWindow)
+        self.actionSave_2.setObjectName("actionSave_2")
+        self.actionLoad = QtWidgets.QAction(MainWindow)
+        self.actionLoad.setObjectName("actionLoad")
         self.menuSession.addAction(self.actionSave)
         self.menuSession.addAction(self.actionReset)
+        self.menuSession.addAction(self.actionSave_2)
+        self.menuSession.addAction(self.actionLoad)
         self.menuHelp.addAction(self.actionDocumentation)
         self.menuBar.addAction(self.menuSession.menuAction())
         self.menuBar.addAction(self.menuHelp.menuAction())
@@ -486,9 +492,11 @@ class Ui_MainWindow(object):
         self.PCGroupBox.setTitle(_translate("MainWindow", "Power estimation calculation and results:"))
         self.menuSession.setTitle(_translate("MainWindow", "Session"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
-        self.actionSave.setText(_translate("MainWindow", "Save"))
+        self.actionSave.setText(_translate("MainWindow", "Save to Excel"))
         self.actionReset.setText(_translate("MainWindow", "Reset"))
         self.actionDocumentation.setText(_translate("MainWindow", "Documentation"))
+        self.actionSave_2.setText(_translate("MainWindow", "Dump to JSON"))
+        self.actionLoad.setText(_translate("MainWindow", "Load from JSON"))
 
 
 if __name__ == "__main__":

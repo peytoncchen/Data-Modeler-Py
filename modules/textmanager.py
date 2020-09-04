@@ -25,6 +25,7 @@ def preparemultisas(s5inputs, multiRun, s1inputs, s2inputs, eName):
 
     bigboysas = ''
     blockName = ' '.join(blocklist)
+    #Boilerplate SAS script generated
     sasstart = 'DATA ' + expmtName + '; INPUT ' + nmMeas + ' Treatment ' + blockName + ' ' + dvNm + '; Lines;\n\n'
     sasfinish = '\n;\nRUN;\n\nPROC MIXED ASYCOV NOBOUND DATA=' + expmtName + ' ALPHA=0.05;\nCLASS Treatment ' + blockName + ';\n'
     sasfinish += 'MODEL ' + dvNm + ' = ' + 'Treatment ' + blockName + '\n'

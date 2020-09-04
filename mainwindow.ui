@@ -1112,6 +1112,8 @@
     </property>
     <addaction name="actionSave"/>
     <addaction name="actionReset"/>
+    <addaction name="actionSave_2"/>
+    <addaction name="actionLoad"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1124,7 +1126,7 @@
   </widget>
   <action name="actionSave">
    <property name="text">
-    <string>Save</string>
+    <string>Save to Excel</string>
    </property>
   </action>
   <action name="actionReset">
@@ -1135,6 +1137,16 @@
   <action name="actionDocumentation">
    <property name="text">
     <string>Documentation</string>
+   </property>
+  </action>
+  <action name="actionSave_2">
+   <property name="text">
+    <string>Dump to JSON</string>
+   </property>
+  </action>
+  <action name="actionLoad">
+   <property name="text">
+    <string>Load from JSON</string>
    </property>
   </action>
  </widget>

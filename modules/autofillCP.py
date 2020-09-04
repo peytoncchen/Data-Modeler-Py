@@ -3,6 +3,7 @@ import itertools #for itertools.product
 
 
 def preparearray(s1inputs, s2inputs):
+    #Prepares array based on inputs to find cartesian product
     result = []
     tlst = [i+1 for i in range(int(s1inputs[1]))]
     result.append(tlst)
@@ -15,6 +16,7 @@ def preparearray(s1inputs, s2inputs):
 
 
 def combotodict(combos, s2inputs):
+    #Takes combos and turns it into a dict to load in
     dic = {}
     for combo in combos:
         if 'Treatment' not in dic:
@@ -42,6 +44,7 @@ def verifyCPalgo(s1inputs, combos):
 
 
 def combotofitgrid(combos, s2inputs, s1inputs):
+    #Fits combos to grid incase there needs to be doubling/tripling up, etc.
     n = int(s1inputs[0]) // len(combos)
     if n > 1:
         newcombos = [item for item in combos for _ in range(n)]

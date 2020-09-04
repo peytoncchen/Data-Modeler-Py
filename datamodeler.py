@@ -1,10 +1,12 @@
 # Data Modeler for Power Calculations Python Edition 
 # Dedicated to the Appel Lab at Stanford University Department of Bioengineering
+# Developed by Peyton Chen, Summer 2020
 
 import sys
 import pandas as pd
 import numpy as np
 import webbrowser
+import json
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -108,6 +110,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionDocumentation.triggered.connect(self.opendocs)
         self.actionDocumentation.setShortcut("Ctrl+D")
 
+        self.actionSave_2.triggered.connect(self.savejson)
+        self.actionSave_2.setShortcut("Ctrl+J")
+        self.actionLoad.triggered.connect(self.loadjson)
+        self.actionLoad.setShortcut("Ctrl+L")
+
         #Timer used in a few places for statusBar background
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.resetSBbkgrd)
@@ -131,6 +138,114 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.completer3 = QCompleter(completerNmBF, self)
         self.completer3.setCaseSensitivity(0)
 
+
+    def savejson(self):
+        #Saves to json so that user can load in data from a session later
+        if self.results.multiRun: #Can't be empty to save
+            dlg = QFileDialog()
+            dlg.setFileMode(QFileDialog.Directory)
+            if dlg.exec_():
+                directory, _filter = dlg.getSaveFileName()
+                outdic = {}
+                outdic['s1Inputs'] = self.inputs.s1Inputs
+                outdic['s2Inputs'] = self.inputs.s2Inputs
+                outdic['s3Inputs'] = self.inputs.s3Inputs
+                outdic['s4Inputs'] = self.inputs.s4Inputs
+                outdic['s4labels'] = self.inputs.s4labels
+                outdic['s5Inputs'] = self.inputs.s5Inputs
+                outdic['errorResults'] = self.results.errorResults
+                outdic['multiRun'] = self.results.multiRun
+                outdic['finalexpand'] = self.finalexpand
+                with open(str(directory) + '.json', 'w') as write_file:
+                    json.dump(outdic,write_file)
+        else:
+            self.statusBar.setStyleSheet("background-color: #FFFF99")
+            self.statusBar.showMessage('Generate some values before you export to json!', 7000)
+            self.timer.start(7000)
+
+
+    def loadjson(self):
+        self.reset() #Resets to prepare for loading in
+        dlg = QFileDialog()
+        dlg.setFileMode(QFileDialog.ExistingFile)
+        filename, _filter = dlg.getOpenFileName(None, "Load in json", ".", "(*.json)")
+
+        if filename:
+            self.reset()
+            with open(filename, 'r') as read_file:
+                indic = json.load(read_file)
+
+                #Set text for S1
+                self.numMeasure.setText(indic['s1Inputs'][0])
+                self.numMeasure.setModified(True)
+                self.numMeasure.repaint()
+                self.numTreat.setText(indic['s1Inputs'][1])
+                self.numTreat.setModified(True)
+                self.numTreat.repaint()
+                self.numBf.setText(indic['s1Inputs'][2])
+                self.numBf.setModified(True)
+                self.numBf.repaint()
+                self.nameMeas.setText(indic['s1Inputs'][3])
+                self.nameMeas.setModified(True)
+                self.nameMeas.repaint()
+                self.namedVar.setText(indic['s1Inputs'][4])
+                self.namedVar.setModified(True)
+                self.namedVar.repaint()
+                self.s1process()
+
+                #Set text for S2
+                for i, obj in enumerate(self.inputs.s2Obj[0]): #labels
+                    obj.setText(indic['s2Inputs'][0][i])
+                    obj.repaint()
+                for i, obj in enumerate(self.inputs.s2Obj[1]): #values
+                    obj.setText(indic['s2Inputs'][1][i])
+                    obj.repaint()
+                self.s2process()
+
+                #Set text for S3
+                for i, obj in enumerate(self.inputs.s3Obj):
+                    obj.setText(indic['s3Inputs'][i])
+                    obj.repaint()
+
+                #Set text for S4
+                for i, obj in enumerate(self.inputs.s4Obj):
+                    obj.setText(indic['s4Inputs'][i])
+                    obj.repaint()
+                for i, obj in enumerate(self.inputs.s4labelobj):
+                    obj.setText(indic['s4labels'][i])
+                    obj.repaint()
+                self.s3and4process()
+
+                #Set text for S5 and storage
+                self.results.multiRun = indic['multiRun']
+                self.results.dVResults = self.results.multiRun[-1] 
+                self.initdVValView()
+                self.results.errorResults = indic['errorResults']
+                self.initcurrInpView()
+                self.inputs.s5Inputs = indic['s5Inputs']
+                for i, obj in enumerate(self.inputs.s5Obj[0]): #Treatment col
+                    obj.setText(indic['s5Inputs'][0][i])
+                    obj.repaint()
+                for i,lst in enumerate(self.inputs.s5Obj[1]): #Blocking fac cols
+                    for j,obj in enumerate(lst):
+                        obj.setText(indic['s5Inputs'][1][i][j])
+                        obj.repaint()
+                self.lockgrid()
+                self.lockinputs()
+                self.editInputs.show()
+                self.editInputs.repaint()
+                self.runcounter = len(self.results.multiRun)
+                self.runCount.setText('Current run count: ' + str(self.runcounter))
+                self.runCount.repaint()
+                self.s5but.setText('Reset runs')
+                self.s5but.repaint()
+                self.updates4.show()
+                self.updates4.repaint()
+                self.shows6fields()
+
+                if indic['finalexpand']:
+                    self.runglm()
+                    self.pwr()                        
 
 
     def s1process(self):
@@ -188,8 +303,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.dViewlabelchanged = False  
             if self.firstexpand:
                 self.unlockgrid()
-                self.results.genEVals(self.inputs.s2Inputs, self.inputs.s3Inputs)
-                self.initcurrInpView() #Reinitializes current input box: if blank, updated needed S3 or S4
     
 
     def s2process(self):
@@ -218,7 +331,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.unlockgrid()
                 self.results.genEVals(self.inputs.s2Inputs, self.inputs.s3Inputs)
                 self.initcurrInpView() #Reinitializes current input box: if blank, updated needed S3 or S4
-            self.minimize() #Minimizes 3rd pane if it exists
+
 
 
     def s3and4process(self):
@@ -245,7 +358,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.results.genEVals(self.inputs.s2Inputs, self.inputs.s3Inputs)
             self.initcurrInpView()
             self.unlockgrid()
-            self.minimize() #Minimizes 3rd pane if it exists
 
 
     def s3and4update(self):
@@ -267,7 +379,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.initcurrInpView()
             self.updatebool = True #To update not reinitialize and overwrite current dVVal view
             self.unlockgrid()
-            self.minimize() #Minimizes 3rd pane if it exists
 
 
     def s5process(self):
@@ -302,7 +413,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.updates4.show()
                 self.updates4.repaint()
                 self.shows6fields()
-                self.updatebool = True
             else:
                 self.shows6fields()
                 self.updatedVVal()
@@ -398,7 +508,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 if not verify[0]:
                     self.statusBar.showMessage(verify[1])
-                    self.statusBar.setStyleSheet("background-color: #FFFF99") #Light yellow warning
+                    self.statusBar.setStyleSheet("background-color: pink;") #Light yellow warning
                     return #will not fit to grid unless #of measurements is multiple of combos
                 else:
                     dic = combotofitgrid(combos, self.inputs.s2Inputs, self.inputs.s1Inputs)
@@ -459,7 +569,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statusBar.setStyleSheet("background-color: #FFFF99") #Light yellow warning
             self.statusBar.showMessage('Warning - this experiment is designed without enough separation in treatment and blocking factor assignments, unable to complete f-test', 10000)
             self.timer.start(10000)
-
 
         #Initializing tableviews for pairwise t-test
         self.dfBox.addWidget(QLabel('Pairwise t-test results:'))
@@ -526,9 +635,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def exporttxt(self):
-        #Exports a read-out of current session into text file
-        #Includes all inputs, generated error, treatment means, all runs and dVVal generation, power estimation results
-        #if they exist. CSV dataframes must be separately exported
+        #Exports a read-out of all runs and only runs into text file
         dlg = QFileDialog()
         dlg.setFileMode(QFileDialog.Directory)
         outstring = preparemultitxt(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, self.inputs.s2Inputs)
@@ -557,6 +664,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     
     def exportxlsx(self):
+        #Exports a read-out of current session into excel file
+        #Includes all inputs, generated error, treatment means, all runs and dVVal generation, power estimation results
+        #if they exist. CSV dataframes must be separately exported
         if self.updatebool:
             dlg = QFileDialog()
             dlg.setFileMode(QFileDialog.Directory)
@@ -639,6 +749,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             labellst.append(label)
             self.dGrid.addWidget(label,i+1,colCount)
         self.results.dVObjects = labellst
+        self.updatebool = True
 
 
     def updateDviewlabels(self):
@@ -799,6 +910,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def lockinputs(self):
+        #Locks input QLineEdits and QPushButtons for pane 1
         self.editInputs.setEnabled(True)
         self.editInputs.repaint()
 
@@ -835,8 +947,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def unlockinputs(self):
+        #Unlocks QLineEdits and QPushButtons to update inputs for pane 1
         self.editInputs.setEnabled(False)
         self.editInputs.repaint()
+        self.minimize()
 
         if self.firstexpand:
             self.unlockgrid()
@@ -851,30 +965,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.s1but.repaint()
 
         #Unlocking S2
-        for obj in self.inputs.s2Obj[0]:
-            obj.setReadOnly(False)
-        for obj in self.inputs.s2Obj[1]:
-            obj.setReadOnly(False)
-        if int(self.inputs.s1Inputs[2]) != 0:
-            self.s2but.setEnabled(True)
-            self.s2but.repaint()
+        if self.inputs.s2Obj:
+            for obj in self.inputs.s2Obj[0]:
+                obj.setReadOnly(False)
+            for obj in self.inputs.s2Obj[1]:
+                obj.setReadOnly(False)
+            if int(self.inputs.s1Inputs[2]) != 0:
+                self.s2but.setEnabled(True)
+                self.s2but.repaint()
 
         #Unlocking S3
-        for obj in self.inputs.s3Obj:
-            obj.setReadOnly(False)
+        if self.inputs.s3Obj:
+            for obj in self.inputs.s3Obj:
+                obj.setReadOnly(False)
         
         #Unlocking S4
-        for obj in self.inputs.s4Obj:
-            obj.setReadOnly(False)
-        for obj in self.inputs.s4labelobj:
-            obj.setReadOnly(False)
-        self.s4but.setEnabled(True)
-        self.s4but.repaint()
-        self.updates4.setEnabled(True)
-        self.updates4.repaint()
+        if self.inputs.s4Obj:
+            for obj in self.inputs.s4Obj:
+                obj.setReadOnly(False)
+            for obj in self.inputs.s4labelobj:
+                obj.setReadOnly(False)
+            self.s4but.setEnabled(True)
+            self.s4but.repaint()
+            self.updates4.setEnabled(True)
+            self.updates4.repaint()
 
 
     def unlockgrid(self):
+        #Unlocks distribution grid on pane 2
         self.hides6fields()
         self.results.multiRun.clear()
         self.runcounter = 0
@@ -895,6 +1013,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def lockgrid(self):
+        #Locks distribution grid on pane 2
         for obj in self.inputs.s5Obj[0]: #Treatment col
             obj.setReadOnly(True)
         for lst in self.inputs.s5Obj[1]: #Blocking fac cols
@@ -903,10 +1022,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     
     def changedViewlabelsbool(self):
+        #Changes bool dViewlabelchanged to True
         self.dViewlabelchanged = True
 
     
     def resetSBbkgrd(self):
+        #Changes status bar background back to none
         self.statusBar.setStyleSheet("background-color: none;")
   
     

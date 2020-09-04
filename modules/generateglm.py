@@ -60,6 +60,7 @@ def makeglmresults(s5inputs, multiRun, s1inputs, s2inputs):
 
 
 def makeftest(s5inputs, multiRun, s1inputs, s2inputs, bigmodels):
+    #Based on GLMs, makes f-test and outputs list of tuples of fstat, p-value for each run
     formula = makeformula(s1inputs, s2inputs, False)
     results = []
     for i in range(len(multiRun)):

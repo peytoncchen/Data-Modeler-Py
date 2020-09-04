@@ -30,6 +30,7 @@ class Results:
         for i in range(length):
             self.dVResults.append('')
 
+
     def gendvVals(self, s5inputs, s4inputs, totalerror):
         #Generates dependent variable values using Gaussian distribution (inv-norm) and user inputs
         count = len(s5inputs[0])
