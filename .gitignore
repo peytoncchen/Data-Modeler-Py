@@ -1,7 +1,6 @@
 venv
-.DS_Store
 .vscode
 __pycache__
-todo.txt
+.DS_Store
 
 
