@@ -8,16 +8,16 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
-from Mainwindow import Ui_MainWindow
-from verify import s1verify, s2verify, s3and4verify, s5verify, verifygriddict
-from textmanager import preparemultitxt, preparemultisas, preparelabeltxt
-from generateglm import makeglmresults, printpwr, exportresultframe, makeftest, fpwr
-from autofillLD import runLDalgo
-from autofillCP import runCPalgo, verifyCPalgo, combotofitgrid
-from exportxlsx import writetoxlsx
-from inputs import Inputs
-from results import Results
-from displaypd import pdModel
+from modules.Mainwindow import Ui_MainWindow
+from modules.verify import s1verify, s2verify, s3and4verify, s5verify, verifygriddict
+from modules.textmanager import preparemultitxt, preparemultisas, preparelabeltxt
+from modules.generateglm import makeglmresults, printpwr, exportresultframe, makeftest, fpwr
+from modules.autofillLD import runLDalgo
+from modules.autofillCP import runCPalgo, verifyCPalgo, combotofitgrid
+from modules.exportxlsx import writetoxlsx
+from modules.inputs import Inputs
+from modules.results import Results
+from modules.displaypd import pdModel
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -25,61 +25,61 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
 
-        self.setupUi(self)
+        self.setupUi(self) #From Mainwindow.py
 
-        self.inputs = Inputs()
+        self.inputs = Inputs() #Initialize classes
         self.results = Results()
 
-        self.runcounter = 0
+        self.runcounter = 0 #Initialize run counter at step 5
 
         self.bFbox = QFormLayout()
-        self.bFscrollWidget.setLayout(self.bFbox)
+        self.bFscrollWidget.setLayout(self.bFbox) #Blocking factor inputs FormLayout
 
         self.cBox = QHBoxLayout()
-        self.cScrollWidget.setLayout(self.cBox)
+        self.cScrollWidget.setLayout(self.cBox) #Current Inputs View 
 
         self.tBox = QFormLayout()
-        self.tScrollWidget.setLayout(self.tBox)
+        self.tScrollWidget.setLayout(self.tBox) #Treatment inputs FormLayout
 
         self.eBox = QFormLayout()
-        self.eRscrollWidget.setLayout(self.eBox)
+        self.eRscrollWidget.setLayout(self.eBox) #Error inputs FormLayout
 
         self.dGrid = QGridLayout()
-        self.dScrollWidget.setLayout(self.dGrid)
+        self.dScrollWidget.setLayout(self.dGrid) #Distributing assignments Step 5 GridLayout
 
         self.dfBox = QVBoxLayout()
-        self.GLMScrollWidget.setLayout(self.dfBox)
+        self.GLMScrollWidget.setLayout(self.dfBox) #Dataframes from pairwise t-test GLM VBoxLayout
 
         self.pwrBox = QVBoxLayout()
-        self.PCScrollWidget.setLayout(self.pwrBox)
+        self.PCScrollWidget.setLayout(self.pwrBox) #Power estimate results VBoxLayout
         self.pwrBox.setSpacing(5)
         
         self.fBox = QVBoxLayout()
-        self.FScrollWidget.setLayout(self.fBox)
+        self.FScrollWidget.setLayout(self.fBox) #Fixed effect f-test results VBoxLayout
         self.fBox.setSpacing(5)
 
         self.dGroupBox.hide()
         self.cGroupBox.hide()
         self.GLMGroupBox.hide()
-        self.PCGroupBox.hide()
-        self.s2but.setEnabled(False)
+        self.PCGroupBox.hide() #Hiding boxes that won't be shown unless expanded
+        self.s2but.setEnabled(False) #Buttons will be enabled when input pane is advanced
         self.s4but.setEnabled(False)
         self.updates4.hide()
         self.editInputs.hide()
         self.hides6fields()
 
-        self.setMinimumSize(QSize(450, 750))
+        self.setMinimumSize(QSize(450, 750)) #Setting minimum sizes and resize for pane 1
         self.resize(450, 750)
 
-        self.updatebool = False
+        self.updatebool = False #Initializing variables
         self.finalexpand = False
         self.firstexpand = False
         self.dViewlabelchanged = False
         self.badexpmt = False
-        self.dViewlabels = []
+        self.dViewlabels = [] #Will store QLabel objects of labels in the grid so these can be updated w/o reinitialization
 
-
-        self.nameMeas.textChanged.connect(self.changedViewlabelsbool)
+        #Connecting events
+        self.nameMeas.textChanged.connect(self.changedViewlabelsbool) 
         self.namedVar.textChanged.connect(self.changedViewlabelsbool)
 
         self.s1but.clicked.connect(self.s1process)
@@ -99,6 +99,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.parsepower.clicked.connect(self.pwr)
         self.exportpwrcsv.clicked.connect(self.exportframes)
 
+        #Status bar events
         self.actionSave.triggered.connect(self.exportxlsx)
         self.actionSave.setShortcut("Ctrl+S")
         self.actionReset.triggered.connect(self.reset)
@@ -106,11 +107,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionDocumentation.triggered.connect(self.opendocs)
         self.actionDocumentation.setShortcut("Ctrl+D")
 
+        #Timer used in a few places for statusBar background
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.resetSBbkgrd)
         self.timer.start(0) #fixing the fact that SB bkgd color doesn't initialize correctly
 
-
+        #Setting up QCompleters for labelling/naming
         completerNmMeaslst = ['Rat', 'Mouse', 'Pig', 'Sheep' 
         'Rabbit', 'Guinea Pig', 'Subject', 'Measurement', 'Sample']
         self.completer1 = QCompleter(completerNmMeaslst, self)
@@ -128,399 +130,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.completer3 = QCompleter(completerNmBF, self)
         self.completer3.setCaseSensitivity(0)
 
-    
-    def exportxlsx(self):
-        if self.updatebool:
-            dlg = QFileDialog()
-            dlg.setFileMode(QFileDialog.Directory)
-            if dlg.exec_():
-                directory, _filter = dlg.getSaveFileName()
-                labels = preparelabeltxt(self.inputs.s1Inputs, self.inputs.s2Inputs)
-                writetoxlsx(self.inputs.s1Inputs, self.inputs.s2Inputs, self.inputs.s3Inputs, self.inputs.s4Inputs, 
-                self.inputs.s4labels, self.inputs.s5Inputs, self.results.multiRun, self.results.fstring, self.results.fpwrstring,
-                self.results.pstring, labels, self.results.errorResults, directory)
-                
-        else:
-            self.statusBar.setStyleSheet("background-color: #FFFF99")
-            self.statusBar.showMessage('Generate some values before you export to xlsx!', 7000)
-            self.timer.start(7000)
 
-
-    def lockinputs(self):
-        self.editInputs.setEnabled(True)
-        self.editInputs.repaint()
-
-        #Locking out S1
-        self.numMeasure.setReadOnly(True)
-        self.numTreat.setReadOnly(True)
-        self.numBf.setReadOnly(True)
-        self.nameMeas.setReadOnly(True)
-        self.namedVar.setReadOnly(True)
-        self.s1but.setEnabled(False)
-        self.s1but.repaint()
-        
-        #Locking out S2
-        for obj in self.inputs.s2Obj[0]:
-            obj.setReadOnly(True)
-        for obj in self.inputs.s2Obj[1]:
-            obj.setReadOnly(True)
-        self.s2but.setEnabled(False)
-        self.s2but.repaint()
-
-        #Locking out S3
-        for obj in self.inputs.s3Obj:
-            obj.setReadOnly(True)
-        
-        #Locking out S4
-        for obj in self.inputs.s4Obj:
-            obj.setReadOnly(True)
-        for obj in self.inputs.s4labelobj:
-            obj.setReadOnly(True)
-        self.s4but.setEnabled(False)
-        self.s4but.repaint()
-        self.updates4.setEnabled(False)
-        self.updates4.repaint()
-
-
-    def unlockinputs(self):
-        self.editInputs.setEnabled(False)
-        self.editInputs.repaint()
-
-        if self.firstexpand:
-            self.unlockgrid()
-
-        #Unlocking S1
-        self.numMeasure.setReadOnly(False)
-        self.numTreat.setReadOnly(False)
-        self.numBf.setReadOnly(False)
-        self.nameMeas.setReadOnly(False)
-        self.namedVar.setReadOnly(False)
-        self.s1but.setEnabled(True)
-        self.s1but.repaint()
-
-        #Unlocking S2
-        for obj in self.inputs.s2Obj[0]:
-            obj.setReadOnly(False)
-        for obj in self.inputs.s2Obj[1]:
-            obj.setReadOnly(False)
-        if int(self.inputs.s1Inputs[2]) != 0:
-            self.s2but.setEnabled(True)
-            self.s2but.repaint()
-
-        #Unlocking S3
-        for obj in self.inputs.s3Obj:
-            obj.setReadOnly(False)
-        
-        #Unlocking S4
-        for obj in self.inputs.s4Obj:
-            obj.setReadOnly(False)
-        for obj in self.inputs.s4labelobj:
-            obj.setReadOnly(False)
-        self.s4but.setEnabled(True)
-        self.s4but.repaint()
-        self.updates4.setEnabled(True)
-        self.updates4.repaint()
-
-
-    def loadincsv(self):
-        self.unlockgrid()
-        dlg = QFileDialog()
-        dlg.setFileMode(QFileDialog.ExistingFile)
-        filename, _filter = dlg.getOpenFileName(None, "Load in csv", ".", "(*.csv)")
-
-        if filename:
-            grid = pd.read_csv(str(filename))
-            griddict = grid.to_dict('list') #list format extraction of dataframe to dict
-
-            verify = verifygriddict(griddict, self.inputs.s1Inputs, self.inputs.s2Inputs)
-            self.statusBar.clearMessage()
-            self.statusBar.setStyleSheet("background-color: none;")
-
-            if not verify[0]:
-                self.statusBar.showMessage(verify[1])
-                self.statusBar.setStyleSheet("background-color: pink;")
-                return
-            else:
-                self.inputs.loadin_s5(self.inputs.s5Obj, griddict)
-    
-
-    def genGrid(self):
-        choices = ('Cartesian product assignment (Default)', 'Quasi-random low discrepancy sequence assignment')
-        choice, ok = QInputDialog.getItem(self, 'Select auto-gen method', 'Note: Use cartesian product for all but very large sample sizes.', choices, 0 , False)
-        if ok and choice:
-            self.unlockgrid()
-
-            if choice == 'Cartesian product assignment (Default)':
-                combos = runCPalgo(self.inputs.s1Inputs, self.inputs.s2Inputs)
-                verify = verifyCPalgo(self.inputs.s1Inputs, combos)
-                if not verify[0]:
-                    self.statusBar.showMessage(verify[1], 10000)
-                    self.statusBar.setStyleSheet("background-color: #FFFF99") #Light yellow warning
-                    self.timer.start(10000)
-                    return
-                else:
-                    dic = combotofitgrid(combos, self.inputs.s2Inputs, self.inputs.s1Inputs)
-                    self.inputs.loadin_s5(self.inputs.s5Obj, dic)
-
-            if choice == 'Quasi-random low discrepancy sequence assignment':
-                dic = runLDalgo(self.inputs.s1Inputs, self.inputs.s2Inputs)
-
-                verify = verifygriddict(dic, self.inputs.s1Inputs, self.inputs.s2Inputs)
-                self.statusBar.clearMessage()
-                self.statusBar.setStyleSheet("background-color: none;")
-
-                if not verify[0]:
-                    self.statusBar.showMessage('Auto-generation is an experimental feature... it did something wrong, going to have to grid in yourself or try Cartesian product!') 
-                    self.statusBar.setStyleSheet("background-color: pink;")
-                    return
-                else:
-                    self.statusBar.setStyleSheet("background-color: #FFFF99") #Light yellow warning
-                    self.timer.start(5000)
-                    self.statusBar.showMessage('Experimental feature - there may be a better distribution if done by hand or cartesian product', 5000)
-                    self.inputs.loadin_s5(self.inputs.s5Obj, dic)
-
-
-    def changedViewlabelsbool(self):
-        self.dViewlabelchanged = True
-  
-    
-    def opendocs(self):
-        #Links documentation menu button to Github main page with README for user and developer documentation
-        webbrowser.open('https://github.com/peytoncchen/Data-Modeler-Py')
-        
-
-    def reset(self):
-        #Resets everything back to just like first opening the app
-        #Storage for app will clear itself when reinitializing that view/calculations so no need to do it here
-        self.unlockinputs()
-        self.minimize()
-        self.minimize2()
-        self.hides6fields()
-        self.s2but.setEnabled(False)
-        self.s4but.setEnabled(False)
-        self.updates4.hide()
-        self.editInputs.hide()
-        self.updatebool = False
-        self.finalexpand = False
-        self.firstexpand = False
-        self.dViewlabelchanged = False
-        self.badexpmt = False
-        self.dViewlabels = []
-
-        self.numMeasure.clear()
-        self.numTreat.clear()
-        self.numBf.clear()
-        self.nameMeas.clear()
-        self.namedVar.clear()
-
-        self.numRuns.clear()
-        self.experimentName.clear()
-
-        self.clearLayout(self.bFbox)
-        self.clearLayout(self.eBox)
-        self.clearLayout(self.tBox)
-
-        self.s1but.setText('Continue')
-        self.s1but.repaint()
-        self.s2but.setText('Continue')
-        self.repaint()
-        self.s4but.setText('Continue')
-        self.s4but.repaint()
-        self.s5but.setText('Generate values')
-        self.s5but.repaint()
-
-    
-    def exportframes(self):
-        #Creates file dialog for csv export of resultant dataframes from pairwise t-test after GLM fit
-        dlg = QFileDialog()
-        dlg.setFileMode(QFileDialog.Directory)
-        dataframe = exportresultframe(self.results.resultframes)
-        if dlg.exec_():
-            directory, _filter = dlg.getSaveFileName()
-            dataframe.to_csv(str(directory) + '.csv', index=True)
-
-
-    def pwr(self):
-        #Initializes display after parsing power with power estimation results
-        self.clearLayout(self.pwrBox)
-        labels = printpwr(self.results.resultframes)
-        headpwrlabel = QLabel('Based on ' + str(len(self.results.multiRun)) + ' runs and alpha = 0.05:')
-        headpwrlabel.setStyleSheet("font-weight: bold;")
-        self.pwrBox.addWidget(headpwrlabel)
-        
-
-        fixedlabel = QLabel('Power for fixed effect f-test is estimated as:')
-        fixedlabel.setStyleSheet("font-weight: bold;")
-        self.pwrBox.addWidget(fixedlabel)
-        fixedeffect = fpwr(self.results.fresults)
-        self.results.fpwrstring = fixedeffect
-        fixedeffectresult = QLabel(fixedeffect)
-        fixedeffectresult.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        fixedeffectresult.setCursor(Qt.IBeamCursor)
-        self.pwrBox.addWidget(fixedeffectresult)
-
-        pairwiselabel = QLabel('Power for pairwise t-tests between treatments are estimated as:')
-        pairwiselabel.setStyleSheet("font-weight: bold;")
-        self.pwrBox.addWidget(pairwiselabel)
-        pairwiseresultstr = ''
-        for label in labels:
-            pairwiseresultstr += label
-            pairwiseresultstr += '\n'
-        pairwiseresult = QLabel(pairwiseresultstr)
-        self.results.pstring = pairwiseresultstr
-        pairwiseresult.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        pairwiseresult.setCursor(Qt.IBeamCursor)
-        self.pwrBox.addWidget(pairwiseresult)
-
-
-    def resetSBbkgrd(self):
-        self.statusBar.setStyleSheet("background-color: none;")
-
-    
-    def runglm(self):
-        #Expands and initializes GLM fit and pairwise t-test multiple comparison for display in QTableViews
-        self.expand2()
-        self.clearLayout(self.dfBox)
-        self.clearLayout(self.pwrBox) #Since GLM is reinitialized
-        self.clearLayout(self.fBox)
-        self.badexpmt = False
-
-        results = makeglmresults(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, self.inputs.s2Inputs)
-        resultframes = results[0]
-        bigmodels = results[1]
-        self.results.resultframes.clear()
-        self.results.resultframes = resultframes
-
-        fresults = makeftest(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, self.inputs.s2Inputs, bigmodels)
-        self.results.fresults.clear()
-        self.results.fresults = fresults
-        #Initializing text for display in f-test box
-        self.fBox.addWidget(QLabel('Fixed effects f-test results:'))
-        fstring = ''
-
-        for i, tup in enumerate(self.results.fresults):
-            fstring += 'Run ' + str(i+1) + ' | ' + 'f-stat: ' + str(round(tup[0], 4)) + ', ' + 'p-value: ' + str(round(tup[1], 4))
-            fstring += '\n'
-            if tup[0] == -np.inf or tup[0] == np.inf:
-                self.badexpmt = True
-        
-        flabel = QLabel(fstring)
-        self.results.fstring = fstring
-        flabel.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        flabel.setCursor(Qt.IBeamCursor)
-        self.fBox.addWidget(flabel)
-
-        if self.badexpmt:
-            self.statusBar.setStyleSheet("background-color: #FFFF99") #Light yellow warning
-            self.statusBar.showMessage('Warning - this experiment is designed without enough separation in treatment and blocking factor assignments, unable to complete f-test', 10000)
-            self.timer.start(10000)
-
-
-        #Initializing tableviews for pairwise t-test
-        self.dfBox.addWidget(QLabel('Pairwise t-test results:'))
-        for frame in self.results.resultframes:
-            model = pdModel(frame)
-            view = QTableView()
-            view.setModel(model)
-
-            #setting height of TableViews, capping expandability @ 4 treatments / 6 rows
-            height = view.rowHeight(0)
-            numRows = model.rowCount()
-            if numRows > 6:
-                numRows = 6
-            height = (height * numRows) 
-
-            view.resizeColumnsToContents()
-            view.resizeRowsToContents()
-            view.setFixedHeight(height) #locks in height
-            self.dfBox.addWidget(view)
-        self.dfBox.addStretch() #Fill in empty space if there aren't enough tables generated
-
-
-    def unlockgrid(self):
-        self.hides6fields()
-        self.results.multiRun.clear()
-        self.runcounter = 0
-        self.runCount.setText('Current run count: ' + str(self.runcounter))
-        self.runCount.repaint()
-        if self.updatebool: #So this doesn't crash out on reset since QLabel objects are deleted
-            self.results.cleardVResultView() #Clears dependent variable generation until update complete
-            self.updatedVVal()
-        self.s5but.setText('Generate values')
-        self.s5but.repaint()
-        self.minimize()
-        if self.inputs.s5Obj: #if not empty
-            for obj in self.inputs.s5Obj[0]: #Treatment col
-                obj.setReadOnly(False)
-            for lst in self.inputs.s5Obj[1]: #Blocking fac cols
-                for obj in lst:
-                    obj.setReadOnly(False)
-
-
-    def lockgrid(self):
-        for obj in self.inputs.s5Obj[0]: #Treatment col
-            obj.setReadOnly(True)
-        for lst in self.inputs.s5Obj[1]: #Blocking fac cols
-            for obj in lst:
-                obj.setReadOnly(True)
-
-        
-    def hides6fields(self):
-        #Disables buttons and set readonly QLineEdit until generated values
-        self.addRun.setEnabled(False)
-        self.numRuns.setReadOnly(True)
-        self.editGrid.setEnabled(False)
-        self.exportSAS.setEnabled(False)
-        self.glmCalc.setEnabled(False)
-        self.experimentName.setReadOnly(True)
-        self.exportTextBut.setEnabled(False)
-        self.exportTextBut.repaint()
-        self.addRun.repaint()
-        self.editGrid.repaint()
-        self.experimentName.repaint()
-        self.exportSAS.repaint()
-        self.glmCalc.repaint()
-        self.numRuns.repaint()
-    
-
-    def shows6fields(self):
-        #Enables buttons and allow edit QLineEdit after generated values
-        self.addRun.setEnabled(True)
-        self.numRuns.setReadOnly(False)
-        self.editGrid.setEnabled(True)
-        self.exportSAS.setEnabled(True)
-        self.glmCalc.setEnabled(True)
-        self.experimentName.setReadOnly(False)
-        self.exportTextBut.setEnabled(True)
-        self.exportTextBut.repaint()
-        self.addRun.repaint()
-        self.editGrid.repaint()
-        self.experimentName.repaint()
-        self.exportSAS.repaint()
-        self.glmCalc.repaint()
-        self.numRuns.repaint()
-
-    
-    def minimize(self):
-        #Minimizes the 3rd GLM pane
-        if self.finalexpand:
-            self.finalexpand = False
-            self.GLMGroupBox.hide()
-            self.PCGroupBox.hide()
-            self.setMinimumSize(QSize(900, 750))
-            self.resize(900, 750)
-
-
-    def minimize2(self):
-        #Minimizes the 2nd pane
-        if self.firstexpand:
-            self.firstexpand = False
-            self.updates4.hide()
-            self.dGroupBox.hide()
-            self.cGroupBox.hide()
-            self.setMinimumSize(QSize(450, 750))
-            self.resize(450, 750)
-            
 
     def s1process(self):
         #Continue/Update for initial parameters 
@@ -751,6 +361,169 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.results.addRun()
 
 
+    def loadincsv(self):
+        self.unlockgrid()
+        dlg = QFileDialog()
+        dlg.setFileMode(QFileDialog.ExistingFile)
+        filename, _filter = dlg.getOpenFileName(None, "Load in csv", ".", "(*.csv)")
+
+        if filename:
+            grid = pd.read_csv(str(filename))
+            griddict = grid.to_dict('list') #list format extraction of dataframe to dict
+
+            verify = verifygriddict(griddict, self.inputs.s1Inputs, self.inputs.s2Inputs)
+            self.statusBar.clearMessage()
+            self.statusBar.setStyleSheet("background-color: none;")
+
+            if not verify[0]:
+                self.statusBar.showMessage(verify[1])
+                self.statusBar.setStyleSheet("background-color: pink;")
+                return
+            else:
+                self.inputs.loadin_s5(self.inputs.s5Obj, griddict)
+    
+
+    def genGrid(self):
+        choices = ('Cartesian product assignment (Default)', 'Quasi-random low discrepancy sequence assignment')
+        choice, ok = QInputDialog.getItem(self, 'Select auto-gen method', 'Note: Use cartesian product for all but very large sample sizes.', choices, 0 , False)
+        if ok and choice:
+            self.unlockgrid()
+
+            if choice == 'Cartesian product assignment (Default)':
+                combos = runCPalgo(self.inputs.s1Inputs, self.inputs.s2Inputs)
+                verify = verifyCPalgo(self.inputs.s1Inputs, combos)
+                self.statusBar.clearMessage()
+                self.statusBar.setStyleSheet("background-color: none;")
+
+                if not verify[0]:
+                    self.statusBar.showMessage(verify[1])
+                    self.statusBar.setStyleSheet("background-color: #FFFF99") #Light yellow warning
+                    return #will not fit to grid unless #of measurements is multiple of combos
+                else:
+                    dic = combotofitgrid(combos, self.inputs.s2Inputs, self.inputs.s1Inputs)
+                    self.inputs.loadin_s5(self.inputs.s5Obj, dic)
+
+            if choice == 'Quasi-random low discrepancy sequence assignment':
+                dic = runLDalgo(self.inputs.s1Inputs, self.inputs.s2Inputs)
+
+                verify = verifygriddict(dic, self.inputs.s1Inputs, self.inputs.s2Inputs)
+                self.statusBar.clearMessage()
+                self.statusBar.setStyleSheet("background-color: none;")
+
+                if not verify[0]:
+                    self.statusBar.showMessage('Auto-generation is an experimental feature... it did something wrong, going to have to grid in yourself or try Cartesian product!') 
+                    self.statusBar.setStyleSheet("background-color: pink;")
+                    return
+                else:
+                    self.statusBar.setStyleSheet("background-color: #FFFF99") #Light yellow warning
+                    self.timer.start(5000)
+                    self.statusBar.showMessage('Experimental feature - there may be a better distribution if done by hand or cartesian product', 5000)
+                    self.inputs.loadin_s5(self.inputs.s5Obj, dic)
+
+
+    def runglm(self):
+        #Expands and initializes GLM fit and pairwise t-test multiple comparison for display in QTableViews
+        self.expand2()
+        self.clearLayout(self.dfBox)
+        self.clearLayout(self.pwrBox) #Since GLM is reinitialized
+        self.clearLayout(self.fBox)
+        self.badexpmt = False
+
+        results = makeglmresults(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, self.inputs.s2Inputs)
+        resultframes = results[0]
+        bigmodels = results[1]
+        self.results.resultframes.clear()
+        self.results.resultframes = resultframes
+
+        fresults = makeftest(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, self.inputs.s2Inputs, bigmodels)
+        self.results.fresults.clear()
+        self.results.fresults = fresults
+        #Initializing text for display in f-test box
+        self.fBox.addWidget(QLabel('Fixed effects f-test results:'))
+        fstring = ''
+
+        for i, tup in enumerate(self.results.fresults):
+            fstring += 'Run ' + str(i+1) + ' | ' + 'f-stat: ' + str(round(tup[0], 4)) + ', ' + 'p-value: ' + str(round(tup[1], 4))
+            fstring += '\n'
+            if tup[0] == -np.inf or tup[0] == np.inf:
+                self.badexpmt = True
+        
+        flabel = QLabel(fstring)
+        self.results.fstring = fstring
+        flabel.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        flabel.setCursor(Qt.IBeamCursor)
+        self.fBox.addWidget(flabel)
+
+        if self.badexpmt:
+            self.statusBar.setStyleSheet("background-color: #FFFF99") #Light yellow warning
+            self.statusBar.showMessage('Warning - this experiment is designed without enough separation in treatment and blocking factor assignments, unable to complete f-test', 10000)
+            self.timer.start(10000)
+
+
+        #Initializing tableviews for pairwise t-test
+        self.dfBox.addWidget(QLabel('Pairwise t-test results:'))
+        for frame in self.results.resultframes:
+            model = pdModel(frame)
+            view = QTableView()
+            view.setModel(model)
+
+            #setting height of TableViews, capping expandability @ 4 treatments / 6 rows
+            height = view.rowHeight(0)
+            numRows = model.rowCount()
+            if numRows > 6:
+                numRows = 6
+            height = (height * numRows) 
+
+            view.resizeColumnsToContents()
+            view.resizeRowsToContents()
+            view.setFixedHeight(height) #locks in height
+            self.dfBox.addWidget(view)
+        self.dfBox.addStretch() #Fill in empty space if there aren't enough tables generated
+
+    
+    def pwr(self):
+        #Initializes display after parsing power with power estimation results
+        self.clearLayout(self.pwrBox)
+        labels = printpwr(self.results.resultframes)
+        headpwrlabel = QLabel('Based on ' + str(len(self.results.multiRun)) + ' runs and alpha = 0.05:')
+        headpwrlabel.setStyleSheet("font-weight: bold;")
+        self.pwrBox.addWidget(headpwrlabel)
+        
+
+        fixedlabel = QLabel('Power for fixed effect f-test is estimated as:')
+        fixedlabel.setStyleSheet("font-weight: bold;")
+        self.pwrBox.addWidget(fixedlabel)
+        fixedeffect = fpwr(self.results.fresults)
+        self.results.fpwrstring = fixedeffect
+        fixedeffectresult = QLabel(fixedeffect)
+        fixedeffectresult.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        fixedeffectresult.setCursor(Qt.IBeamCursor)
+        self.pwrBox.addWidget(fixedeffectresult)
+
+        pairwiselabel = QLabel('Power for pairwise t-tests between treatments are estimated as:')
+        pairwiselabel.setStyleSheet("font-weight: bold;")
+        self.pwrBox.addWidget(pairwiselabel)
+        pairwiseresultstr = ''
+        for label in labels:
+            pairwiseresultstr += label
+            pairwiseresultstr += '\n'
+        pairwiseresult = QLabel(pairwiseresultstr)
+        self.results.pstring = pairwiseresultstr
+        pairwiseresult.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        pairwiseresult.setCursor(Qt.IBeamCursor)
+        self.pwrBox.addWidget(pairwiseresult)
+
+
+    def exportframes(self):
+        #Creates file dialog for csv export of resultant dataframes from pairwise t-test after GLM fit
+        dlg = QFileDialog()
+        dlg.setFileMode(QFileDialog.Directory)
+        dataframe = exportresultframe(self.results.resultframes)
+        if dlg.exec_():
+            directory, _filter = dlg.getSaveFileName()
+            dataframe.to_csv(str(directory) + '.csv', index=True)
+
+
     def exporttxt(self):
         #Exports a read-out of current session into text file
         #Includes all inputs, generated error, treatment means, all runs and dVVal generation, power estimation results
@@ -780,6 +553,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             f.write(outstring)
             f.close()
         self.experimentName.clear() #Clears experiment name
+
+    
+    def exportxlsx(self):
+        if self.updatebool:
+            dlg = QFileDialog()
+            dlg.setFileMode(QFileDialog.Directory)
+            if dlg.exec_():
+                directory, _filter = dlg.getSaveFileName()
+                labels = preparelabeltxt(self.inputs.s1Inputs, self.inputs.s2Inputs)
+                writetoxlsx(self.inputs.s1Inputs, self.inputs.s2Inputs, self.inputs.s3Inputs, self.inputs.s4Inputs, 
+                self.inputs.s4labels, self.inputs.s5Inputs, self.results.multiRun, self.results.fstring, self.results.fpwrstring,
+                self.results.pstring, labels, self.results.errorResults, directory)
+                
+        else:
+            self.statusBar.setStyleSheet("background-color: #FFFF99")
+            self.statusBar.showMessage('Generate some values before you export to xlsx!', 7000)
+            self.timer.start(7000)
                   
 
     def initcurrInpView(self):
@@ -1007,6 +797,200 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.inputs.s2Obj.append(lstval)
 
 
+    def lockinputs(self):
+        self.editInputs.setEnabled(True)
+        self.editInputs.repaint()
+
+        #Locking out S1
+        self.numMeasure.setReadOnly(True)
+        self.numTreat.setReadOnly(True)
+        self.numBf.setReadOnly(True)
+        self.nameMeas.setReadOnly(True)
+        self.namedVar.setReadOnly(True)
+        self.s1but.setEnabled(False)
+        self.s1but.repaint()
+        
+        #Locking out S2
+        for obj in self.inputs.s2Obj[0]:
+            obj.setReadOnly(True)
+        for obj in self.inputs.s2Obj[1]:
+            obj.setReadOnly(True)
+        self.s2but.setEnabled(False)
+        self.s2but.repaint()
+
+        #Locking out S3
+        for obj in self.inputs.s3Obj:
+            obj.setReadOnly(True)
+        
+        #Locking out S4
+        for obj in self.inputs.s4Obj:
+            obj.setReadOnly(True)
+        for obj in self.inputs.s4labelobj:
+            obj.setReadOnly(True)
+        self.s4but.setEnabled(False)
+        self.s4but.repaint()
+        self.updates4.setEnabled(False)
+        self.updates4.repaint()
+
+
+    def unlockinputs(self):
+        self.editInputs.setEnabled(False)
+        self.editInputs.repaint()
+
+        if self.firstexpand:
+            self.unlockgrid()
+
+        #Unlocking S1
+        self.numMeasure.setReadOnly(False)
+        self.numTreat.setReadOnly(False)
+        self.numBf.setReadOnly(False)
+        self.nameMeas.setReadOnly(False)
+        self.namedVar.setReadOnly(False)
+        self.s1but.setEnabled(True)
+        self.s1but.repaint()
+
+        #Unlocking S2
+        for obj in self.inputs.s2Obj[0]:
+            obj.setReadOnly(False)
+        for obj in self.inputs.s2Obj[1]:
+            obj.setReadOnly(False)
+        if int(self.inputs.s1Inputs[2]) != 0:
+            self.s2but.setEnabled(True)
+            self.s2but.repaint()
+
+        #Unlocking S3
+        for obj in self.inputs.s3Obj:
+            obj.setReadOnly(False)
+        
+        #Unlocking S4
+        for obj in self.inputs.s4Obj:
+            obj.setReadOnly(False)
+        for obj in self.inputs.s4labelobj:
+            obj.setReadOnly(False)
+        self.s4but.setEnabled(True)
+        self.s4but.repaint()
+        self.updates4.setEnabled(True)
+        self.updates4.repaint()
+
+
+    def unlockgrid(self):
+        self.hides6fields()
+        self.results.multiRun.clear()
+        self.runcounter = 0
+        self.runCount.setText('Current run count: ' + str(self.runcounter))
+        self.runCount.repaint()
+        if self.updatebool: #So this doesn't crash out on reset since QLabel objects are deleted
+            self.results.cleardVResultView() #Clears dependent variable generation until update complete
+            self.updatedVVal()
+        self.s5but.setText('Generate values')
+        self.s5but.repaint()
+        self.minimize()
+        if self.inputs.s5Obj: #if not empty
+            for obj in self.inputs.s5Obj[0]: #Treatment col
+                obj.setReadOnly(False)
+            for lst in self.inputs.s5Obj[1]: #Blocking fac cols
+                for obj in lst:
+                    obj.setReadOnly(False)
+
+
+    def lockgrid(self):
+        for obj in self.inputs.s5Obj[0]: #Treatment col
+            obj.setReadOnly(True)
+        for lst in self.inputs.s5Obj[1]: #Blocking fac cols
+            for obj in lst:
+                obj.setReadOnly(True)
+
+    
+    def changedViewlabelsbool(self):
+        self.dViewlabelchanged = True
+
+    
+    def resetSBbkgrd(self):
+        self.statusBar.setStyleSheet("background-color: none;")
+  
+    
+    def opendocs(self):
+        #Links documentation menu button to Github main page with README for user and developer documentation
+        webbrowser.open('https://github.com/peytoncchen/Data-Modeler-Py')
+        
+
+    def reset(self):
+        #Resets everything back to just like first opening the app
+        #Storage for app will clear itself when reinitializing that view/calculations so no need to do it here
+        self.unlockinputs()
+        self.minimize()
+        self.minimize2()
+        self.hides6fields()
+        self.s2but.setEnabled(False)
+        self.s4but.setEnabled(False)
+        self.updates4.hide()
+        self.editInputs.hide()
+        self.updatebool = False
+        self.finalexpand = False
+        self.firstexpand = False
+        self.dViewlabelchanged = False
+        self.badexpmt = False
+        self.dViewlabels = []
+
+        self.numMeasure.clear()
+        self.numTreat.clear()
+        self.numBf.clear()
+        self.nameMeas.clear()
+        self.namedVar.clear()
+
+        self.numRuns.clear()
+        self.experimentName.clear()
+
+        self.clearLayout(self.bFbox)
+        self.clearLayout(self.eBox)
+        self.clearLayout(self.tBox)
+
+        self.s1but.setText('Continue')
+        self.s1but.repaint()
+        self.s2but.setText('Continue')
+        self.repaint()
+        self.s4but.setText('Continue')
+        self.s4but.repaint()
+        self.s5but.setText('Generate values')
+        self.s5but.repaint()
+
+
+    def hides6fields(self):
+        #Disables buttons and set readonly QLineEdit until generated values for step 6
+        self.addRun.setEnabled(False)
+        self.numRuns.setReadOnly(True)
+        self.editGrid.setEnabled(False)
+        self.exportSAS.setEnabled(False)
+        self.glmCalc.setEnabled(False)
+        self.experimentName.setReadOnly(True)
+        self.exportTextBut.setEnabled(False)
+        self.exportTextBut.repaint()
+        self.addRun.repaint()
+        self.editGrid.repaint()
+        self.experimentName.repaint()
+        self.exportSAS.repaint()
+        self.glmCalc.repaint()
+        self.numRuns.repaint()
+    
+
+    def shows6fields(self):
+        #Enables buttons and allow edit QLineEdit after generated values for step 6
+        self.addRun.setEnabled(True)
+        self.numRuns.setReadOnly(False)
+        self.editGrid.setEnabled(True)
+        self.exportSAS.setEnabled(True)
+        self.glmCalc.setEnabled(True)
+        self.experimentName.setReadOnly(False)
+        self.exportTextBut.setEnabled(True)
+        self.exportTextBut.repaint()
+        self.addRun.repaint()
+        self.editGrid.repaint()
+        self.experimentName.repaint()
+        self.exportSAS.repaint()
+        self.glmCalc.repaint()
+        self.numRuns.repaint()
+
+
     def expand2(self):
         #Final expand for GLM pane
         self.finalexpand = True
@@ -1025,8 +1009,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.cGroupBox.show()
 
 
+    def minimize(self):
+        #Minimizes the 3rd GLM pane
+        if self.finalexpand:
+            self.finalexpand = False
+            self.GLMGroupBox.hide()
+            self.PCGroupBox.hide()
+            self.setMinimumSize(QSize(900, 750))
+            self.resize(900, 750)
+
+
+    def minimize2(self):
+        #Minimizes the 2nd pane
+        if self.firstexpand:
+            self.firstexpand = False
+            self.updates4.hide()
+            self.dGroupBox.hide()
+            self.cGroupBox.hide()
+            self.setMinimumSize(QSize(450, 750))
+            self.resize(450, 750)
+
+
     def store_s1(self):
         #Stores the values for S1 into instance of Inputs model created on init
+        #Function is here and not inputs class since this is part of static UI
         numM = str(self.numMeasure.text()).strip()
         numT = str(self.numTreat.text()).strip()
         numB = str(self.numBf.text()).strip()

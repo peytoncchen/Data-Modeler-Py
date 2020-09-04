@@ -1,10 +1,6 @@
 venv
 .vscode
-.DS_Store
 __pycache__
-dump.txt
-test.py
-modules
 todo.txt
 
 
