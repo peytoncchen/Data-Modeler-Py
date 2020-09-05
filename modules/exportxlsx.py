@@ -32,9 +32,7 @@ fstring, fpwrstring, pstring, labels, errorResults, filename):
         resultformat = workbook.add_format({'bold': True})
         runformat = workbook.add_format({'bold': True, 'bg_color': '#ADD8E6'})
 
-        worksheet.write(0, 0, """Form implementation generated from reading data from Data Modeler for\
-        Power Calculations software v1.0
-        """, resultformat)
+        worksheet.write(0, 0, 'Form implementation generated from reading data from Data Modeler for Power Calculations software v1.0', resultformat)
 
         #Step 1
         worksheet.write(1, 0, 'Step 1', stepformat)
