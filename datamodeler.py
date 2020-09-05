@@ -139,115 +139,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         completerNmBF += completerNmMeaslst[0:11]
         self.completer3 = QCompleter(completerNmBF, self)
         self.completer3.setCaseSensitivity(0)
-
-
-    def savejson(self):
-        #Saves to json so that user can load in data from a session later
-        if self.results.multiRun: #Can't be empty to save
-            dlg = QFileDialog()
-            dlg.setFileMode(QFileDialog.Directory)
-            if dlg.exec_():
-                directory, _filter = dlg.getSaveFileName()
-                outdic = {}
-                outdic['s1Inputs'] = self.inputs.s1Inputs
-                outdic['s2Inputs'] = self.inputs.s2Inputs
-                outdic['s3Inputs'] = self.inputs.s3Inputs
-                outdic['s4Inputs'] = self.inputs.s4Inputs
-                outdic['s4labels'] = self.inputs.s4labels
-                outdic['s5Inputs'] = self.inputs.s5Inputs
-                outdic['errorResults'] = self.results.errorResults
-                outdic['multiRun'] = self.results.multiRun
-                outdic['finalexpand'] = self.finalexpand
-                with open(str(directory) + '.json', 'w') as write_file:
-                    json.dump(outdic,write_file)
-        else:
-            self.statusBar.setStyleSheet("background-color: #FFFF99")
-            self.statusBar.showMessage('Generate some values before you export to json!', 7000)
-            self.timer.start(7000)
-
-
-    def loadjson(self):
-        self.reset() #Resets to prepare for loading in
-        dlg = QFileDialog()
-        dlg.setFileMode(QFileDialog.ExistingFile)
-        filename, _filter = dlg.getOpenFileName(None, "Load in json", ".", "(*.json)")
-
-        if filename:
-            self.reset()
-            with open(filename, 'r') as read_file:
-                indic = json.load(read_file)
-
-                #Set text for S1
-                self.numMeasure.setText(indic['s1Inputs'][0])
-                self.numMeasure.setModified(True)
-                self.numMeasure.repaint()
-                self.numTreat.setText(indic['s1Inputs'][1])
-                self.numTreat.setModified(True)
-                self.numTreat.repaint()
-                self.numBf.setText(indic['s1Inputs'][2])
-                self.numBf.setModified(True)
-                self.numBf.repaint()
-                self.nameMeas.setText(indic['s1Inputs'][3])
-                self.nameMeas.setModified(True)
-                self.nameMeas.repaint()
-                self.namedVar.setText(indic['s1Inputs'][4])
-                self.namedVar.setModified(True)
-                self.namedVar.repaint()
-                self.s1process()
-
-                #Set text for S2
-                for i, obj in enumerate(self.inputs.s2Obj[0]): #labels
-                    obj.setText(indic['s2Inputs'][0][i])
-                    obj.repaint()
-                for i, obj in enumerate(self.inputs.s2Obj[1]): #values
-                    obj.setText(indic['s2Inputs'][1][i])
-                    obj.repaint()
-                self.s2process()
-
-                #Set text for S3
-                for i, obj in enumerate(self.inputs.s3Obj):
-                    obj.setText(indic['s3Inputs'][i])
-                    obj.repaint()
-
-                #Set text for S4
-                for i, obj in enumerate(self.inputs.s4Obj):
-                    obj.setText(indic['s4Inputs'][i])
-                    obj.repaint()
-                for i, obj in enumerate(self.inputs.s4labelobj):
-                    obj.setText(indic['s4labels'][i])
-                    obj.repaint()
-                self.s3and4process()
-
-                #Set text for S5 and storage
-                self.results.multiRun = indic['multiRun']
-                self.results.dVResults = self.results.multiRun[-1] 
-                self.initdVValView()
-                self.results.errorResults = indic['errorResults']
-                self.initcurrInpView()
-                self.inputs.s5Inputs = indic['s5Inputs']
-                for i, obj in enumerate(self.inputs.s5Obj[0]): #Treatment col
-                    obj.setText(indic['s5Inputs'][0][i])
-                    obj.repaint()
-                for i,lst in enumerate(self.inputs.s5Obj[1]): #Blocking fac cols
-                    for j,obj in enumerate(lst):
-                        obj.setText(indic['s5Inputs'][1][i][j])
-                        obj.repaint()
-                self.lockgrid()
-                self.lockinputs()
-                self.editInputs.show()
-                self.editInputs.repaint()
-                self.runcounter = len(self.results.multiRun)
-                self.runCount.setText('Current run count: ' + str(self.runcounter))
-                self.runCount.repaint()
-                self.s5but.setText('Reset runs')
-                self.s5but.repaint()
-                self.updates4.show()
-                self.updates4.repaint()
-                self.shows6fields()
-
-                if indic['finalexpand']:
-                    self.runglm()
-                    self.pwr()                        
+  
 
 
     def s1process(self):
@@ -683,6 +575,115 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statusBar.setStyleSheet("background-color: #FFFF99")
             self.statusBar.showMessage('Generate some values before you export to xlsx!', 7000)
             self.timer.start(7000)
+
+    
+    def savejson(self):
+        #Saves to json so that user can load in data from a session later
+        if self.results.multiRun: #Can't be empty to save
+            dlg = QFileDialog()
+            dlg.setFileMode(QFileDialog.Directory)
+            if dlg.exec_():
+                directory, _filter = dlg.getSaveFileName()
+                outdic = {}
+                outdic['s1Inputs'] = self.inputs.s1Inputs
+                outdic['s2Inputs'] = self.inputs.s2Inputs
+                outdic['s3Inputs'] = self.inputs.s3Inputs
+                outdic['s4Inputs'] = self.inputs.s4Inputs
+                outdic['s4labels'] = self.inputs.s4labels
+                outdic['s5Inputs'] = self.inputs.s5Inputs
+                outdic['errorResults'] = self.results.errorResults
+                outdic['multiRun'] = self.results.multiRun
+                outdic['finalexpand'] = self.finalexpand
+                with open(str(directory) + '.json', 'w') as write_file:
+                    json.dump(outdic,write_file)
+        else:
+            self.statusBar.setStyleSheet("background-color: #FFFF99")
+            self.statusBar.showMessage('Generate some values before you export to json!', 7000)
+            self.timer.start(7000)
+
+
+    def loadjson(self):
+        self.reset() #Resets to prepare for loading in
+        dlg = QFileDialog()
+        dlg.setFileMode(QFileDialog.ExistingFile)
+        filename, _filter = dlg.getOpenFileName(None, "Load in json", ".", "(*.json)")
+
+        if filename:
+            self.reset()
+            with open(filename, 'r') as read_file:
+                indic = json.load(read_file)
+
+                #Set text for S1
+                self.numMeasure.setText(indic['s1Inputs'][0])
+                self.numMeasure.setModified(True)
+                self.numMeasure.repaint()
+                self.numTreat.setText(indic['s1Inputs'][1])
+                self.numTreat.setModified(True)
+                self.numTreat.repaint()
+                self.numBf.setText(indic['s1Inputs'][2])
+                self.numBf.setModified(True)
+                self.numBf.repaint()
+                self.nameMeas.setText(indic['s1Inputs'][3])
+                self.nameMeas.setModified(True)
+                self.nameMeas.repaint()
+                self.namedVar.setText(indic['s1Inputs'][4])
+                self.namedVar.setModified(True)
+                self.namedVar.repaint()
+                self.s1process()
+
+                #Set text for S2
+                for i, obj in enumerate(self.inputs.s2Obj[0]): #labels
+                    obj.setText(indic['s2Inputs'][0][i])
+                    obj.repaint()
+                for i, obj in enumerate(self.inputs.s2Obj[1]): #values
+                    obj.setText(indic['s2Inputs'][1][i])
+                    obj.repaint()
+                self.s2process()
+
+                #Set text for S3
+                for i, obj in enumerate(self.inputs.s3Obj):
+                    obj.setText(indic['s3Inputs'][i])
+                    obj.repaint()
+
+                #Set text for S4
+                for i, obj in enumerate(self.inputs.s4Obj):
+                    obj.setText(indic['s4Inputs'][i])
+                    obj.repaint()
+                for i, obj in enumerate(self.inputs.s4labelobj):
+                    obj.setText(indic['s4labels'][i])
+                    obj.repaint()
+                self.s3and4process()
+
+                #Set text for S5 and storage
+                self.results.multiRun = indic['multiRun']
+                self.results.dVResults = self.results.multiRun[-1] 
+                self.initdVValView()
+                self.results.errorResults = indic['errorResults']
+                self.initcurrInpView()
+                self.inputs.s5Inputs = indic['s5Inputs']
+                for i, obj in enumerate(self.inputs.s5Obj[0]): #Treatment col
+                    obj.setText(indic['s5Inputs'][0][i])
+                    obj.repaint()
+                for i,lst in enumerate(self.inputs.s5Obj[1]): #Blocking fac cols
+                    for j,obj in enumerate(lst):
+                        obj.setText(indic['s5Inputs'][1][i][j])
+                        obj.repaint()
+                self.lockgrid()
+                self.lockinputs()
+                self.editInputs.show()
+                self.editInputs.repaint()
+                self.runcounter = len(self.results.multiRun)
+                self.runCount.setText('Current run count: ' + str(self.runcounter))
+                self.runCount.repaint()
+                self.s5but.setText('Reset runs')
+                self.s5but.repaint()
+                self.updates4.show()
+                self.updates4.repaint()
+                self.shows6fields()
+
+                if indic['finalexpand']:
+                    self.runglm()
+                    self.pwr()                      
                   
 
     def initcurrInpView(self):
@@ -1061,6 +1062,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.numBf.clear()
         self.nameMeas.clear()
         self.namedVar.clear()
+
+        self.inputs.s2Obj.clear()
+        self.inputs.s3Obj.clear()
+        self.inputs.s4Obj.clear()
+        self.inputs.s4labelobj.clear()
+        self.inputs.s5Obj.clear()
+        self.results.dVObjects.clear()
 
         self.numRuns.clear()
         self.experimentName.clear()
