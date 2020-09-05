@@ -25,7 +25,7 @@ def s1verify(s1list):
         return False, 'Invalid input - must have at least 2 treatments'
 
     if nameM == '' or namedVar == '':
-        return False, 'Invalid input - name measurements and name of dependent variable cannot be blank'
+        return False, 'Invalid input - names of variables cannot be blank'
     
     return True, ''
 

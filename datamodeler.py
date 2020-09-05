@@ -330,8 +330,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.statusBar.setStyleSheet("background-color: none;")
             self.minimize()
             if self.runcounter > 2000:
-                self.statusBar.showMessage('Are you trying to crash the program??? Error - Too many runs')
+                self.statusBar.showMessage('Are you trying to crash the program??? Error - Too many runs',5000)
                 self.statusBar.setStyleSheet("background-color: pink;")
+                self.timer.start(5000)
                 return
             if str(self.numRuns.text()):
                 try:
@@ -401,7 +402,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 if not verify[0]:
                     self.statusBar.showMessage(verify[1])
-                    self.statusBar.setStyleSheet("background-color: pink;") #Light yellow warning
+                    self.statusBar.setStyleSheet("background-color: pink;")
                     return #will not fit to grid unless #of measurements is multiple of combos
                 else:
                     dic = combotofitgrid(combos, self.inputs.s2Inputs, self.inputs.s1Inputs)
