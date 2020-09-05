@@ -120,7 +120,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #Timer used in a few places for statusBar background
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.resetSBbkgrd)
-        self.timer.start(0) #fixing the fact that SB bkgd color doesn't initialize correctly
 
         #Setting up QCompleters for labelling/naming
         completerNmMeaslst = ['Rat', 'Mouse', 'Pig', 'Sheep' 
