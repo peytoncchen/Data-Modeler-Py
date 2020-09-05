@@ -1,4 +1,6 @@
-#Results object to store generated results from calculations 
+# Results object to store generated results from calculations 
+
+# Copyright (C) 2020 Peyton Chen
 
 import random
 import scipy.stats as sc

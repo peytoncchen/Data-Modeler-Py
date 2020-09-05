@@ -1,4 +1,6 @@
-#Input Object to store input data 
+# Input Object to store input data 
+
+# Copyright (C) 2020 Peyton Chen
 
 from PyQt5.QtWidgets import QLineEdit
 

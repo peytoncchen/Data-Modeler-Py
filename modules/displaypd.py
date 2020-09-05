@@ -1,8 +1,9 @@
+# Standard model class to be used with QTableView based on PyQt's MVC-like architecture
+# Copyright (C) 2020 Peyton Chen
+
 import pandas as pd
 from PyQt5.QtWidgets import QTableView
 from PyQt5.QtCore import QAbstractTableModel, Qt
-
-#Standard model class to be used with QTableView based on PyQt's MVC-like architecture
 
 class pdModel(QAbstractTableModel):
 

@@ -1,5 +1,7 @@
 #Prepares text file strings
 
+# Copyright (C) 2020 Peyton Chen
+
 def preparelabeltxt(s1inputs, s2inputs):
     #Generates label text for non-SAS output
         labels = []

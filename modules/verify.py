@@ -1,6 +1,8 @@
-import copy
+# Function for verifying all the inputs are of the correct for at each step
 
-#Verifying all the inputs at each step
+# Copyright (C) 2020 Peyton Chen
+
+import copy
 
 def s1verify(s1list):
     numM = s1list[0]

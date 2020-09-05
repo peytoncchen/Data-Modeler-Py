@@ -1,4 +1,7 @@
-#Functions to export everything to xlsx
+# Functions to export everything to xlsx
+
+# Copyright (C) 2020 Peyton Chen
+
 import xlsxwriter
 
 def prepares5anddV(s5Inputs, dVResults): 

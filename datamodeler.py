@@ -2,6 +2,8 @@
 # Dedicated to the Appel Lab at Stanford University Department of Bioengineering
 # Developed by Peyton Chen, Summer 2020
 
+# Copyright (C) 2020 Peyton Chen
+
 import sys
 import pandas as pd
 import numpy as np

@@ -1,5 +1,8 @@
 # Utilized for autofill of step 5 grid distribution... experimental and not quite as reliable as hand for small
 # sample sizes.
+
+# Copyright (C) 2020 Peyton Chen
+
 import numpy as np
 
 def phi(d):

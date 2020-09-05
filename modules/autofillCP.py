@@ -1,4 +1,7 @@
-#Homebrew autofill feature for lower sample sizes utilizing cartesian products for full factorial design
+# Homebrew autofill feature for lower sample sizes utilizing cartesian products for full factorial design
+
+# Copyright (C) 2020 Peyton Chen
+
 import itertools #for itertools.product
 
 
