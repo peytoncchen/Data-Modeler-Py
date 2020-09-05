@@ -20,6 +20,9 @@ def makedict(s5inputs, dVlist, s1inputs, s2inputs, big):
         for lst in s5inputs[1]:
             blk.append(lst[i])
         result[s2inputs[0][i].replace(' ', '')] = blk
+    
+    if int(s1inputs[2]) == 0:
+        result['Intercept'] = ['1' for _ in range(int(s1inputs[0]))]
 
     return result
 
@@ -29,6 +32,8 @@ def makeformula(s1inputs, s2inputs, big):
     result = s1inputs[4].replace(' ', '') + ' ~ '
     if big:
         result += 'C(Treatment) + '
+    if int(s1inputs[2]) == 0:
+        result += 'C(Intercept) + '
     for name in s2inputs[0]:
         blkstring = 'C(' + name.replace(' ', '') + ') + '
         result += blkstring
