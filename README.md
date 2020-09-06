@@ -47,7 +47,7 @@ python3 py2appfiles/setup.py py2app -A
 ## Feedback/Development
 The code for this application is open source and can be downloaded and modified as you wish. 
 
-Please rpeort any bugs or feedback to [peytonc@stanford.edu](peytonc@stanford.edu)
+Please report any bugs or feedback to (peytonc@stanford.edu)
 
 ## Releases
 For the various versions and releases available, see the [releases page](https://github.com/peytoncchen/Data-Modeler-Py/releases)
