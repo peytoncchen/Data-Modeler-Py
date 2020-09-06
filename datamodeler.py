@@ -567,6 +567,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if dlg.exec_():
                 directory, _filter = dlg.getSaveFileName()
                 labels = preparelabeltxt(self.inputs.s1Inputs, self.inputs.s2Inputs)
+                labels.insert(0, 'Run')
                 writetoxlsx(self.inputs.s1Inputs, self.inputs.s2Inputs, self.inputs.s3Inputs, self.inputs.s4Inputs, 
                 self.inputs.s4labels, self.inputs.s5Inputs, self.results.multiRun, self.results.fstring, self.results.fpwrstring,
                 self.results.pstring, labels, self.results.errorResults, directory)

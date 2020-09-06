@@ -48,11 +48,11 @@ fstring, fpwrstring, pstring, labels, errorResults, filename):
         worksheet.write(6, 1, s1Inputs[4])
 
         worksheet.set_column(0, 0, 22)
-        worksheet.set_column(1, 1, 14)
-        worksheet.set_column(2, 2, 14)
-        worksheet.set_column(3, 3, 14)
-        worksheet.set_column(4, 4, 14)
-        worksheet.set_column(5, 5, 14)
+        worksheet.set_column(1, 1, 12)
+        worksheet.set_column(2, 2, 12)
+        worksheet.set_column(3, 3, 12)
+        worksheet.set_column(4, 4, 12)
+        worksheet.set_column(5, 5, 12)
         
         #Step 2
         worksheet.write(1, 3, 'Step 2: Blocking', stepformat)
@@ -122,16 +122,14 @@ fstring, fpwrstring, pstring, labels, errorResults, filename):
         #Time for storing runs
         if multiRun:
             worksheet.write(sofar+3, 0, 'Run results', runformat)
-            #for k,label in enumerate(labels): #writes the labels
-                #worksheet.write(sofar+3, k+1, label, resultformat) #shift over one column since placing Run # labels in first column
+            for k,label in enumerate(labels): #writes the labels
+                worksheet.write(sofar+3, k+1, label, resultformat) #shift over one column since placing Run # labels in first column
             for i,run in enumerate(multiRun):
-                for k,label in enumerate(labels): #writes the labels
-                    worksheet.write(sofar+4, k+1, label, resultformat) #shift over one column since placing Run # labels in first column
                 worksheet.write(sofar+5, 0, 'Run ' + str(i+1), resultformat)
                 lst = prepares5anddV(s5Inputs, run)
                 for line in lst:
+                    worksheet.write_number(sofar+5, 1, i+1)
                     for j,val in enumerate(line):
-                        worksheet.write_number(sofar+5, j+1, val)
-                        worksheet.set_column(j+2, j+1, 14) #To ensure all columns used are same width
+                        worksheet.write_number(sofar+5, j+2, val)
+                        worksheet.set_column(j+2, j+2, 12) #To ensure all columns used are same width
                     sofar += 1 #next line
-                sofar += 2 #to separate each run
