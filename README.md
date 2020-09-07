@@ -53,7 +53,7 @@ The code for this application is open source and can be downloaded and modified 
 Please report any bugs or feedback to peytonc@stanford.edu
 
 ## Releases
-For the various versions and releases available, see the [releases page](https://github.com/peytoncchen/Data-Modeler-Py/releases)
+For the various versions and releases available, see the [releases page](https://github.com/peytoncchen/Data-Modeler-Py/releases).
 
 ## Licensing
 This application is licensed under the GNU GPL (General Public License) v3.0. See [LICENSE.txt](LICENSE.txt) for more details.
