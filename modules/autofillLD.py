@@ -1,5 +1,5 @@
 # Utilized for autofill of step 5 grid distribution... experimental and not quite as reliable as hand for small
-# sample sizes.
+# sample sizes or cartesian product.
 
 # Copyright (C) 2020 Peyton Chen
 
