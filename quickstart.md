@@ -26,7 +26,7 @@ To be written.
 
 ## Pane 1
 Step 1 - 4 is completed on Pane 1.
-[Pane1](images/Pane1demo.png)
+![Pane1](images/Pane1demo.png)
 ### Step 1 - Enter inputs
 - Total measurements:
   - Enter your expected number of total measurments, e.g. 36 (This must be a positive integer)
@@ -71,7 +71,7 @@ When you are done, click **Continue** to expand the application and continue to 
 
 ## Pane 2
 Step 5, distributing groups and dependent variable generation, is completed on Pane 2. Pane 1 will remain visible.
-Here is what the app should look like at this stage. [Pane2](images/Pane2demo.png)
+Here is what the app should look like at this stage. ![Pane2](images/Pane2demo.png)
 
 ### Current Inputs
 Upon pressing **Continue** from step 4, you will notice that a display below the Step 5 box labelled "Current Inputs". 
