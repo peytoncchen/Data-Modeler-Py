@@ -26,7 +26,7 @@ To be written.
 
 ## Pane 1
 Step 1 - 4 is completed on Pane 1.
-![Pane1](images/Pane1demo.png)
+![Pane1](images/Pane1demo.png | width=150)
 ### Step 1 - Enter inputs
 - Total measurements:
   - Enter your expected number of total measurments, e.g. 36 (This must be a positive integer)
