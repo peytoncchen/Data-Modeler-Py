@@ -15,6 +15,7 @@ Step 1 - 4 is completed on Pane 1. Minimum window size: (450 x 750)
   - [Step 2](#step-2---enter-blocking-factor-labels-and-values-(if-applicable))
   - [Step 3](#step-3---enter-estimated-error-standard-deviations)
   - [Step 4](#step-4---enter-treatment-means-and-labels-(optional))
+
 Step 5, distributing groups and dependent variable value generation, is completed on Pane 2. Minimum window size: (900 x 450)
 - [Pane 2](#pane-2)
   - [Current Inputs](#current-inputs)
@@ -64,7 +65,10 @@ When you are done, continue directly to step 4, there is no dedicated button. If
 
 ### Step 4 - Enter treatment means and labels (optional)
 In this box, enter the treatment means for the number of treatments you specified in step 1.
-You can choose to label each treatment as well, this will not be used anywhere but in the Excel sheet you can choose to save. Click [here](#save-to-excel) to learn more.
+You can choose to label each treatment as well, this will not be used anywhere but in the Excel sheet you can choose to save.
+Click [here](#save-to-excel) to learn more. 
+When assigning treatments in pane 2, use the number assigned to each treatment.
+
 
 When you are done, click **Continue** to expand the application and continue to pane 2 where you will distribute assignments to every measurement and generate dependent variable values. Soldier on!
 
@@ -77,8 +81,19 @@ Here is what the app should look like at this stage. ![Pane2](images/Pane2demo.p
 ### Current Inputs
 Upon pressing **Continue** from step 4, you will notice that a display below the Step 5 box labelled "Current Inputs". 
 This box is to inform the user what the current inputs are. Based on the number of values for each blocking factor, that many error values are generated, e.g. if I have 3 cages with a cage SD of 1.2, a Gaussian distribution with SD 1.2 is created and 3 values are randomly picked from the distribution and assigned to each cage.
+- **Please keep note of this display to make sure your inputs are correctly reflected in the app's backend storage**
 
-To be continued...
+### Distributing assignments:
+In the "Distribute groups" box, you aim to assign groups to each of your measurements. 
+In the example from the app screenshot, I will select a treatment 1-3, a cage 1-3, a color 1-2, and a gender 1-2 for each mouse. 
+- Out of index values, i.e. if I assign treatment 4 to a mouse, will produce a warning. Similarly, if you enter a random string 'abc' for example, will produce a warning. Assign only valid integers.
+- Try to prevent overlap in assignments, i.e. don't have tons of mice all assigned the same combination of treatment 1, cage 1, color 1, and gender 1. If you have too much overlap if your assignments, the GLM f-test analysis will have degrees of freedom analysis error and will produce null values for the f-test.
+
+- #### Load in CSV
+To be written...
+
+- #### Auto-gen values
+To be written...
 
 
 ## Pane 3
