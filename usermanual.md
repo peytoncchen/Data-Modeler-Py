@@ -32,7 +32,7 @@ To be written.
 
 ## Pane 1
 Step 1 - 4 is completed on Pane 1.
-<img src="images/Pane1demo.png" width="450">
+<img src="misc/Pane1demo.png" width="450">
 
 ### Step 1 - Enter inputs
 - Total measurements:
@@ -81,7 +81,7 @@ When you are done, click **Continue** to expand the application and continue to 
 
 ## Pane 2
 Step 5, distributing groups and dependent variable generation, is completed on Pane 2. Pane 1 will remain visible.
-Here is what the app should look like at this stage. ![Pane2](images/Pane2demo.png)
+Here is what the app should look like at this stage. ![Pane2](misc/Pane2demo.png)
 
 
 ### Current Inputs
@@ -104,7 +104,7 @@ In the example from the app screenshot, I will select a treatment 1-3, a cage 1-
   - *Guidelines*
     - Up at the top, label columns starting with "Treatment" followed by your blocking factors spelled exactly how you spelled them in the app.
     - Then, fill out the CSV file as you would by hand in the app. Since the first row is taken up by labels, you will start the first measurment's assignments on row 2. A good rule of thumb is to check that you have your (# of measurments + 1) rows in your CSV file.
-    - An example CSV file is linked [here](static/exampleloadincsv.csv). This example has 10 measurements, 3 treatments, and 3 blocking factors cage(3), color(3), species(3).
+    - An example CSV file is linked [here](misc/exampleloadincsv.csv). This example has 10 measurements, 3 treatments, and 3 blocking factors cage(3), color(3), species(3).
   - If after importing the file you would like to make changes, you can do so, but do note that changes will not be reflected in your CSV file.
 
 - #### Auto-gen grid
