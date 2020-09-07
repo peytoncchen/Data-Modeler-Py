@@ -226,7 +226,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.initcurrInpView() #Reinitializes current input box: if blank, updated needed S3 or S4
 
 
-
     def s3and4process(self):
         #Continue/reset grid button
         #Store values from step 3 and 4 into an instance of Inputs class created at Mainwindow init

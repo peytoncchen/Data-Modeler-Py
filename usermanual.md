@@ -19,7 +19,12 @@ Step 1 - 4 is completed on Pane 1. Minimum window size: (450 x 750)
 Step 5, distributing groups and dependent variable value generation, is completed on Pane 2. Minimum window size: (900 x 450)
 - [Pane 2](#pane-2)
   - [Current Inputs](#current-inputs)
-  - To be continued...
+  - [Step 5 - Distributing Groups](#distributing-groups)
+    - [By hand](#by-hand)
+    - [Load in CSV](#load-in-csv)
+    - [Auto-generate grid](#auto-gen-grid)
+    - [General advice for this section](#general-advice-for-this-section)
+  - 
 
 
 ## Detailed-purpose statement
@@ -78,22 +83,48 @@ When you are done, click **Continue** to expand the application and continue to 
 Step 5, distributing groups and dependent variable generation, is completed on Pane 2. Pane 1 will remain visible.
 Here is what the app should look like at this stage. ![Pane2](images/Pane2demo.png)
 
+
 ### Current Inputs
 Upon pressing **Continue** from step 4, you will notice that a display below the Step 5 box labelled "Current Inputs". 
 This box is to inform the user what the current inputs are. Based on the number of values for each blocking factor, that many error values are generated, e.g. if I have 3 cages with a cage SD of 1.2, a Gaussian distribution with SD 1.2 is created and 3 values are randomly picked from the distribution and assigned to each cage.
 - **Please keep note of this display to make sure your inputs are correctly reflected in the app's backend storage**
 
-### Distributing assignments:
-In the "Distribute groups" box, you aim to assign groups to each of your measurements. 
-In the example from the app screenshot, I will select a treatment 1-3, a cage 1-3, a color 1-2, and a gender 1-2 for each mouse. 
-- Out of index values, i.e. if I assign treatment 4 to a mouse, will produce a warning. Similarly, if you enter a random string 'abc' for example, will produce a warning. Assign only valid integers.
-- Try to prevent overlap in assignments, i.e. don't have tons of mice all assigned the same combination of treatment 1, cage 1, color 1, and gender 1. If you have too much overlap if your assignments, the GLM f-test analysis will have degrees of freedom analysis error and will produce null values for the f-test.
+
+### Distributing groups:
+In the "Distribute groups" box, you aim to distribute assignments of groups to each of your measurements. If you want to reset the grid, you will notice that the **Continue** button from step 4 has changed to **Reinitialize grid**, which will reset and clear the grid so you can start fresh.
+
+In the example from the app screenshot, I will select a treatment 1-3, a cage 1-3, a color 1-2, and a gender 1-2 for each mouse.
+
+- #### By hand
+  - You can enter these values all *by hand* by entering values into the various textboxes, or see one of the options [below](#load-in-csv). 
 
 - #### Load in CSV
-To be written...
+  - One of your options is to load in a formatted CSV file by clicking on the **Load in CSV** button. This will bring up a file interface for you to select a .csv file to be imported into the app.
+  - This option requires strict formatting of your CSV file, unrecognized CSV formats will be rejected.
+  - *Guidelines*
+    - Up at the top, label columns starting with "Treatment" followed by your blocking factors spelled exactly how you spelled them in the app.
+    - Then, fill out the CSV file as you would by hand in the app. Since the first row is taken up by labels, you will start the first measurment's assignments on row 2. A good rule of thumb is to check that you have your (# of measurments + 1) rows in your CSV file.
+    - An example CSV file is linked [here](static/exampleloadincsv.csv). This example has 10 measurements, 3 treatments, and 3 blocking factors cage(3), color(3), species(3).
+  - If after importing the file you would like to make changes, you can do so, but do note that changes will not be reflected in your CSV file.
 
-- #### Auto-gen values
-To be written...
+- #### Auto-gen grid
+  - Another one of your options is to have choose an algorithm to distribute assignments of groups for you. This is the fastest way to get this done, although may not produce the results you exactly want. However, it should do the trick in most cases.
+  - Once you press on the button, an input dialog will pop up showing you 2 options, the "Cartesian product assignment" and the "Quasi-random low discrepancy sequence assignment". 
+
+  - *Cartesian product assignment*
+    - This method works best for any experiment that is smaller and for an experiment where you want every combination of treatment and blocking factors to be covered. 
+    - This will ensure perfect factorial design.
+    - If the number of measurements you selected is not a perfect multiple of the number of combinations, the status bar will glow red, warning you to add a multiple of the number of possible combinations. This algorithm cannot assign unless the number of measurements is a multiple of the number of possible combinations.
+
+  - *Quasi-random low discrepancy sequence assignment*
+    - This method works best for an experiment that is much larger ~(> 200) and for an experiment where you want to distribute assignments as evenly as possible to a sample size that is NOT a multiple of the number of possible combinations.
+      - This is because, as the name suggests, this is a quasi-random method where it relies on large sample sizes to converge on its maximal benefit of being low discrepancy.
+    - In most cases, you will want to utilize factorial design and hence, the cartesian product will serve you better.
+    - The status bar will glow yellow, indicating this is an experimental method and that it is recommended the user check the values in the grid manually to ensure they conform to what they want.
+
+- #### General advice for this section
+  - Out of index values, i.e. if I assign treatment 4 to a mouse, will produce a warning. Similarly, if you enter a random string 'abc' for example, will produce a warning. Assign only valid integers.
+  - Try to prevent overlap in assignments, i.e. don't have tons of mice all assigned the same combination of treatment 1, cage 1, color 1, and gender 1. If you have too much overlap if your assignments, the GLM f-test analysis will have degrees of freedom analysis error and will produce null values for the f-test.
 
 
 ## Pane 3
