@@ -26,7 +26,7 @@ To be written.
 
 ## Pane 1
 Step 1 - 4 is completed on Pane 1.
-<img src="images/Pane1demo.png" width="300">
+<img src="images/Pane1demo.png" width="450">
 
 ### Step 1 - Enter inputs
 - Total measurements:
