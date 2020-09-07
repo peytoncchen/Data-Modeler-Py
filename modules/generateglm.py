@@ -37,7 +37,7 @@ def makeformula(s1inputs, s2inputs, big):
     for name in s2inputs[0]:
         blkstring = 'C(' + name.replace(' ', '') + ') + '
         result += blkstring
-    return result[:-3] #accounting for superfluous + character at the end of the formula
+    return result[:-3] #accounting for extraneous + character at the end of the formula
 
 
 def calcnestedfstat(smallmodel, bigmodel):
