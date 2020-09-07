@@ -26,7 +26,8 @@ To be written.
 
 ## Pane 1
 Step 1 - 4 is completed on Pane 1.
-![Pane1](images/Pane1demo.png){:height="50%" width="100%"}
+<img src="images/Pane1demo.png" width="300">
+
 ### Step 1 - Enter inputs
 - Total measurements:
   - Enter your expected number of total measurments, e.g. 36 (This must be a positive integer)
