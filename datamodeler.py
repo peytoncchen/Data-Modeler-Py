@@ -639,8 +639,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         self.timer.start(7000)
                         return
                         
-
-
                     #Set text for S1
                     self.numMeasure.setText(indic['s1Inputs'][0])
                     self.numMeasure.setModified(True)
