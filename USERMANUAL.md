@@ -71,6 +71,7 @@ Power calculations can be complex and are hard to calculate by hand.
 Most power calculators are limiting and can only be done with a simple t-test. This means crucial experimental aspects like multiple treatment groups, blocking factors, corrections for multiple comparisons, and other more complicated experimental design elements cannot be incorporated.
 
 **Solution 1: Resource Equation**
+
 Power calculations require estimates of effect size, however effect size can be difficult to estimate accurately. Instead we can use the Mead resource equation degrees of freedom analysis to approximate sample sizes. Mead resource equation can be used for complex experimental designs, and does not require an estimate of standard deviation or effect size. Recommended reading can be found below. 
 
 In short, the resource equation is based on diminishing returns, where an inflection point can be found at 10 error degrees of freedom, and at 20 degrees of freedom the curve begins to plateau. Thus, a sample size that results in error degrees of freedom between 10-20 gives you a high probability of detecting a meaningful effect size. 
