@@ -14,9 +14,9 @@ Additionally, all boxes, other than the box labelled step 1, as that is a static
 Step 1 - 4 is completed on Pane 1. Minimum window size: (450 x 750)
 - [Pane 1](#pane-1)
   - [Step 1](#step-1---enter-inputs)
-  - [Step 2](#step-2---enter-blocking-factor-labels-and-values-(if-applicable))
+  - [Step 2](#step-2---enter-blocking-factor-labels-and-values)
   - [Step 3](#step-3---enter-estimated-error-standard-deviations)
-  - [Step 4](#step-4---enter-treatment-means-and-labels-(optional))
+  - [Step 4](#step-4---enter-treatment-means-and-labels)
 
 Step 5, distributing groups and dependent variable value generation, is completed on Pane 2. Minimum window size: (900 x 750)
 - [Pane 2](#pane-2)
@@ -28,11 +28,11 @@ Step 5, distributing groups and dependent variable value generation, is complete
     - [General advice for this section](#general-advice-for-this-section)
 
   - [Pane 2 buttons](#pane-2-buttons)
-    - [Generate values and Edit Inputs (new pane 1 button)](#generate-values-and-edit-inputs-(new-pane-1-button))
+    - [Generate values and Edit Inputs (new pane 1 button)](#generate-values-and-edit-inputs)
     - [Add run](#add-run)
     - [Edit grid distribution](#edit-grid-distribution)
-    - [Export run(s) and Export SAS run(s)](#export-run(s)-and-export-sas-run(s))
-    - [Run GLM (General Linear Model) Calculations](#run-glm-(general-linear-model)-calculations)
+    - [Export run(s) and Export SAS run(s)](#export-runs-and-export-sas-runs)
+    - [Run GLM (General Linear Model) Calculations](#run-glm-calculations)
 
 GLM (general linear model) analysis and results are completed on Pane 3. Minimum window size: (1350 x 750)
   - [Pane 3](#pane-3)
@@ -101,7 +101,7 @@ Step 1 - 4 is completed on Pane 1.
 When you are done, click **Continue**. The "continue" button will be relabelled to "update" after the initial press. If you need to update these values later in the app, don't forget to click the **Update** button to make sure that the values are updated in the app's backend storage.
 
 
-### Step 2 - Enter blocking factor labels and values (if applicable)
+### Step 2 - Enter blocking factor labels and values
 This box is based on your step 1 input value for "Number of blocking factors".
 *Note*: If you have 0 blocking factors, the button will stay grayed out as you can skip this step and go directly to step 3.
 
@@ -122,7 +122,7 @@ This step is for filling out estimated error standard deviations.
 When you are done, continue directly to step 4, there is no dedicated button. If you need to update this field, there will be an **Update Error/Treatment Means** button that can be pressed to update both error and treatment means/labels.
 
 
-### Step 4 - Enter treatment means and labels (optional)
+### Step 4 - Enter treatment means and labels
 In this box, enter the treatment means for the number of treatments you specified in step 1.
 You can choose to label each treatment as well, this will not be used anywhere but in the Excel sheet you can choose to save.
 Click [here](#save-to-excel) to learn more. 
@@ -182,7 +182,7 @@ In the example from the app screenshot, I will select a treatment 1-3, a cage 1-
 
 
 ### Pane 2 Buttons:
-- #### Generate values and Edit Inputs (new pane 1 button)
+- #### Generate values and Edit Inputs
   - Once your grid is filled out, click generate values! This will generate 1 run of your experiment, you will see the dependent variable column populate in the grid scroll view. 
 
   - This program will add the assigned treatment value, randomly generated SD (on Gaussian distribution) for the assigned blocking factor if the exist, and generated total error SD (on Gaussian distribution) to create the dependent variable value.
@@ -199,10 +199,10 @@ In the example from the app screenshot, I will select a treatment 1-3, a cage 1-
 
 
 - #### Edit grid distribution
-  - As noted in the [Generate values section](#generate-values-and-edit-inputs-(new-pane-1-button)), the grid will be locked out and you will not be able to edit the grid. However, you can press the "Edit grid distribution" button, which will allow you to edit the grid distribution. Press "Generate Values" to generate dependent variable values again.
+  - As noted in the [Generate values section](#generate-values-and-edit-inputs), the grid will be locked out and you will not be able to edit the grid. However, you can press the "Edit grid distribution" button, which will allow you to edit the grid distribution. Press "Generate Values" to generate dependent variable values again.
 
 
-- #### Export run(s) and Export SAS run(s)
+- #### Export runs and Export SAS runs
   - These are deprecated features, but may be useful in certain cases. Pressing either of these buttons will bring up a file dialog for you to select a file directory and name the file to which the text data will be saved.
 
   - Export run(s)
@@ -212,7 +212,7 @@ In the example from the app screenshot, I will select a treatment 1-3, a cage 1-
     - Export all your runs as well as boilerplate to be run in SAS statistical software. The application is set up to generate a script to obtain the pairwise t-test results from a fitted general linear model with a Tukey correction. You can, of course, download and edit this code to perform tests that you wish. See this [section](#run-glm-calculations) to see how this can be done within this application. 
 
 
-- #### Run GLM (General Linear Model) Calculations
+- #### Run GLM Calculations
   - The application will enlarge to its final size of 1350 x 750.
   - This button will fit, calculate, and display general linear model results for fixed effect f-tests and pairwise t-tests for each run. Results will be explained in the section below, [Pane 3](#pane-3)
 
