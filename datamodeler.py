@@ -611,113 +611,120 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if filename:
             self.reset()
             with open(filename, 'r') as read_file:
-                indic = json.load(read_file)
+                try: 
+                    indic = json.load(read_file)
 
-                for key in indic:
-                    if key not in ['s1Inputs', 's2Inputs', 's3Inputs', 's4Inputs', 's4labels', 's5Inputs', 'errorResults', 'multiRun', 'finalexpand']:
+                    for key in indic:
+                        if key not in ['s1Inputs', 's2Inputs', 's3Inputs', 's4Inputs', 's4labels', 's5Inputs', 'errorResults', 'multiRun', 'finalexpand']:
+                            self.statusBar.setStyleSheet("background-color: pink;")
+                            self.statusBar.showMessage('Unrecognized JSON format, select another file', 7000)
+                            self.timer.start(7000)
+                            return
+
+                    if len(indic['s1Inputs']) != 5:
                         self.statusBar.setStyleSheet("background-color: pink;")
                         self.statusBar.showMessage('Unrecognized JSON format, select another file', 7000)
                         self.timer.start(7000)
                         return
 
-                if len(indic['s1Inputs']) != 5:
-                    self.statusBar.setStyleSheet("background-color: pink;")
-                    self.statusBar.showMessage('Unrecognized JSON format, select another file', 7000)
-                    self.timer.start(7000)
-                    return
+                    if not indic['errorResults']:
+                        self.statusBar.setStyleSheet("background-color: pink;")
+                        self.statusBar.showMessage('Unrecognized JSON format, select another file', 7000)
+                        self.timer.start(7000)
+                        return
 
-                if not indic['errorResults']:
-                    self.statusBar.setStyleSheet("background-color: pink;")
-                    self.statusBar.showMessage('Unrecognized JSON format, select another file', 7000)
-                    self.timer.start(7000)
-                    return
-
-                if not indic['multiRun']:
-                    self.statusBar.setStyleSheet("background-color: pink;")
-                    self.statusBar.showMessage('Unrecognized JSON format, select another file', 7000)
-                    self.timer.start(7000)
-                    return
-                    
+                    if not indic['multiRun']:
+                        self.statusBar.setStyleSheet("background-color: pink;")
+                        self.statusBar.showMessage('Unrecognized JSON format, select another file', 7000)
+                        self.timer.start(7000)
+                        return
+                        
 
 
-                #Set text for S1
-                self.numMeasure.setText(indic['s1Inputs'][0])
-                self.numMeasure.setModified(True)
-                self.numMeasure.repaint()
-                self.numTreat.setText(indic['s1Inputs'][1])
-                self.numTreat.setModified(True)
-                self.numTreat.repaint()
-                self.numBf.setText(indic['s1Inputs'][2])
-                self.numBf.setModified(True)
-                self.numBf.repaint()
-                self.nameMeas.setText(indic['s1Inputs'][3])
-                self.nameMeas.setModified(True)
-                self.nameMeas.repaint()
-                self.namedVar.setText(indic['s1Inputs'][4])
-                self.namedVar.setModified(True)
-                self.namedVar.repaint()
-                self.s1process()
+                    #Set text for S1
+                    self.numMeasure.setText(indic['s1Inputs'][0])
+                    self.numMeasure.setModified(True)
+                    self.numMeasure.repaint()
+                    self.numTreat.setText(indic['s1Inputs'][1])
+                    self.numTreat.setModified(True)
+                    self.numTreat.repaint()
+                    self.numBf.setText(indic['s1Inputs'][2])
+                    self.numBf.setModified(True)
+                    self.numBf.repaint()
+                    self.nameMeas.setText(indic['s1Inputs'][3])
+                    self.nameMeas.setModified(True)
+                    self.nameMeas.repaint()
+                    self.namedVar.setText(indic['s1Inputs'][4])
+                    self.namedVar.setModified(True)
+                    self.namedVar.repaint()
+                    self.s1process()
 
-                #Set text for S2
-                for i, obj in enumerate(self.inputs.s2Obj[0]): #labels
-                    obj.setText(indic['s2Inputs'][0][i])
-                    obj.repaint()
-                for i, obj in enumerate(self.inputs.s2Obj[1]): #values
-                    obj.setText(indic['s2Inputs'][1][i])
-                    obj.repaint()
-                self.s2process()
-
-                #Set text for S3
-                for i, obj in enumerate(self.inputs.s3Obj):
-                    obj.setText(indic['s3Inputs'][i])
-                    obj.repaint()
-
-                #Set text for S4
-                for i, obj in enumerate(self.inputs.s4Obj):
-                    obj.setText(indic['s4Inputs'][i])
-                    obj.repaint()
-                for i, obj in enumerate(self.inputs.s4labelobj):
-                    obj.setText(indic['s4labels'][i])
-                    obj.repaint()
-                self.s3and4process()
-
-                #Set text for S5 and storage
-                self.results.multiRun = indic['multiRun']
-                self.results.dVResults = self.results.multiRun[-1] 
-                self.initdVValView()
-                self.results.errorResults = indic['errorResults']
-                self.initcurrInpView()
-                self.inputs.s5Inputs = indic['s5Inputs']
-                verify = s5verify(self.inputs.s5Inputs, self.inputs.s1Inputs, self.inputs.s2Inputs)
-                if not verify[0]:
-                    self.statusBar.showMessage(verify[1])
-                    self.statusBar.setStyleSheet("background-color: pink;")
-                    return
-                else: 
-                    for i, obj in enumerate(self.inputs.s5Obj[0]): #Treatment col
-                        obj.setText(indic['s5Inputs'][0][i])
+                    #Set text for S2
+                    for i, obj in enumerate(self.inputs.s2Obj[0]): #labels
+                        obj.setText(indic['s2Inputs'][0][i])
                         obj.repaint()
-                    for i,lst in enumerate(self.inputs.s5Obj[1]): #Blocking fac cols
-                        for j,obj in enumerate(lst):
-                            obj.setText(indic['s5Inputs'][1][i][j])
+                    for i, obj in enumerate(self.inputs.s2Obj[1]): #values
+                        obj.setText(indic['s2Inputs'][1][i])
+                        obj.repaint()
+                    self.s2process()
+
+                    #Set text for S3
+                    for i, obj in enumerate(self.inputs.s3Obj):
+                        obj.setText(indic['s3Inputs'][i])
+                        obj.repaint()
+
+                    #Set text for S4
+                    for i, obj in enumerate(self.inputs.s4Obj):
+                        obj.setText(indic['s4Inputs'][i])
+                        obj.repaint()
+                    for i, obj in enumerate(self.inputs.s4labelobj):
+                        obj.setText(indic['s4labels'][i])
+                        obj.repaint()
+                    self.s3and4process()
+
+                    #Set text for S5 and storage
+                    self.results.multiRun = indic['multiRun']
+                    self.results.dVResults = self.results.multiRun[-1] 
+                    self.initdVValView()
+                    self.results.errorResults = indic['errorResults']
+                    self.initcurrInpView()
+                    self.inputs.s5Inputs = indic['s5Inputs']
+                    verify = s5verify(self.inputs.s5Inputs, self.inputs.s1Inputs, self.inputs.s2Inputs)
+                    if not verify[0]:
+                        self.statusBar.showMessage(verify[1])
+                        self.statusBar.setStyleSheet("background-color: pink;")
+                        return
+                    else: 
+                        for i, obj in enumerate(self.inputs.s5Obj[0]): #Treatment col
+                            obj.setText(indic['s5Inputs'][0][i])
                             obj.repaint()
-                    self.lockgrid()
-                    self.lockinputs()
-                    self.editInputs.show()
-                    self.editInputs.repaint()
-                    self.runcounter = len(self.results.multiRun)
-                    self.runCount.setText('Current run count: ' + str(self.runcounter))
-                    self.runCount.repaint()
-                    self.s5but.setText('Reset runs')
-                    self.s5but.repaint()
-                    self.updates4.show()
-                    self.updates4.repaint()
-                    self.shows6fields()
+                        for i,lst in enumerate(self.inputs.s5Obj[1]): #Blocking fac cols
+                            for j,obj in enumerate(lst):
+                                obj.setText(indic['s5Inputs'][1][i][j])
+                                obj.repaint()
+                        self.lockgrid()
+                        self.lockinputs()
+                        self.editInputs.show()
+                        self.editInputs.repaint()
+                        self.runcounter = len(self.results.multiRun)
+                        self.runCount.setText('Current run count: ' + str(self.runcounter))
+                        self.runCount.repaint()
+                        self.s5but.setText('Reset runs')
+                        self.s5but.repaint()
+                        self.updates4.show()
+                        self.updates4.repaint()
+                        self.shows6fields()
 
 
-                    if indic['finalexpand']:
-                        self.runglm()
-                        self.pwr()                      
+                        if indic['finalexpand']:
+                            self.runglm()
+                            self.pwr()     
+                
+                except json.decoder.JSONDecodeError:
+                    self.statusBar.showMessage('Invalid JSON format, select another file')
+                    self.statusBar.setStyleSheet("background-color: pink;")
+                    return
+
                   
 
     def initcurrInpView(self):
