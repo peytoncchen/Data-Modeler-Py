@@ -199,7 +199,7 @@ In the example from the app screenshot, I will select a treatment 1-3, a cage 1-
 
 
 - #### Edit grid distribution
-  - As noted in the [Generate values section](#generate-values), the grid will be locked out and you will not be able to edit the grid. However, you can press the "Edit grid distribution" button, which will allow you to edit the grid distribution. Press "Generate Values" to generate dependent variable values again.
+  - As noted in the [Generate values section](#generate-values-and-edit-inputs-(new-pane-1-button)), the grid will be locked out and you will not be able to edit the grid. However, you can press the "Edit grid distribution" button, which will allow you to edit the grid distribution. Press "Generate Values" to generate dependent variable values again.
 
 
 - #### Export run(s) and Export SAS run(s)
