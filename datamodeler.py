@@ -613,6 +613,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             with open(filename, 'r') as read_file:
                 indic = json.load(read_file)
 
+                for key in indic:
+                    if key not in ['s1Inputs', 's2Inputs', 's3Inputs', 's4Inputs', 's4labels', 's5Inputs', 'errorResults', 'multiRun', 'finalexpand']:
+                        self.statusBar.setStyleSheet("background-color: pink;")
+                        self.statusBar.showMessage('Unrecognized JSON format, select another file', 7000)
+                        self.timer.start(7000)
+                        return
+
+                if len(indic['s1Inputs']) != 5:
+                    self.statusBar.setStyleSheet("background-color: pink;")
+                    self.statusBar.showMessage('Unrecognized JSON format, select another file', 7000)
+                    self.timer.start(7000)
+                    return
+
+                if not indic['errorResults']:
+                    self.statusBar.setStyleSheet("background-color: pink;")
+                    self.statusBar.showMessage('Unrecognized JSON format, select another file', 7000)
+                    self.timer.start(7000)
+                    return
+
+                if not indic['multiRun']:
+                    self.statusBar.setStyleSheet("background-color: pink;")
+                    self.statusBar.showMessage('Unrecognized JSON format, select another file', 7000)
+                    self.timer.start(7000)
+                    return
+                    
+
+
                 #Set text for S1
                 self.numMeasure.setText(indic['s1Inputs'][0])
                 self.numMeasure.setModified(True)
@@ -661,29 +688,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.results.errorResults = indic['errorResults']
                 self.initcurrInpView()
                 self.inputs.s5Inputs = indic['s5Inputs']
-                for i, obj in enumerate(self.inputs.s5Obj[0]): #Treatment col
-                    obj.setText(indic['s5Inputs'][0][i])
-                    obj.repaint()
-                for i,lst in enumerate(self.inputs.s5Obj[1]): #Blocking fac cols
-                    for j,obj in enumerate(lst):
-                        obj.setText(indic['s5Inputs'][1][i][j])
+                verify = s5verify(self.inputs.s5Inputs, self.inputs.s1Inputs, self.inputs.s2Inputs)
+                if not verify[0]:
+                    self.statusBar.showMessage(verify[1])
+                    self.statusBar.setStyleSheet("background-color: pink;")
+                    return
+                else: 
+                    for i, obj in enumerate(self.inputs.s5Obj[0]): #Treatment col
+                        obj.setText(indic['s5Inputs'][0][i])
                         obj.repaint()
-                self.lockgrid()
-                self.lockinputs()
-                self.editInputs.show()
-                self.editInputs.repaint()
-                self.runcounter = len(self.results.multiRun)
-                self.runCount.setText('Current run count: ' + str(self.runcounter))
-                self.runCount.repaint()
-                self.s5but.setText('Reset runs')
-                self.s5but.repaint()
-                self.updates4.show()
-                self.updates4.repaint()
-                self.shows6fields()
+                    for i,lst in enumerate(self.inputs.s5Obj[1]): #Blocking fac cols
+                        for j,obj in enumerate(lst):
+                            obj.setText(indic['s5Inputs'][1][i][j])
+                            obj.repaint()
+                    self.lockgrid()
+                    self.lockinputs()
+                    self.editInputs.show()
+                    self.editInputs.repaint()
+                    self.runcounter = len(self.results.multiRun)
+                    self.runCount.setText('Current run count: ' + str(self.runcounter))
+                    self.runCount.repaint()
+                    self.s5but.setText('Reset runs')
+                    self.s5but.repaint()
+                    self.updates4.show()
+                    self.updates4.repaint()
+                    self.shows6fields()
 
-                if indic['finalexpand']:
-                    self.runglm()
-                    self.pwr()                      
+
+                    if indic['finalexpand']:
+                        self.runglm()
+                        self.pwr()                      
                   
 
     def initcurrInpView(self):
@@ -1036,7 +1070,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def opendocs(self):
         #Links documentation menu button to Github main page with README for user and developer documentation
-        webbrowser.open('https://github.com/peytoncchen/Data-Modeler-Py')
+        webbrowser.open('https://github.com/peytoncchen/Data-Modeler-Py/blob/master/USERMANUAL.md')
         
 
     def reset(self):

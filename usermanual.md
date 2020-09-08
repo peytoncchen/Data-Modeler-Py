@@ -2,13 +2,15 @@
 Thank you for downloading Data Modeler for Power Calculations! We hope this tool will serve you useful in your research workflow and experimental design.
 
 ## Here are a few quick-tips.
-Upon first start - this application will be a window sized 450px wide and 750 high. This application will automatically resize by getting larger or smaller based on the user input - this is normal behavior. Fully expanded, this application will be 1350px wide and 750px high. You can expand the window as large as you want but it cannot be smaller than the specified size.
+Upon first start - this application will be a window sized 450px wide and 750px high. This application will automatically resize by getting larger or smaller based on the user input - this is normal behavior. Fully expanded, this application will be 1350px wide and 750px high. You can expand the window as large as you want but it cannot be smaller than the specified size.
 
 Regarding input errors: if there is an issue with your inputs, pay attention to the status bar at the bottom of the app, it will glow red with an error message detailing how to fix your inputs. A yellow glow with an error message is not a fatal error, but merely a warning.
 
 Additionally, all boxes, other than the box labelled step 1, as that is a static size, are scrollable views. Make sure to scroll through and fill out every value. If you think that you have entered every input correctly and a warning pops up in the status bar, chances are you may have forgotten to fill out values that are hidden by the scroll views.
 
 ## Table of Contents
+- [Purpose statement](#detailed-purpose-statement)
+
 Step 1 - 4 is completed on Pane 1. Minimum window size: (450 x 750)
 - [Pane 1](#pane-1)
   - [Step 1](#step-1---enter-inputs)
@@ -16,7 +18,7 @@ Step 1 - 4 is completed on Pane 1. Minimum window size: (450 x 750)
   - [Step 3](#step-3---enter-estimated-error-standard-deviations)
   - [Step 4](#step-4---enter-treatment-means-and-labels-(optional))
 
-Step 5, distributing groups and dependent variable value generation, is completed on Pane 2. Minimum window size: (900 x 450)
+Step 5, distributing groups and dependent variable value generation, is completed on Pane 2. Minimum window size: (900 x 750)
 - [Pane 2](#pane-2)
   - [Current Inputs](#current-inputs)
   - [Step 5 - Distributing Groups](#distributing-groups)
@@ -24,11 +26,63 @@ Step 5, distributing groups and dependent variable value generation, is complete
     - [Load in CSV](#load-in-csv)
     - [Auto-generate grid](#auto-gen-grid)
     - [General advice for this section](#general-advice-for-this-section)
-  - 
+
+  - [Pane 2 buttons](#pane-2-buttons)
+    - [Generate values and Edit Inputs (new pane 1 button)](#generate-values-and-edit-inputs-(new-pane-1-button))
+    - [Add run](#add-run)
+    - [Edit grid distribution](#edit-grid-distribution)
+    - [Export run(s) and Export SAS run(s)](#export-run(s)-and-export-sas-run(s))
+    - [Run GLM (General Linear Model) Calculations](#run-glm-(general-linear-model)-calculations)
+
+GLM (general linear model) analysis and results are completed on Pane 3. Minimum window size: (1350 x 750)
+  - [Pane 3](#pane-3)
+    - [Fixed effect f-test](#fixed-effect-f-test)
+    - [Pairwise t-test](#pairwise-t-test)
+    - [Power estimation calculations and results](#power-estimation-calculations-and-results)
+
+    - [Pane 3 buttons](#pane-3-buttons)
+      - [Parse and estimate power](#parse-and-estimate-power)
+      - [Export pairwise t-test results to CSV](#export-pairwise-t-test-results-to-csv)
+  
+
+  - [Menu bar](#menu-bar)
+    - [Session](#session)
+      - [Save to Excel](#save-to-excel)
+      - [Reset](#reset)
+      - [Dump to JSON](#dump-to-json)
+      - [Load from JSON](#load-from-json)
+    - [Help] (#help)
+      - Documentation... should link you right here!
+      - [Feedback](#feedback)
+
 
 
 ## Detailed-purpose statement
-To be written.
+Power is defined as the probability of correctly rejecting the null hypothesis in favor of the alternative hypothesis. This is crucial for experiment study design, paper reviewers, and animal protocol review if you choose to utilize animal models in your experiments.
+
+Power equations describe the relationship between 4 variables:
+  - Significance criterion or critcal alpha (commonly set at 0.05)
+  - The sample size, N
+  - The population effect size
+  - Power
+
+Actual power calculations are extremely complex and hard.
+
+Most power calculators are limiting and can only be done with a simple t-test. This means crucial experimental aspects like multiple treatment groups, blockign factors, multiple comparisons, and various statistical corrections can't be accounted for or incorporated.
+
+**Solution 1: Resource Equation**
+- Determining sample size using power calculations is difficult to imposible for these more complex designs. Math is hard.
+- Instead we can use degrees of freedom to approximate sample sizes
+  - 10-20 error degrees of freedom is the magical range where within the range where at all effect sizes, you will see a p-value less than 0.05.
+  - 10 is the inflection point, and 20 is about where the plateau is (therefore, closest but not over 20 is best.)
+
+**Solution 2: Data Modeling**
+- Generating model data for your study allows you to then run coplex statistical analyses
+  - Like GLM or multiple comparison tests
+- You can run these analyses multiple times and determine the power by counting the number of times you reject the null hypothesis with a p-value less than 0.05. 
+
+Enter the Data Modeler for Power Calculations. It's more akin to Solution 2. We do recommend you start off with the resource equation and then moving on to using our software to make the most out of it. Enjoy and best of luck with your science!
+
 
 ## Pane 1
 Step 1 - 4 is completed on Pane 1.
@@ -124,16 +178,102 @@ In the example from the app screenshot, I will select a treatment 1-3, a cage 1-
 
 - #### General advice for this section
   - Out of index values, i.e. if I assign treatment 4 to a mouse, will produce a warning. Similarly, if you enter a random string 'abc' for example, will produce a warning. Assign only valid integers.
-  - Try to prevent overlap in assignments, i.e. don't have tons of mice all assigned the same combination of treatment 1, cage 1, color 1, and gender 1. If you have too much overlap if your assignments, the GLM f-test analysis will have degrees of freedom analysis error and will produce null values for the f-test.
+  - Try to prevent overlap in assignments, i.e. don't have tons of mice all assigned the same combination of treatment 1, cage 1, color 1, and gender 1. If you have too much overlap if your assignments, the GLM (general linear model) f-test analysis will have degrees of freedom analysis error and will produce null values for the f-test.
+
+
+### Pane 2 Buttons:
+- #### Generate values and Edit Inputs (new pane 1 button)
+  - Once your grid is filled out, click generate values! This will generate 1 run of your experiment, you will see the dependent variable column populate in the grid scroll view. 
+
+  - Note at this point, pane 1 (step 1-4) will not be editable and a new button underneath step 1 labelled "Edit inputs" will pop up. This is to prevent accidental edits in the initial inputs. Additionally, the grid will be locked out and you will not be able to edit the grid. 
+
+  - If you click "Edit inputs", dependent variable values will reset until you have finished updating. From this point on, make sure to click this button to edit your pane 1 inputs. Additionally, be sure to click the "Update" buttons under the inputs that you update. The application will only reinitialize inputs where necessary. As a reminder, step 3 inputs are tied to the buttons underneath step 4.
+
+
+- #### Add run
+  - After generating the initial run, you will see that you have an option to add runs as well as see your current run count. The dependent variable column will only display the most recent run, but don't worry, the app has stored all your other runs, if they exist. 
+
+  - There is a textbox where you can specify how many runs you want to enter. Type in a positive integer and press "Add run". Pressing "Add Run" with nothing in the textbox still works, but it will add the default number of 1 additional run. At any point in time, you can press, "Reset runs" (used to say "Generate Values") to go back to only 1 run stored.
+
+
+- #### Edit grid distribution
+  - As noted in the [Generate values section](#generate-values), the grid will be locked out and you will not be able to edit the grid. However, you can press the "Edit grid distribution" button, which will allow you to edit the grid distribution. Press "Generate Values" to generate dependent variable values again.
+
+
+- #### Export run(s) and Export SAS run(s)
+  - These are deprecated features, but may be useful in certain cases. Pressing either of these buttons will bring up a file dialog for you to select a file directory and name the file to which the text data will be saved.
+
+  - Export run(s)
+    - Exports all your runs and dependent variable values to a text file
+    - For exporting all the data in your session see this [section](#save-to-excel) to see how to download your data to excel sheet.
+  - Export SAS run(s)
+    - Export all your runs as well as boilerplate to be run in SAS statistical software. The application is set up to generate a script to obtain the pairwise t-test results from a fitted general linear model with a Tukey correction. You can, of course, download and edit this code to perform tests that you wish. See this [section](#run-glm-calculations) to see how this can be done within this application. 
+
+
+- #### Run GLM (General Linear Model) Calculations
+  - The application will enlarge to its final size of 1350 x 750.
+  - This button will fit, calculate, and display general linear model results for fixed effect f-tests and pairwise t-tests for each run. Results will be explained in the section below, [Pane 3](#pane-3)
+
 
 
 ## Pane 3
-To be written...
+General linear model results for the fixed effect f-tests and pairwise t-test will be displayed here. You will be able to interact with the scroll views to see all the results, as well as parse and estimate power results and export the pairwise t-test results only to CSV.
+![image](misc/mdSS.png)
+
+### Fixed effect f-test
+- This scroll view box will present the user with f-statistic values and the corresponding p-values. 
+- An interpretation of this p-value would be "Treatment for run [#] has [insert p-value] probability of being the main factor in variation of the dependent variable".
+
+### Pairwise t-test
+- This scroll view box will present the user with tables on pairwise t-test results.
+- Row labels will look something like this: "2-1", "3-1", and "3-2". This is saying that this row corresponds to the difference in values between treatments 2 and 1, 3 and 1, and 3 and 2, respectively.
+- Scroll horizontally to the left to find the correct p-value and whether or not the null hypothesis has been rejected after the hs (Holm-Sidak) correction.
+
+- See this [section](#export-pariwise-t-test-results-to-csv) for how to export these dataframes to a CSV to save the data or further analyze it.
+
+### Power estimation calculations and results
+- See this [section](#parse-and-estimate-power) below for how to activate this view.
+
+- Based on the number of runs you have stored, and a standard alpha value of 0.05 (5%), the power will be estimated. The probability displayed is the probability of rejecting the null hypothesis when it is actually false. This can help you determine whether your experimental parameters will produce results that are statistically significant if the null hypothesis was actually false.
+  - This is important as you want to be able to detect differences between the groups you are studying and make sure that you do not miss finding differences when running your data through tests of statistical significance.
+
+
+### Pane 3 Buttons
+- #### Parse and estimate power
+  - Pressing this button will populate the scroll view underneath the general linear model results labelled "Power esimtation calculation and results"
+
+- ### Export pairwise t-test results to CSV
+  - Pressing this button will bring up a file dialog where you can choose a file directory and name the file to save the dataframes to CSV.
+
 
 
 
 ## Menu Bar
 Navigate to the top of the app (Windows), or the menu bar (by the Apple symbol) to find the built-in menu bar for the app.
 There are a few key features that can be accessed by interacting with the menu bar or keyboard shortcuts.
-### Save to Excel
-To be written...
+![menubardemo](misc/menubardemo.png)
+
+### Session
+- #### Save to Excel
+  - This function will open a file dialog where you will choose a directory and filename to save all your current data to a single excel sheet, from Pane 1, Pane 2, and Pane 3, EXCEPT for the pairwise t-test results. This MUST be exported seperately with the "Export pariwise t-test results to CSV".
+    - Power estimations and f-test results are included, however.
+  - **Shortcut - Ctrl + S**
+
+- #### Reset
+  - This button will reset the app as if you have just opened it. You can activate this function from anywhere at anytime during the app.
+  - **Shortcut - Ctrl + R**
+
+- #### Dump to JSON
+  - This function will open a file dialog where you will choose a directory and filename to dump your current session data to JSON format. Save this somewhere you remember, and at a later time you can use the "Load from JSON" function to load in all your data and pick up where you last left off.
+  - **Shortcut - Ctrl + J**
+
+- #### Load from JSON
+  - This function will open a file dialog where you will choose a JSON document to load a previous session data to the application and pick up where you last left off. Any changes you make will need to be dumped to JSON again, the original file you loaded will stay the same.
+  - A malformed JSON not generated or modified so that it is unrecognizable will be rejected and a red warning will show on the status bar.
+  - **Shortcut - Ctrl + L**
+
+### Help
+By clicking on documentation or the shortcut **Ctrl + D**, you should have arrived here!
+- #### Feedback
+  - For any feedback or bugs, please feel free to email peytonc@stanford.edu
+
