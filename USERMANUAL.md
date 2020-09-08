@@ -244,7 +244,7 @@ General linear model results for the fixed effect f-tests and pairwise t-test wi
 - #### Parse and estimate power
   - Pressing this button will populate the scroll view underneath the general linear model results labelled "Power esimtation calculation and results"
 
-- ### Export pairwise t-test results to CSV
+- #### Export pairwise t-test results to CSV
   - Pressing this button will bring up a file dialog where you can choose a file directory and name the file to save the dataframes to CSV.
 
 
