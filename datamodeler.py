@@ -60,7 +60,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pwrBox.setSpacing(5)
         
         self.fBox = QVBoxLayout()
-        self.FScrollWidget.setLayout(self.fBox) #Fixed effect f-test results VBoxLayout
+        self.FScrollWidget.setLayout(self.fBox) #Fixed effect F-test results VBoxLayout
         self.fBox.setSpacing(5)
 
         self.dGroupBox.hide()
@@ -442,8 +442,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         fresults = makeftest(self.inputs.s5Inputs, self.results.multiRun, self.inputs.s1Inputs, self.inputs.s2Inputs, bigmodels)
         self.results.fresults.clear()
         self.results.fresults = fresults
-        #Initializing text for display in f-test box
-        self.fBox.addWidget(QLabel('Fixed effects f-test results:'))
+        #Initializing text for display in F-test box
+        self.fBox.addWidget(QLabel('Fixed effects F-test results:'))
         fstring = ''
 
         for i, tup in enumerate(self.results.fresults):
@@ -493,7 +493,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pwrBox.addWidget(headpwrlabel)
         
 
-        fixedlabel = QLabel('Power for fixed effect f-test is estimated as:')
+        fixedlabel = QLabel('Power for fixed effect F-test is estimated as:')
         fixedlabel.setStyleSheet("font-weight: bold;")
         self.pwrBox.addWidget(fixedlabel)
         fixedeffect = fpwr(self.results.fresults)
