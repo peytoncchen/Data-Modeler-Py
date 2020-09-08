@@ -51,7 +51,7 @@ GLM (general linear model) analysis and results are completed on Pane 3. Minimum
       - [Reset](#reset)
       - [Dump to JSON](#dump-to-json)
       - [Load from JSON](#load-from-json)
-    - [Help] (#help)
+    - Help
       - Documentation... should link you right here!
       - [Feedback](#feedback)
 
@@ -251,7 +251,8 @@ General linear model results for the fixed effect f-tests and pairwise t-test wi
 ## Menu Bar
 Navigate to the top of the app (Windows), or the menu bar (by the Apple symbol) to find the built-in menu bar for the app.
 There are a few key features that can be accessed by interacting with the menu bar or keyboard shortcuts.
-![menubardemo](misc/Menubardemo.png)
+Here's what it looks like on macOS:
+<img src="misc/Menubardemo.png" width="500">
 
 ### Session
 - #### Save to Excel

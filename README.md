@@ -41,7 +41,7 @@ python3 py2appfiles/setup.py py2app -A
 - In my opinion, this is the best method, as you can run the application without the command line, it is more flexible than the completely frozen application, and you get the cute mouse icon.
 
 ## Quick-start documentation
-Please refer to this [document](usermanual.md) for basic, quick-start documentation.
+Please refer to this [document](USERMANUAL.md) for basic, quick-start documentation.
 
 ## Built With
 - Python 3
