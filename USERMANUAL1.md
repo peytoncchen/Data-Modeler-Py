@@ -251,7 +251,7 @@ General linear model results for the fixed effect f-tests and pairwise t-test wi
 ## Menu Bar
 Navigate to the top of the app (Windows), or the menu bar (by the Apple symbol) to find the built-in menu bar for the app.
 There are a few key features that can be accessed by interacting with the menu bar or keyboard shortcuts.
-![menubardemo](misc/menubardemo.png)
+![menubardemo](misc/Menubardemo.png)
 
 ### Session
 - #### Save to Excel
