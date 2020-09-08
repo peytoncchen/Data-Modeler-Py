@@ -185,6 +185,8 @@ In the example from the app screenshot, I will select a treatment 1-3, a cage 1-
 - #### Generate values and Edit Inputs (new pane 1 button)
   - Once your grid is filled out, click generate values! This will generate 1 run of your experiment, you will see the dependent variable column populate in the grid scroll view. 
 
+  - This program will add the assigned treatment value, randomly generated SD (on Gaussian distribution) for the assigned blocking factor if the exist, and generated total error SD (on Gaussian distribution) to create the dependent variable value.
+
   - Note at this point, pane 1 (step 1-4) will not be editable and a new button underneath step 1 labelled "Edit inputs" will pop up. This is to prevent accidental edits in the initial inputs. Additionally, the grid will be locked out and you will not be able to edit the grid. 
 
   - If you click "Edit inputs", dependent variable values will reset until you have finished updating. From this point on, make sure to click this button to edit your pane 1 inputs. Additionally, be sure to click the "Update" buttons under the inputs that you update. The application will only reinitialize inputs where necessary. As a reminder, step 3 inputs are tied to the buttons underneath step 4.
