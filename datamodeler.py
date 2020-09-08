@@ -122,7 +122,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timer.timeout.connect(self.resetSBbkgrd)
 
         #Setting up QCompleters for labelling/naming
-        completerNmMeaslst = ['Rat', 'Mouse', 'Pig', 'Sheep' 
+        completerNmMeaslst = ['Rat', 'Mouse', 'Pig', 'Sheep', 
         'Rabbit', 'Guinea Pig', 'Subject', 'Measurement', 'Sample']
         self.completer1 = QCompleter(completerNmMeaslst, self)
         self.completer1.setCaseSensitivity(0) #Case insensitive
@@ -447,7 +447,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         fstring = ''
 
         for i, tup in enumerate(self.results.fresults):
-            fstring += 'Run ' + str(i+1) + ' | ' + 'f-stat: ' + str(round(tup[0], 4)) + ', ' + 'p-value: ' + str(round(tup[1], 4))
+            fstring += 'Run ' + str(i+1) + ' | ' + 'F-stat: ' + str(round(tup[0], 4)) + ', ' + 'p-value: ' + str(round(tup[1], 4))
             fstring += '\n'
             if tup[0] == -np.inf or tup[0] == np.inf:
                 self.badexpmt = True
@@ -460,7 +460,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.badexpmt:
             self.statusBar.setStyleSheet("background-color: #FFFF99") #Light yellow warning
-            self.statusBar.showMessage('Warning - this experiment is designed without enough separation in treatment and blocking factor assignments, unable to complete f-test', 10000)
+            self.statusBar.showMessage('Warning - this experiment is designed without enough separation in treatment and blocking factor assignments, unable to complete F-test', 10000)
             self.timer.start(10000)
 
         #Initializing tableviews for pairwise t-test

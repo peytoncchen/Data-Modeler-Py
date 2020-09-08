@@ -883,7 +883,7 @@
          </font>
         </property>
         <property name="title">
-         <string>General Linear Model - f-test and pairwise t-test output:</string>
+         <string>General Linear Model - F-test and pairwise t-test output:</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
