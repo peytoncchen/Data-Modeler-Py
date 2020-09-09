@@ -1,5 +1,6 @@
 # Utilized for autofill of step 5 grid distribution... experimental and not quite as reliable as hand for small
 # sample sizes or cartesian product.
+# Check out this paper for more information: http://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/
 
 # Copyright (C) 2020 Peyton Chen
 
