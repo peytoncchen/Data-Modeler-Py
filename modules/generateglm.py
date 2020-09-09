@@ -1,4 +1,4 @@
-#Contains functions necssary for GLM output and analysis 
+#Contains functions necessary for GLM output and analysis 
 
 # Copyright (C) 2020 Peyton Chen
 
