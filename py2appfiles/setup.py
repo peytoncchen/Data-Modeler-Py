@@ -14,7 +14,7 @@ OPTIONS = {'argv_emulation': True,
            'iconfile': 'py2appfiles/Mouseiconv5.icns',
            'packages': ['statsmodels', 'pandas', 'xlsxwriter'],
            'plist': { 'CFBundleName': 'Data Modeler', 'CFBundleIdentifier': 'com.peyton.datamodeler',
-                     'CFBundleVersion': '1.0.1', 'NSHumanReadableCopyright': 'Copyright 2020 Peyton Chen'}
+                     'CFBundleVersion': '1.1.0', 'NSHumanReadableCopyright': 'Copyright 2020 Peyton Chen'}
         }
 
 setup(
