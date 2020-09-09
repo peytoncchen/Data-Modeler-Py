@@ -772,9 +772,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def updatedVVal(self):
         #Updates dependent var generation text with setText rather than overwriting
-        for i in range(len(self.results.dVResults)):
-            self.results.dVObjects[i].setText(str(self.results.dVResults[i]))
-            self.results.dVObjects[i].repaint()
+        if self.results.dVObjects:
+            for i in range(len(self.results.dVResults)):
+                self.results.dVObjects[i].setText(str(self.results.dVResults[i]))
+                self.results.dVObjects[i].repaint()
             
 
     def initdVValView(self):
@@ -790,6 +791,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             label.setCursor(Qt.IBeamCursor)
             labellst.append(label)
             self.dGrid.addWidget(label,i+1,colCount)
+
         self.results.dVObjects = labellst
         self.updatebool = True
 
@@ -813,6 +815,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         tAssignObj = []
         bAssignObj = []
         self.dViewlabels.clear()
+        self.results.dVObjects.clear()
 
         #Init the row labels
         l1 = QLabel(self.inputs.s1Inputs[3])
