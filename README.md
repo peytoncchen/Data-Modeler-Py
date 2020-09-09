@@ -22,6 +22,10 @@ This application can be downloaded in multiple ways.
   ```
   python3 -m venv NameOfVenv
   ```
+  - To activate the virtual environment:
+  ```
+  source venv/bin/activate
+  ```
   - Make sure you are in the source code directory and install all necessary dependencies:
   ```
   pip install -r requirements.txt
