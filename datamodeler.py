@@ -217,6 +217,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.numBf.setModified(False)
             if self.dViewlabelchanged:
                 self.updateDviewlabels()
+                if self.firstexpand: #Updates labels in the Current Input View
+                    self.initcurrInpView()
                 self.dViewlabelchanged = False
             self.s2but.setText('Update')
             self.s2but.repaint()
