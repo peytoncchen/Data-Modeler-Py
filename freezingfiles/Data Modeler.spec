@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(['datamodeler.py'],
-             pathex=['/Users/peytonchen/Desktop/Data Modeler v2 Python'],
+             pathex=['INSERT YOUR PATH'],
              binaries=[],
              datas=[],
              hiddenimports=['statsmodels.tsa.statespace._kalman_initialization',
@@ -49,6 +49,6 @@ exe = EXE(pyz,
           runtime_tmpdir=None,
           console=False )
 app = BUNDLE(exe,
-             name='Data Modeler.app',
-             icon=None,
+             name='Data Modeler',
+             icon=freezingfiles/Mouseiconv5.ico,
              bundle_identifier=None)
