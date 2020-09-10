@@ -8,7 +8,12 @@ This application can be downloaded in multiple ways.
 ### Running via frozen macOS Application
 - Download and save the .app file from the most [current release](https://github.com/peytoncchen/Data-Modeler-Py/releases)
 - Run the app by double-clicking (if "unknown developer" warning, go to System Preferences > Security & Privacy > Open Anyway)
-- Note: this is only for macOS, however Windows users can run py2exe themselves, if they wish.
+- Note: this is only for macOS, however Windows users can utilize the pyinstaller version that has been uploaded
+
+### Running via (semi) frozen Windows Application
+- Download and save the folder named "Data Modeler Windows" from the most [current release](https://github.com/peytoncchen/Data-Modeler-Py/releases) and unzip the folder
+- Open the folder and look for the executable application named **"Data Modeler"**
+- Double-click on it. If a command line window pops up, you do not have to worry about it, just ignore it. 
 
 ### Running via source code with Python 3
 - Requirements
