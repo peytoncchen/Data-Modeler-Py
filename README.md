@@ -38,7 +38,7 @@ This application can be downloaded in multiple ways.
 - Follow all steps from "Running via source code with Python 3"
 - Run py2app
 ```
-python3 py2appfiles/setup.py py2app -A
+python3 freezingfiles/setup.py py2app -A
 ```
   - Note, without the -A, py2app will freeze the app into stand-alone form.
   - With this, you will need to re-run the command if any new files are added but not if changes are made to existing files.
@@ -49,7 +49,7 @@ Please refer to this [document](USERMANUAL.md) for basic, quick-start documentat
 
 ## Built With
 - Python 3
-- Various packages: scipy, numpy, pandas, PyQt5, xlsxwriter, statsmodels, py2app
+- Various packages: scipy, numpy, pandas, PyQt5, xlsxwriter, statsmodels, py2app and pyinstaller
 
 ## Feedback/Development
 The code for this application is open source and can be downloaded and modified as you wish. 
