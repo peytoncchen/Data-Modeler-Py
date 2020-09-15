@@ -89,7 +89,7 @@ Gaskill, B. N, Garner, J. P. 2020. Power to the People: Power, Negative Results 
   - E.g. general linear model or multiple comparison tests
 - You generate data and run these analyses multiple times and estimate the power by counting the number of times you reject the null hypothesis with a p-value less than 0.05. 
 
-Enter the Data Modeler for Power Calculations. It is more akin to Solution 2 but designed with preclinical durg delivery applications in mind. It should be applicabel to other research areas, but the language we use to define our vairables originates with drug delivery in mind. We do recommend you start off with the resource equation and then use this software as a supplemental tool to generate model data to test out statistical analyses or check experiment power. Enjoy and best of luck with your science!
+Enter the Data Modeler for Power Calculations. It is more akin to Solution 2 but designed with preclinical drug delivery applications in mind. It should be applicable to other research areas, but the language we use to define our variables originates with drug delivery in mind. We do recommend you start off with the resource equation and then use this software as a supplemental tool to generate model data to test out statistical analyses or check experiment power. Enjoy and best of luck with your science!
 
 
 ## Pane 1
