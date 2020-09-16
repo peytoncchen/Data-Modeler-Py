@@ -240,7 +240,7 @@ General linear model results for the fixed effect F-tests and pairwise t-test wi
 - An interpretation of this p-value would be "For run {#}, if there is no effect of treatment on the dependent variable (i.e. null hypothesis), the probability of seeing results like this are [insert p-value]". It is standard to reject the null hypothesis when the probability of the results occurring by chance are less than 5% (p < 0.05).
 
 ### Pairwise t-test
-- Often in addition to knowing whether there is an overall effect of treatment on the dependent variable, we are most interested to know if there are differences between treatments. This requires multiple pair-wise comparisons, and a correction for multiple comparisons. Here we use pariwise t-tests between treatments and a Holm-Sidak (HS) correction for multiple comparisons.
+- Often in addition to knowing whether there is an overall effect of treatment on the dependent variable, we are most interested to know if there are differences between treatments. This requires multiple pair-wise comparisons, and a correction for multiple comparisons. Here we use pairwise t-tests between treatments and a Holm-Sidak (HS) correction for multiple comparisons.
 
 - Adjusted p-values in this section can be interpreted similarly to above: e.g. "If the means of treatment 1 and treatment 2 are the same (null hypothesis), the probability of seeing these results is [insert p-value]".
 
