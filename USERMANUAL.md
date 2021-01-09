@@ -296,5 +296,5 @@ By clicking on documentation or the shortcut **Ctrl + D**, you should have arriv
   - For any feedback or bugs, please feel free to email peytonc@stanford.edu
 
 ### Authors
-Peyton Chen and Catlin Maikawa
+Peyton Chen and Caitlin Maikawa
 

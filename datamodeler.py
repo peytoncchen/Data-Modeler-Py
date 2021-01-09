@@ -9,6 +9,8 @@ import pandas as pd
 import numpy as np
 import webbrowser
 import json
+import matplotlib
+import matplotlib.pyplot as plt
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -1230,6 +1232,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
 
 if __name__ == '__main__':
+    matplotlib.use('TkAgg')
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
