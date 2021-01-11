@@ -73,6 +73,6 @@ This application is licensed under the GNU GPL (General Public License) v3.0. Se
 ## Acknowledgments
 - Caitlin Maikawa, Stanford Bioengineering Ph.D.
   - for all the help with complex statistics and components of UI design
-- Eric Appel, Assistant Professor of Material Sicence and Engineering at Stanford University
+- Eric Appel, Assistant Professor of Material Science and Engineering at Stanford University
 - Appel Lab (hence the little apple in the icon!)
 - Stanford Department of Bioengineering Research Experience for Undergraduates (REU) Program, Summer 2020
